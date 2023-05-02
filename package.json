@@ -1,0 +1,39 @@
+{
+  "name": "slack-edge",
+  "version": "0.1.0",
+  "description": "Slack app development framework for edge functions with streamlined TypeScript support",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:clean": "rm -rf ./dist && tsc",
+    "format": "npx prettier --write src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seratch/slack-edge.git"
+  },
+  "keywords": [
+    "Slack",
+    "ChatBot",
+    "TypeScript",
+    "Cloudflare",
+    "Cloudflare Workers",
+    "Vercel Edge Functions",
+    "Serverless"
+  ],
+  "author": "Kazuhiro Sera",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seratch/slack-edge/issues"
+  },
+  "homepage": "https://github.com/seratch/slack-edge#readme",
+  "dependencies": {
+    "@types/cookie": "^0.5.1",
+    "cookie": "^0.5.0",
+    "slack-web-api-client": "^0.2.9"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.4"
+  }
+}

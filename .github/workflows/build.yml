@@ -1,0 +1,23 @@
+name: CI Build
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Node.js (${{ matrix.node-version }})
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm i
+    - name: Compile
+      run: npm i && npm run build
