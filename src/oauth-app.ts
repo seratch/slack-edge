@@ -325,7 +325,10 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     const queryState = searchParams.get("state");
     const cookie = parseCookie(request.headers.get("Cookie") || "");
     const cookieState = cookie[cookieName];
-    if (queryState !== cookieState) {
+    if (
+      queryState !== cookieState ||
+      !(await this.stateStore.consume(queryState))
+    ) {
       if (startPath === this.routes.oauth.start) {
         return await this.oauth.onStateValidationError(startPath, request);
       } else if (

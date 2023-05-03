@@ -11,11 +11,3 @@ export class AuthorizeError extends Error {
     this.name = "AuthorizeError";
   }
 }
-
-export class ResponseUrlError extends Error {
-  constructor(status: number, body: string) {
-    const message = `Failed to send a message using response_url (status: ${status}, body: ${body})`;
-    super(message);
-    this.name = "ResponseUrlError";
-  }
-}

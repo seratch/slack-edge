@@ -34,7 +34,7 @@ export interface ViewErrorsResponse {
   errors: { [blockId: string]: string };
 }
 
-export type ViewResponses =
+export type AnyViewResponse =
   | ViewUpdateResponse
   | ViewPushResponse
   | ViewClearResponse
@@ -57,4 +57,4 @@ export interface OptionGroupsResponse {
   option_groups: OptionGroup[];
 }
 
-export type OptionsResponses = OptionsResponse | OptionGroupsResponse;
+export type AnyOptionsResponse = OptionsResponse | OptionGroupsResponse;

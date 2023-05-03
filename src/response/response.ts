@@ -1,10 +1,7 @@
 import {
   MessageResponse,
-  OptionsResponses,
-  ViewClearResponse,
-  ViewErrorsResponse,
-  ViewPushResponse,
-  ViewUpdateResponse,
+  AnyOptionsResponse,
+  AnyViewResponse,
 } from "./response-body";
 
 export interface SlackResponse {
@@ -15,21 +12,13 @@ export interface SlackResponse {
 
 export type SlackViewResponse =
   | (SlackResponse & {
-      body:
-        | ""
-        | ViewClearResponse
-        | ViewErrorsResponse
-        | ViewPushResponse
-        | ViewUpdateResponse;
+      body: "" | AnyViewResponse;
     })
   | ""
-  | ViewClearResponse
-  | ViewErrorsResponse
-  | ViewPushResponse
-  | ViewUpdateResponse;
+  | AnyViewResponse;
 
 export type SlackOptionsResponse = SlackResponse & {
-  body: OptionsResponses;
+  body: AnyOptionsResponse;
 };
 
 export function toCompleteResponse(
