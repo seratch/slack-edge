@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "build:clean": "rm -rf ./dist && tsc",
-    "format": "npx prettier --write src/"
+    "format": "npx prettier --write src/ test/",
+    "test": "npm run format && npx vitest",
+    "ci-test": "npx vitest run --coverage"
   },
   "repository": {
     "type": "git",
@@ -33,7 +35,9 @@
     "slack-web-api-client": "^0.2.9"
   },
   "devDependencies": {
+    "@vitest/coverage-c8": "^0.30.1",
     "prettier": "^2.8.7",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "vitest": "^0.30.1"
   }
 }

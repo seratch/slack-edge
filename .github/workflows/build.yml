@@ -20,4 +20,4 @@ jobs:
         cache: 'npm'
     - run: npm i
     - name: Compile
-      run: npm i && npm run build
+      run: npm i && npm run build && npm run ci-test
