@@ -19,5 +19,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm i
-    - name: Compile
-      run: npm i && npm run build && npm run ci-test
+    - name: Build and run tests
+      run: npm run build && npm run ci-test
