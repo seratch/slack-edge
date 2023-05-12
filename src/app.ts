@@ -15,8 +15,8 @@ import { SlashCommand } from "./request/payload/slash-command";
 import { toCompleteResponse } from "./response/response";
 import {
   SlackEvent,
-  SlackEvents,
-  SlackEventsWithChannelId,
+  AnySlackEvent,
+  AnySlackEventWithChannelId,
 } from "./request/payload/event";
 import { ResponseUrlSender, SlackAPIClient } from "slack-web-api-client";
 import {
@@ -737,13 +737,13 @@ export class SlackApp<E extends SlackAppEnv> {
 export type StringOrRegExp = string | RegExp;
 
 export type EventRequest<E extends SlackAppEnv, T> = Extract<
-  SlackEventsWithChannelId,
+  AnySlackEventWithChannelId,
   { type: T }
 > extends never
-  ? SlackRequest<E, Extract<SlackEvents, { type: T }>>
+  ? SlackRequest<E, Extract<AnySlackEvent, { type: T }>>
   : SlackRequestWithChannelId<
       E,
-      Extract<SlackEventsWithChannelId, { type: T }>
+      Extract<AnySlackEventWithChannelId, { type: T }>
     >;
 
 export type MessageEventPattern = string | RegExp | undefined;
@@ -753,7 +753,7 @@ export type MessageEventRequest<
   ST extends string | undefined
 > = SlackRequestWithChannelId<
   E,
-  Extract<SlackEventsWithChannelId, { subtype: ST }>
+  Extract<AnySlackEventWithChannelId, { subtype: ST }>
 >;
 
 export type MessageEventSubtypes =

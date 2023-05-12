@@ -5,7 +5,7 @@ import {
   HomeTabView,
 } from "slack-web-api-client";
 
-export type SlackEvents =
+export type AnySlackEvent =
   | AppRequestedEvent
   | AppHomeOpenedEvent
   | AppMentionEvent
@@ -49,8 +49,8 @@ export type SlackEvents =
   | LinkSharedEvent
   | MemberJoinedChannelEvent
   | MemberLeftChannelEvent
-  | MessageEvents
-  | MessageMetadataEvents
+  | AnyMessageEvent
+  | AnyMessageMetadataEvent
   | PinAddedEvent
   | PinRemovedEvent
   | ReactionAddedEvent
@@ -83,7 +83,7 @@ export type SlackEvents =
   | WorkflowStepExecuteEvent;
 
 // These union types may not be a complete set of events
-export type SlackEventsWithChannelId =
+export type AnySlackEventWithChannelId =
   | AppHomeOpenedEvent
   | AppMentionEvent
   | AppUninstalledEvent
@@ -112,8 +112,8 @@ export type SlackEventsWithChannelId =
   | LinkSharedEvent
   | MemberJoinedChannelEvent
   | MemberLeftChannelEvent
-  | MessageEvents
-  | MessageMetadataEvents
+  | AnyMessageEvent
+  | AnyMessageMetadataEvent
   | PinAddedEvent
   | PinRemovedEvent
   | ReactionAddedEvent
@@ -1129,7 +1129,7 @@ export interface WorkflowStepExecuteEvent
   event_ts: string;
 }
 
-export type MessageEvents =
+export type AnyMessageEvent =
   | GenericMessageEvent
   | BotMessageEvent
   | ChannelArchiveMessageEvent
@@ -1148,7 +1148,7 @@ export type MessageEvents =
   | MessageRepliedEvent
   | ThreadBroadcastMessageEvent;
 
-export type MessageMetadataEvents =
+export type AnyMessageMetadataEvent =
   | MessageMetadataPostedEvent
   | MessageMetadataUpdatedEvent
   | MessageMetadataDeletedEvent;
@@ -1360,8 +1360,8 @@ export interface MessageChangedEvent extends SlackEvent<"message"> {
   channel: string;
   channel_type: ChannelTypes;
   ts: string;
-  message: MessageEvents;
-  previous_message: MessageEvents;
+  message: AnyMessageEvent;
+  previous_message: AnyMessageEvent;
 }
 
 export interface MessageDeletedEvent {
@@ -1373,7 +1373,7 @@ export interface MessageDeletedEvent {
   channel_type: ChannelTypes;
   ts: string;
   deleted_ts: string;
-  previous_message: MessageEvents;
+  previous_message: AnyMessageEvent;
 }
 
 export interface MessageRepliedEvent extends SlackEvent<"message"> {
@@ -1384,11 +1384,11 @@ export interface MessageRepliedEvent extends SlackEvent<"message"> {
   channel: string;
   channel_type: ChannelTypes;
   ts: string;
-  message: MessageEvents & {
+  message: AnyMessageEvent & {
     // TODO: should this be the union of all message events with type 'message'?
     thread_ts: string;
     reply_count: number;
-    replies: MessageEvents[]; // TODO: should this be the union of all message events with type 'message'?
+    replies: AnyMessageEvent[]; // TODO: should this be the union of all message events with type 'message'?
   };
 }
 
