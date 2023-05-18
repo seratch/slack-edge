@@ -603,7 +603,7 @@ export interface ReactionAddedEvent extends SlackEvent<"reaction_added"> {
   user: string;
   reaction: string;
   item_user: string;
-  item: ReactionMessageItem | ReactionFileItem;
+  item: ReactionMessageItem;
   event_ts: string;
 }
 
@@ -612,7 +612,7 @@ export interface ReactionRemovedEvent extends SlackEvent<"reaction_removed"> {
   user: string;
   reaction: string;
   item_user: string;
-  item: ReactionMessageItem | ReactionFileItem;
+  item: ReactionMessageItem;
   event_ts: string;
 }
 
@@ -1148,6 +1148,23 @@ export type AnyMessageEvent =
   | MessageRepliedEvent
   | ThreadBroadcastMessageEvent;
 
+export type AnyMessageItem =
+  | GenericMessageEvent
+  | BotMessageEvent
+  | ChannelArchiveMessageEvent
+  | ChannelJoinMessageEvent
+  | ChannelLeaveMessageEvent
+  | ChannelNameMessageEvent
+  | ChannelPostingPermissionsMessageEvent
+  | ChannelPurposeMessageEvent
+  | ChannelTopicMessageEvent
+  | ChannelUnarchiveMessageEvent
+  | EKMAccessDeniedMessageEvent
+  | FileShareMessageEvent
+  | MeMessageEvent
+  | MessageRepliedEvent
+  | ThreadBroadcastMessageEvent;
+
 export type AnyMessageMetadataEvent =
   | MessageMetadataPostedEvent
   | MessageMetadataUpdatedEvent
@@ -1165,7 +1182,7 @@ export interface GenericMessageEvent extends SlackEvent<"message"> {
   text: string;
   ts: string;
   thread_ts?: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   attachments?: MessageAttachment[];
   blocks?: AnyMessageBlock[];
   files?: File[];
@@ -1191,7 +1208,7 @@ export interface BotMessageEvent extends SlackEvent<"message"> {
   subtype: "bot_message";
   event_ts: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   ts: string;
   text: string;
   bot_id: string;
@@ -1218,7 +1235,7 @@ export interface ChannelArchiveMessageEvent extends SlackEvent<"message"> {
   team: string;
   user: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   text: string;
   ts: string;
   event_ts: string;
@@ -1231,7 +1248,7 @@ export interface ChannelJoinMessageEvent extends SlackEvent<"message"> {
   user: string;
   inviter: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   text: string;
   ts: string;
   event_ts: string;
@@ -1243,7 +1260,7 @@ export interface ChannelLeaveMessageEvent extends SlackEvent<"message"> {
   team: string;
   user: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   text: string;
   ts: string;
   event_ts: string;
@@ -1257,7 +1274,7 @@ export interface ChannelNameMessageEvent extends SlackEvent<"message"> {
   name: string;
   old_name: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   text: string;
   ts: string;
   event_ts: string;
@@ -1269,7 +1286,7 @@ export interface ChannelPostingPermissionsMessageEvent
   subtype: "channel_posting_permissions";
   user: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   text: string;
   ts: string;
   event_ts: string;
@@ -1280,7 +1297,7 @@ export interface ChannelPurposeMessageEvent extends SlackEvent<"message"> {
   subtype: "channel_purpose";
   user: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   text: string;
   purpose: string;
   ts: string;
@@ -1292,7 +1309,7 @@ export interface ChannelTopicMessageEvent extends SlackEvent<"message"> {
   subtype: "channel_topic";
   user: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   text: string;
   topic: string;
   ts: string;
@@ -1305,7 +1322,7 @@ export interface ChannelUnarchiveMessageEvent extends SlackEvent<"message"> {
   team: string;
   user: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   text: string;
   ts: string;
   event_ts: string;
@@ -1316,7 +1333,7 @@ export interface EKMAccessDeniedMessageEvent extends SlackEvent<"message"> {
   subtype: "ekm_access_denied";
   event_ts: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   ts: string;
   text: string; // This will not have any meaningful content within
   user: "UREVOKEDU";
@@ -1337,7 +1354,7 @@ export interface FileShareMessageEvent extends SlackEvent<"message"> {
   ts: string;
   thread_ts?: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   event_ts: string;
 }
 
@@ -1346,7 +1363,7 @@ export interface MeMessageEvent extends SlackEvent<"message"> {
   subtype: "me_message";
   event_ts: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   user: string;
   text: string;
   ts: string;
@@ -1358,10 +1375,10 @@ export interface MessageChangedEvent extends SlackEvent<"message"> {
   event_ts: string;
   hidden: true;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   ts: string;
-  message: AnyMessageEvent;
-  previous_message: AnyMessageEvent;
+  message: AnyMessageItem;
+  previous_message: AnyMessageItem;
 }
 
 export interface MessageDeletedEvent {
@@ -1370,10 +1387,10 @@ export interface MessageDeletedEvent {
   event_ts: string;
   hidden: true;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   ts: string;
   deleted_ts: string;
-  previous_message: AnyMessageEvent;
+  previous_message: AnyMessageItem;
 }
 
 export interface MessageRepliedEvent extends SlackEvent<"message"> {
@@ -1382,9 +1399,9 @@ export interface MessageRepliedEvent extends SlackEvent<"message"> {
   event_ts: string;
   hidden: true;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
   ts: string;
-  message: AnyMessageEvent & {
+  message: AnyMessageItem & {
     // TODO: should this be the union of all message events with type 'message'?
     thread_ts: string;
     reply_count: number;
@@ -1413,7 +1430,7 @@ export interface ThreadBroadcastMessageEvent extends SlackEvent<"message"> {
   };
   client_msg_id: string;
   channel: string;
-  channel_type: ChannelTypes;
+  channel_type: AnyChannelType;
 }
 
 export interface MessageMetadataPostedEvent
@@ -1457,7 +1474,7 @@ export interface MessageMetadataDeletedEvent
   deleted_ts: string;
 }
 
-export type ChannelTypes = "channel" | "group" | "im" | "mpim" | "app_home";
+export type AnyChannelType = "channel" | "group" | "im" | "mpim" | "app_home";
 
 // -----------------------------------------------------------
 
@@ -1563,12 +1580,6 @@ export interface ReactionMessageItem {
   type: "message";
   channel: string;
   ts: string;
-}
-
-export interface ReactionFileItem {
-  type: "file";
-  channel: string;
-  file: string;
 }
 
 export interface StarItem {
