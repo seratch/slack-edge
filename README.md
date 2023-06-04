@@ -45,7 +45,7 @@ export default {
       .command("/hello-cf-workers",
         async (req) => {
           // sync handler, which is resposible to ack the request
-          return ":wave: This app runs on Vercel Edge Function platform!";
+          return ":wave: This app runs on Cloudflare Workers!";
         },
         async ({ context: { respond } }) => {
           // Lazy listener, which can be executed asynchronously
