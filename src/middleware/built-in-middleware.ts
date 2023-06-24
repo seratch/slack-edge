@@ -1,5 +1,6 @@
 import { PreAuthorizeMiddleware, Middleware } from "./middleware";
 
+// deno-lint-ignore require-await
 export const urlVerification: PreAuthorizeMiddleware = async (req) => {
   if (req.body.type === "url_verification") {
     return { status: 200, body: req.body.challenge };
@@ -8,6 +9,7 @@ export const urlVerification: PreAuthorizeMiddleware = async (req) => {
 
 const eventTypesToKeep = ["member_joined_channel", "member_left_channel"];
 
+// deno-lint-ignore require-await
 export const ignoringSelfEvents: Middleware = async (req) => {
   if (req.body.event) {
     if (eventTypesToKeep.includes(req.body.event.type)) {

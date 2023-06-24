@@ -64,6 +64,7 @@ export interface SlackAppOptions<E extends SlackAppEnv> {
   routes?: {
     events: string;
   };
+  socketMode?: boolean;
 }
 
 export class SlackApp<E extends SlackAppEnv> {
@@ -71,11 +72,16 @@ export class SlackApp<E extends SlackAppEnv> {
   public client: SlackAPIClient;
   public authorize: Authorize<E>;
   public routes: { events: string | undefined };
+  public signingSecret: string;
+  public socketMode: boolean;
+  public appLevelToken: string | undefined;
 
+  // deno-lint-ignore no-explicit-any
   public preAuthorizeMiddleware: PreAuthorizeMiddleware<any>[] = [
     urlVerification,
   ];
 
+  // deno-lint-ignore no-explicit-any
   public postAuthorizeMiddleware: Middleware<any>[] = [ignoringSelfEvents];
 
   #slashCommands: ((
@@ -90,9 +96,11 @@ export class SlackApp<E extends SlackAppEnv> {
   #messageShorcuts: ((
     body: SlackRequestBody
   ) => SlackHandler<E, MessageShortcut> | null)[] = [];
-  #blockActions: ((
-    body: SlackRequestBody
-  ) => SlackHandler<E, BlockAction<any>> | null)[] = [];
+  #blockActions: ((body: SlackRequestBody) => SlackHandler<
+    E,
+    // deno-lint-ignore no-explicit-any
+    BlockAction<any>
+  > | null)[] = [];
   #blockSuggestions: ((
     body: SlackRequestBody
   ) => SlackOptionsHandler<E, BlockSuggestion> | null)[] = [];
@@ -117,7 +125,26 @@ export class SlackApp<E extends SlackAppEnv> {
     this.client = new SlackAPIClient(options.env.SLACK_BOT_TOKEN, {
       logLevel: this.env.SLACK_LOGGING_LEVEL,
     });
+    this.socketMode = options.socketMode ?? false;
+    if (this.socketMode) {
+      if (!this.env.SLACK_APP_TOKEN) {
+        throw new ConfigError("env.SLACK_APP_TOKEN must be set!");
+      }
+      this.appLevelToken = this.env.SLACK_APP_TOKEN;
+      this.signingSecret = ""; // won't be used
+    } else {
+      if (!this.env.SLACK_SIGNING_SECRET) {
+        throw new ConfigError("env.SLACK_SIGNING_SECRET must be set!");
+      }
+      this.signingSecret = this.env.SLACK_SIGNING_SECRET;
+    }
+
     this.authorize = options.authorize ?? singleTeamAuthorize;
+    if (this.socketMode && options.routes) {
+      console.error(
+        "Note that the `routes` parameter will be ignored when enabling Socket Mode"
+      );
+    }
     this.routes = { events: options.routes?.events };
   }
 
@@ -176,6 +203,7 @@ export class SlackApp<E extends SlackAppEnv> {
         return null;
       }
       if (body.event.type === event) {
+        // deno-lint-ignore require-await
         return { ack: async () => "", lazy };
       }
       return null;
@@ -210,6 +238,7 @@ export class SlackApp<E extends SlackAppEnv> {
           }
         }
         if (matched) {
+          // deno-lint-ignore require-await
           return { ack: async (_: EventRequest<E, "message">) => "", lazy };
         }
       }
@@ -456,6 +485,10 @@ export class SlackApp<E extends SlackAppEnv> {
     return await this.handleEventRequest(request, ctx);
   }
 
+  readonly withSocketMode = {
+    async connect(): Promise<void> {},
+  };
+
   async handleEventRequest(
     request: Request,
     ctx: ExecutionContext
@@ -485,13 +518,16 @@ export class SlackApp<E extends SlackAppEnv> {
     }
 
     // Verify the request headers and body
-    if (
-      await verifySlackRequest(
-        this.env.SLACK_SIGNING_SECRET,
+    let verified = this.socketMode;
+    if (!verified) {
+      verified = await verifySlackRequest(
+        this.signingSecret,
         request.headers,
         rawBody
-      )
-    ) {
+      );
+    }
+    if (verified) {
+      // deno-lint-ignore no-explicit-any
       const body: Record<string, any> = await parseRequestBody(
         request.headers,
         rawBody
@@ -501,12 +537,15 @@ export class SlackApp<E extends SlackAppEnv> {
         const retryNumHeader = request.headers.get("x-slack-retry-num");
         if (retryNumHeader) {
           retryNum = Number.parseInt(retryNumHeader);
+        } else if (this.socketMode) {
+          retryNum = Number.parseInt(body.retry_attempt);
         }
+        // deno-lint-ignore no-unused-vars
       } catch (e) {
         // Ignore an exception here
       }
       const retryReason =
-        request.headers.get("x-slack-retry-reason") ?? undefined;
+        request.headers.get("x-slack-retry-reason") ?? body.retry_reason;
       const preAuthorizeRequest: PreAuthorizeSlackMiddlwareRequest<E> = {
         body,
         rawBody,
@@ -517,7 +556,7 @@ export class SlackApp<E extends SlackAppEnv> {
         headers: request.headers,
       };
       if (isDebugLogEnabled(this.env.SLACK_LOGGING_LEVEL)) {
-        console.log(`*** Received request body***\n ${prettyPrint(body)}`);
+        console.log(`*** Received request body ***\n ${prettyPrint(body)}`);
       }
       for (const middlware of this.preAuthorizeMiddleware) {
         const response = await middlware(preAuthorizeRequest);
@@ -550,6 +589,7 @@ export class SlackApp<E extends SlackAppEnv> {
       }
       if (authorizedContext.responseUrl) {
         const responseUrl = authorizedContext.responseUrl;
+        // deno-lint-ignore require-await
         (authorizedContext as SlackAppContextWithRespond).respond = async (
           params
         ) => {
@@ -648,7 +688,9 @@ export class SlackApp<E extends SlackAppEnv> {
         }
       } else if (body.type === PayloadType.BlockAction) {
         // Block actions
+        // deno-lint-ignore no-explicit-any
         const slackRequest: SlackRequest<E, BlockAction<any>> = {
+          // deno-lint-ignore no-explicit-any
           payload: body as BlockAction<any>,
           ...baseRequest,
         };

@@ -13,6 +13,7 @@ export type OpenIDConnectCallback = (
 export function defaultOpenIDConnectCallback(
   env: SlackLoggingLevel
 ): OpenIDConnectCallback {
+  // deno-lint-ignore no-unused-vars
   return async (token, req) => {
     const client = new SlackAPIClient(token.access_token, {
       logLevel: env.SLACK_LOGGING_LEVEL,

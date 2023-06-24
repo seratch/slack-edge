@@ -19,6 +19,7 @@ export interface PreAuthorizeSlackAppContext {
   responseUrl?: string;
   channelId?: string;
   custom: {
+    // deno-lint-ignore no-explicit-any
     [key: string]: any; // custom properties
   };
 }
@@ -47,6 +48,7 @@ export type SlackAppContextWithOptionalRespond = {
 } & SlackAppContext;
 
 export function builtBaseContext(
+  // deno-lint-ignore no-explicit-any
   body: Record<string, any>
 ): PreAuthorizeSlackAppContext {
   return {
@@ -66,6 +68,7 @@ export function builtBaseContext(
 }
 
 export function extractIsEnterpriseInstall(
+  // deno-lint-ignore no-explicit-any
   body: Record<string, any>
 ): boolean | undefined {
   if (body.authorizations && body.authorizations.length > 0) {
@@ -81,6 +84,7 @@ export function extractIsEnterpriseInstall(
 }
 
 export function extractEnterpriseId(
+  // deno-lint-ignore no-explicit-any
   body: Record<string, any>
 ): string | undefined {
   if (body.enterprise) {
@@ -105,6 +109,7 @@ export function extractEnterpriseId(
   return undefined;
 }
 
+// deno-lint-ignore no-explicit-any
 export function extractTeamId(body: Record<string, any>): string | undefined {
   if (body.view && body.view.app_installed_team_id) {
     // view_submission payloads can have `view.app_installed_team_id`
@@ -134,6 +139,7 @@ export function extractTeamId(body: Record<string, any>): string | undefined {
   return undefined;
 }
 
+// deno-lint-ignore no-explicit-any
 export function extractUserId(body: Record<string, any>): string | undefined {
   if (body.user) {
     if (typeof body.user === "string") {
@@ -155,6 +161,7 @@ export function extractUserId(body: Record<string, any>): string | undefined {
 }
 
 export function extractActorEnterpriseId(
+  // deno-lint-ignore no-explicit-any
   body: Record<string, any>
 ): string | undefined {
   if (body.is_ext_shared_channel) {
@@ -171,6 +178,7 @@ export function extractActorEnterpriseId(
 }
 
 export function extractActorTeamId(
+  // deno-lint-ignore no-explicit-any
   body: Record<string, any>
 ): string | undefined {
   if (body.is_ext_shared_channel) {
@@ -220,6 +228,7 @@ export function extractActorTeamId(
 }
 
 export function extractActorUserId(
+  // deno-lint-ignore no-explicit-any
   body: Record<string, any>
 ): string | undefined {
   if (body.is_ext_shared_channel) {
@@ -239,6 +248,7 @@ export function extractActorUserId(
 }
 
 export function extractResponseUrl(
+  // deno-lint-ignore no-explicit-any
   body: Record<string, any>
 ): string | undefined {
   if (body.response_url) {
@@ -250,6 +260,7 @@ export function extractResponseUrl(
 }
 
 export function extractChannelId(
+  // deno-lint-ignore no-explicit-any
   body: Record<string, any>
 ): string | undefined {
   if (body.channel) {

@@ -10,6 +10,7 @@ import { SlackAppEnv } from "../app-env";
 export interface SlackMiddlewareRequestBase<E extends SlackAppEnv> {
   env: E;
   context: PreAuthorizeSlackAppContext;
+  // deno-lint-ignore no-explicit-any
   body: Record<string, any>;
   retryNum?: number;
   retryReason?: string;

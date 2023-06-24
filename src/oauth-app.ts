@@ -8,7 +8,7 @@ import {
   renderStartPage,
 } from "./oauth/oauth-page-renderer";
 import { generateAuthorizeUrl } from "./oauth/authorize-url-generator";
-import { parse as parseCookie } from "cookie";
+import { parse as parseCookie } from "./cookie";
 import {
   SlackAPIClient,
   OAuthV2AccessResponse,
@@ -162,6 +162,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     return await super.handleEventRequest(request, ctx);
   }
 
+  // deno-lint-ignore no-unused-vars
   async handleOAuthStartRequest(request: Request): Promise<Response> {
     const stateValue = await this.stateStore.issueNewState();
     const authorizeUrl = generateAuthorizeUrl(stateValue, this.env);
@@ -257,6 +258,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     }
   }
 
+  // deno-lint-ignore no-unused-vars
   async handleOIDCStartRequest(request: Request): Promise<Response> {
     if (!this.oidc) {
       return new Response("Not found", { status: 404 });

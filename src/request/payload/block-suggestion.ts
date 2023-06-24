@@ -23,6 +23,7 @@ export interface BlockSuggestion {
     team_id?: string;
   };
   token: string;
+  // deno-lint-ignore no-explicit-any
   container: any;
   view?: DataSubmissionView;
   is_enterprise_install?: boolean;
