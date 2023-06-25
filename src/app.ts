@@ -122,9 +122,6 @@ export class SlackApp<E extends SlackAppEnv> {
     this.client = new SlackAPIClient(options.env.SLACK_BOT_TOKEN, {
       logLevel: this.env.SLACK_LOGGING_LEVEL,
     });
-    if (!this.env.SLACK_SIGNING_SECRET) {
-      throw new ConfigError("env.SLACK_SIGNING_SECRET must be set!");
-    }
     this.signingSecret = this.env.SLACK_SIGNING_SECRET;
     this.authorize = options.authorize ?? singleTeamAuthorize;
     this.routes = { events: options.routes?.events };
