@@ -7,3 +7,4 @@ docs/
 scripts/
 test/
 vite.config.ts
+tmp/
