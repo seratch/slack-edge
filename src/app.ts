@@ -54,7 +54,7 @@ import {
   SlackMessageHandler,
 } from "./handler/message-handler";
 import { singleTeamAuthorize } from "./authorization/single-team-authorize";
-import { ExecutionContext } from "./execution-context";
+import { ExecutionContext, NoopExecutionContext } from "./execution-context";
 import { PayloadType } from "./request/payload-types";
 import { isPostedMessageEvent } from "./utility/message-events";
 
@@ -71,11 +71,14 @@ export class SlackApp<E extends SlackAppEnv> {
   public client: SlackAPIClient;
   public authorize: Authorize<E>;
   public routes: { events: string | undefined };
+  public signingSecret: string;
 
+  // deno-lint-ignore no-explicit-any
   public preAuthorizeMiddleware: PreAuthorizeMiddleware<any>[] = [
     urlVerification,
   ];
 
+  // deno-lint-ignore no-explicit-any
   public postAuthorizeMiddleware: Middleware<any>[] = [ignoringSelfEvents];
 
   #slashCommands: ((
@@ -90,9 +93,11 @@ export class SlackApp<E extends SlackAppEnv> {
   #messageShorcuts: ((
     body: SlackRequestBody
   ) => SlackHandler<E, MessageShortcut> | null)[] = [];
-  #blockActions: ((
-    body: SlackRequestBody
-  ) => SlackHandler<E, BlockAction<any>> | null)[] = [];
+  #blockActions: ((body: SlackRequestBody) => SlackHandler<
+    E,
+    // deno-lint-ignore no-explicit-any
+    BlockAction<any>
+  > | null)[] = [];
   #blockSuggestions: ((
     body: SlackRequestBody
   ) => SlackOptionsHandler<E, BlockSuggestion> | null)[] = [];
@@ -117,6 +122,10 @@ export class SlackApp<E extends SlackAppEnv> {
     this.client = new SlackAPIClient(options.env.SLACK_BOT_TOKEN, {
       logLevel: this.env.SLACK_LOGGING_LEVEL,
     });
+    if (!this.env.SLACK_SIGNING_SECRET) {
+      throw new ConfigError("env.SLACK_SIGNING_SECRET must be set!");
+    }
+    this.signingSecret = this.env.SLACK_SIGNING_SECRET;
     this.authorize = options.authorize ?? singleTeamAuthorize;
     this.routes = { events: options.routes?.events };
   }
@@ -176,6 +185,7 @@ export class SlackApp<E extends SlackAppEnv> {
         return null;
       }
       if (body.event.type === event) {
+        // deno-lint-ignore require-await
         return { ack: async () => "", lazy };
       }
       return null;
@@ -210,6 +220,7 @@ export class SlackApp<E extends SlackAppEnv> {
           }
         }
         if (matched) {
+          // deno-lint-ignore require-await
           return { ack: async (_: EventRequest<E, "message">) => "", lazy };
         }
       }
@@ -452,7 +463,10 @@ export class SlackApp<E extends SlackAppEnv> {
     return this;
   }
 
-  async run(request: Request, ctx: ExecutionContext): Promise<Response> {
+  async run(
+    request: Request,
+    ctx: ExecutionContext = new NoopExecutionContext()
+  ): Promise<Response> {
     return await this.handleEventRequest(request, ctx);
   }
 
@@ -485,13 +499,13 @@ export class SlackApp<E extends SlackAppEnv> {
     }
 
     // Verify the request headers and body
-    if (
-      await verifySlackRequest(
-        this.env.SLACK_SIGNING_SECRET,
-        request.headers,
-        rawBody
-      )
-    ) {
+    const isRequestSignatureVerified = await verifySlackRequest(
+      this.signingSecret,
+      request.headers,
+      rawBody
+    );
+    if (isRequestSignatureVerified) {
+      // deno-lint-ignore no-explicit-any
       const body: Record<string, any> = await parseRequestBody(
         request.headers,
         rawBody
@@ -502,6 +516,7 @@ export class SlackApp<E extends SlackAppEnv> {
         if (retryNumHeader) {
           retryNum = Number.parseInt(retryNumHeader);
         }
+        // deno-lint-ignore no-unused-vars
       } catch (e) {
         // Ignore an exception here
       }
@@ -517,7 +532,7 @@ export class SlackApp<E extends SlackAppEnv> {
         headers: request.headers,
       };
       if (isDebugLogEnabled(this.env.SLACK_LOGGING_LEVEL)) {
-        console.log(`*** Received request body***\n ${prettyPrint(body)}`);
+        console.log(`*** Received request body ***\n ${prettyPrint(body)}`);
       }
       for (const middlware of this.preAuthorizeMiddleware) {
         const response = await middlware(preAuthorizeRequest);
@@ -550,6 +565,7 @@ export class SlackApp<E extends SlackAppEnv> {
       }
       if (authorizedContext.responseUrl) {
         const responseUrl = authorizedContext.responseUrl;
+        // deno-lint-ignore require-await
         (authorizedContext as SlackAppContextWithRespond).respond = async (
           params
         ) => {
@@ -648,7 +664,9 @@ export class SlackApp<E extends SlackAppEnv> {
         }
       } else if (body.type === PayloadType.BlockAction) {
         // Block actions
+        // deno-lint-ignore no-explicit-any
         const slackRequest: SlackRequest<E, BlockAction<any>> = {
+          // deno-lint-ignore no-explicit-any
           payload: body as BlockAction<any>,
           ...baseRequest,
         };
@@ -725,8 +743,9 @@ export class SlackApp<E extends SlackAppEnv> {
           }
         }
       }
+      // TODO: Add code suggestion here
       console.log(
-        `*** No listener found ***\n${prettyPrint(baseRequest.body)}`
+        `*** No listener found ***\n${JSON.stringify(baseRequest.body)}`
       );
       return new Response("No listener found", { status: 404 });
     }

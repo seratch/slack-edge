@@ -1,6 +1,7 @@
 ## Slack Edge
 
 [![npm version](https://badge.fury.io/js/slack-edge.svg)](https://badge.fury.io/js/slack-edge) 
+[![deno module](https://shield.deno.dev/x/slack_edge)](https://deno.land/x/slack_edge)
 
 The **slack-edge** library is a Slack app development framework designed specifically for the following runtimes:
 
@@ -131,3 +132,68 @@ npm run dev
 If you use ngrok or something equivalent, you may want to run `ngrok http 3000 --subdomain your-domain` in a different terminal window.
 
 We are currently working on the **slack-vercel-edge-functions** package, which offers Vercel-specific features in addition to the core ones provided by **slack-edge**. Until its release, please use slack-edge directly and implement the missing features on your own as necessary.
+
+### Run Your App with Deno / Bun
+
+This library is available not only for edge function use cases but also for novel JavaScript runtime use cases. Specifically, you can run an app with Deno and Bun, both of which are new JS runtimes. To learn more about this, please check the example files under the `./test` directory.
+
+#### Run with Bun
+
+```typescript
+import { SlackApp } from "slack-edge";
+
+const app = new SlackApp({
+  env: {
+    SLACK_SIGNING_SECRET: process.env.SLACK_SIGNING_SECRET!,
+    SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN,
+    SLACK_LOGGING_LEVEL: "DEBUG",
+  },
+});
+
+// Add listeners here
+
+export default {
+  port: 3000,
+  async fetch(request) {
+    return await app.run(request);
+  },
+};
+```
+
+You can run the app by:
+
+```bash
+bun run --watch my-app.ts
+ngrok http 3000 --subdomain your-domain
+```
+
+#### Run with Deno
+
+```typescript
+import { SlackApp } from "https://deno.land/x/slack_edge@0.2.0/mod.ts";
+
+const app = new SlackApp({
+  env: {
+    SLACK_SIGNING_SECRET: Deno.env.get("SLACK_SIGNING_SECRET"),
+    SLACK_BOT_TOKEN: Deno.env.get("SLACK_BOT_TOKEN"),
+    SLACK_LOGGING_LEVEL: "DEBUG",
+  },
+});
+
+// Add listeners here
+
+import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
+await serve(
+  async (request) => {
+    return await app.run(request);
+  },
+  { port: 3000 }
+);
+```
+
+You can run the app by:
+
+```bash
+deno run --watch --allow-net --allow-env my-app.ts
+ngrok http 3000 --subdomain your-domain
+```

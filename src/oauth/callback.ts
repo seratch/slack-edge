@@ -16,8 +16,10 @@ export type OnStateValidationError = (
   req: Request
 ) => Promise<Response>;
 
+// deno-lint-ignore require-await
 export const defaultOnStateValidationError = async (
   startPath: string,
+  // deno-lint-ignore no-unused-vars
   req: Request
 ) => {
   return new Response(renderErrorPage(startPath, InvalidStateParameter), {
@@ -32,9 +34,11 @@ export type OnFailure = (
   req: Request
 ) => Promise<Response>;
 
+// deno-lint-ignore require-await
 export const defaultOnFailure = async (
   startPath: string,
   reason: OAuthErrorCode,
+  // deno-lint-ignore no-unused-vars
   req: Request
 ) => {
   return new Response(renderErrorPage(startPath, reason), {

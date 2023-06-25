@@ -1123,6 +1123,7 @@ export interface WorkflowStepExecuteEvent
     workflow_id: string;
     workflow_instance_id: string;
     step_id: string;
+    // deno-lint-ignore no-explicit-any
     inputs: { [key: string]: { value: any } };
     outputs: { name: string; type: string; label: string }[];
   };
@@ -1582,6 +1583,16 @@ export interface ReactionMessageItem {
   ts: string;
 }
 
+export interface FileInitialComment {
+  channel?: string;
+  comment?: string;
+  created?: number;
+  id?: string;
+  is_intro?: boolean;
+  timestamp?: number;
+  user?: string;
+}
+
 export interface StarItem {
   date_create: number;
   type: string;
@@ -1636,7 +1647,7 @@ export interface FileItem {
   id?: string;
   image_exif_rotation?: number;
   ims?: string[];
-  initial_comment?: Comment;
+  initial_comment?: FileInitialComment;
   is_external?: boolean;
   is_public?: boolean;
   is_starred?: boolean;
@@ -1849,7 +1860,7 @@ export interface FileElement {
   id?: string;
   image_exif_rotation?: number;
   ims?: string[];
-  initial_comment?: Comment;
+  initial_comment?: FileInitialComment;
   is_external: boolean;
   is_public: boolean;
   is_starred?: boolean;

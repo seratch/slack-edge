@@ -1,7 +1,9 @@
+// deno-lint-ignore require-await
 export async function parseRequestBody(
   requestHeaders: Headers,
   requestBody: string
-): Promise<Record<string, any>> {
+): // deno-lint-ignore no-explicit-any
+Promise<Record<string, any>> {
   const contentType = requestHeaders.get("content-type");
   if (
     contentType?.startsWith("application/json") ||
@@ -14,6 +16,7 @@ export async function parseRequestBody(
     const payload = params.get("payload")!;
     return JSON.parse(payload);
   }
+  // deno-lint-ignore no-explicit-any
   const formBody: any = {};
   for (const k of params.keys()) {
     formBody[k] = params.get(k);

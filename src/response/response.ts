@@ -7,6 +7,7 @@ import {
 export interface SlackResponse {
   status?: number;
   contentType?: string;
+  // deno-lint-ignore no-explicit-any
   body?: string | MessageResponse | Record<string, any>;
 }
 
@@ -43,11 +44,13 @@ export function toCompleteResponse(
   }
   let completeResponse: SlackResponse = {};
   if (
-    slackResponse.hasOwnProperty("text") ||
-    slackResponse.hasOwnProperty("blocks")
+    Object.prototype.hasOwnProperty.call(slackResponse, "text") ||
+    Object.prototype.hasOwnProperty.call(slackResponse, "blocks")
   ) {
     completeResponse = { status: 200, body: slackResponse as MessageResponse };
-  } else if (slackResponse.hasOwnProperty("response_action")) {
+  } else if (
+    Object.prototype.hasOwnProperty.call(slackResponse, "response_action")
+  ) {
     completeResponse = { status: 200, body: slackResponse };
   } else {
     completeResponse = slackResponse as SlackResponse;
