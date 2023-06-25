@@ -3,6 +3,7 @@ tsconfig.json
 .prettierrc.json
 examples/
 src/
+src_deno/
 docs/
 scripts/
 test/
