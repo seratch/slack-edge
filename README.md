@@ -170,7 +170,7 @@ ngrok http 3000 --subdomain your-domain
 #### Run with Deno
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.2.0/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.2.1/mod.ts";
 
 const app = new SlackApp({
   env: {
