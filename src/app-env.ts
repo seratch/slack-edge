@@ -3,11 +3,23 @@ export interface SlackLoggingLevel {
 }
 
 export type SlackAppEnv = SlackLoggingLevel & {
+  SLACK_SIGNING_SECRET?: string;
+  SLACK_BOT_TOKEN?: string;
+  SLACK_APP_TOKEN?: string;
+};
+
+export type SlackEdgeAppEnv = SlackAppEnv & {
   SLACK_SIGNING_SECRET: string;
   SLACK_BOT_TOKEN?: string;
 };
 
-export type SlackOAuthEnv = SlackAppEnv & {
+export type SlackSocketModeAppEnv = SlackAppEnv & {
+  SLACK_SIGNING_SECRET?: string;
+  SLACK_BOT_TOKEN?: string;
+  SLACK_APP_TOKEN: string;
+};
+
+export type SlackOAuthEnv = (SlackEdgeAppEnv | SlackSocketModeAppEnv) & {
   SLACK_CLIENT_ID: string;
   SLACK_CLIENT_SECRET: string;
   SLACK_BOT_SCOPES: string;

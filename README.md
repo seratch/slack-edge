@@ -197,3 +197,28 @@ You can run the app by:
 deno run --watch --allow-net --allow-env my-app.ts
 ngrok http 3000 --subdomain your-domain
 ```
+
+#### Run with Deno (Socket Mode)
+
+**Important Notice:** The Socket Mode support provided by slack-edge is still experimental and is not designed to handle reconnections for production-grade applications. It is recommended to use this mode only for local development and testing purposes.
+
+Thanks to Deno's stable WebSocket implementation, you can quickly and easily run a Socket Mode app too!
+
+```typescript
+import { SlackApp } from "https://deno.land/x/slack_edge@0.2.2/mod.ts";
+
+const app = new SlackApp({
+  env: {
+    SLACK_BOT_TOKEN: Deno.env.get("SLACK_BOT_TOKEN"),
+    SLACK_APP_TOKEN: Deno.env.get("SLACK_APP_TOKEN"),
+    SLACK_LOGGING_LEVEL: "DEBUG",
+  },
+});
+
+// Add listeners here
+
+await app.connect();
+setTimeout(() => {}, Number.MAX_SAFE_INTEGER);
+```
+
+You can run this app by `deno run --watch --allow-net --allow-env my-app.ts`.

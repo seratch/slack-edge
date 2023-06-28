@@ -42,7 +42,7 @@ describe("SlackOAuthApp", () => {
         SLACK_CLIENT_ID: "111.222",
         SLACK_CLIENT_SECRET: "xxx",
         SLACK_BOT_SCOPES: "commands,chat:write",
-        SLACK_SIGNING_SECRET: "",
+        SLACK_SIGNING_SECRET: "test",
       },
       installationStore: new MemoryInstallationStore(),
     });

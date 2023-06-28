@@ -1,4 +1,4 @@
-import { SlackAppEnv } from "./app-env";
+import { SlackAppEnv, SlackEdgeAppEnv, SlackSocketModeAppEnv } from "./app-env";
 import { parseRequestBody } from "./request/request-parser";
 import { verifySlackRequest } from "./request/request-verification";
 import { AckResponse, SlackHandler } from "./handler/handler";
@@ -57,21 +57,29 @@ import { singleTeamAuthorize } from "./authorization/single-team-authorize";
 import { ExecutionContext, NoopExecutionContext } from "./execution-context";
 import { PayloadType } from "./request/payload-types";
 import { isPostedMessageEvent } from "./utility/message-events";
+import { SocketModeClient } from "./socket-mode/socket-mode-client";
 
-export interface SlackAppOptions<E extends SlackAppEnv> {
+export interface SlackAppOptions<
+  E extends SlackEdgeAppEnv | SlackSocketModeAppEnv
+> {
   env: E;
   authorize?: Authorize<E>;
   routes?: {
     events: string;
   };
+  socketMode?: boolean;
 }
 
-export class SlackApp<E extends SlackAppEnv> {
+export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
   public env: E;
   public client: SlackAPIClient;
   public authorize: Authorize<E>;
   public routes: { events: string | undefined };
   public signingSecret: string;
+
+  public appLevelToken: string | undefined;
+  public socketMode: boolean;
+  public socketModeClient: SocketModeClient | undefined;
 
   // deno-lint-ignore no-explicit-any
   public preAuthorizeMiddleware: PreAuthorizeMiddleware<any>[] = [
@@ -122,7 +130,18 @@ export class SlackApp<E extends SlackAppEnv> {
     this.client = new SlackAPIClient(options.env.SLACK_BOT_TOKEN, {
       logLevel: this.env.SLACK_LOGGING_LEVEL,
     });
-    this.signingSecret = this.env.SLACK_SIGNING_SECRET;
+    this.appLevelToken = options.env.SLACK_APP_TOKEN;
+    this.socketMode = options.socketMode ?? this.appLevelToken !== undefined;
+    if (this.socketMode) {
+      this.signingSecret = "";
+    } else {
+      if (!this.env.SLACK_SIGNING_SECRET) {
+        throw new ConfigError(
+          "env.SLACK_SIGNING_SECRET is required to run your app on edge functions!"
+        );
+      }
+      this.signingSecret = this.env.SLACK_SIGNING_SECRET;
+    }
     this.authorize = options.authorize ?? singleTeamAuthorize;
     this.routes = { events: options.routes?.events };
   }
@@ -467,6 +486,22 @@ export class SlackApp<E extends SlackAppEnv> {
     return await this.handleEventRequest(request, ctx);
   }
 
+  async connect(): Promise<void> {
+    if (!this.socketMode) {
+      throw new ConfigError(
+        "Both env.SLACK_APP_TOKEN and socketMode: true are required to start a Socket Mode connection!"
+      );
+    }
+    this.socketModeClient = new SocketModeClient(this);
+    await this.socketModeClient.connect();
+  }
+
+  async disconnect(): Promise<void> {
+    if (this.socketModeClient) {
+      await this.socketModeClient.disconnect();
+    }
+  }
+
   async handleEventRequest(
     request: Request,
     ctx: ExecutionContext
@@ -496,11 +531,9 @@ export class SlackApp<E extends SlackAppEnv> {
     }
 
     // Verify the request headers and body
-    const isRequestSignatureVerified = await verifySlackRequest(
-      this.signingSecret,
-      request.headers,
-      rawBody
-    );
+    const isRequestSignatureVerified =
+      this.socketMode ||
+      (await verifySlackRequest(this.signingSecret, request.headers, rawBody));
     if (isRequestSignatureVerified) {
       // deno-lint-ignore no-explicit-any
       const body: Record<string, any> = await parseRequestBody(
@@ -512,13 +545,15 @@ export class SlackApp<E extends SlackAppEnv> {
         const retryNumHeader = request.headers.get("x-slack-retry-num");
         if (retryNumHeader) {
           retryNum = Number.parseInt(retryNumHeader);
+        } else if (this.socketMode && body.retry_attempt) {
+          retryNum = Number.parseInt(body.retry_attempt);
         }
         // deno-lint-ignore no-unused-vars
       } catch (e) {
         // Ignore an exception here
       }
       const retryReason =
-        request.headers.get("x-slack-retry-reason") ?? undefined;
+        request.headers.get("x-slack-retry-reason") ?? body.retry_reason;
       const preAuthorizeRequest: PreAuthorizeSlackMiddlwareRequest<E> = {
         body,
         rawBody,

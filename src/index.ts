@@ -50,5 +50,6 @@ export * from "./request/payload/view-closed";
 export * from "./request/payload/view-objects";
 
 export * from "./response/response";
+export * from "./socket-mode/socket-mode-client";
 
 export * from "./utility/message-events";
