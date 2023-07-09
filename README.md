@@ -12,7 +12,7 @@ This framework draws significant inspiration from Slack's [Bolt framework](https
 
 Key differences include:
 
-* _Edge function ready_: Provide out-of-the-box edge function support
+* _Edge function ready_: Out-of-the-box edge function (e.g., Cloudflare Workers) support
 * _TypeScript focused_: Enhances type safety and clarifies typings for developers
 * _Lazy listener enabled_: [bolt-python's lazy listener feature](https://slack.dev/bolt-python/concepts#lazy-listeners) is provided out of the box
 * _Zero additional dependencies_: No other dependencies required beyond TypeScript types and [slack-web-api-client](https://github.com/seratch/slack-web-api-client) (our fetch-function-based Slack API client)
