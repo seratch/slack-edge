@@ -175,7 +175,7 @@ ngrok http 3000 --subdomain your-domain
 #### Run with Deno
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.3.1/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.3.2/mod.ts";
 
 const app = new SlackApp({
   env: {
@@ -210,7 +210,7 @@ ngrok http 3000 --subdomain your-domain
 Thanks to Deno's stable WebSocket implementation, you can quickly and easily run a Socket Mode app too!
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.3.1/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.3.2/mod.ts";
 
 const app = new SlackApp({
   env: {
