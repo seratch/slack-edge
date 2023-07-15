@@ -16,17 +16,22 @@ export type SlackViewResponse =
     body: "" | AnyViewResponse;
   })
   | ""
-  | AnyViewResponse;
+  | AnyViewResponse
+  | undefined
+  | void;
 
-export type SlackOptionsResponse = SlackResponse & {
-  body: AnyOptionsResponse;
-};
+export type SlackOptionsResponse =
+  | (SlackResponse & {
+    body: AnyOptionsResponse;
+  })
+  | AnyOptionsResponse;
 
 export function toCompleteResponse(
   slackResponse:
     | SlackResponse
     | MessageResponse
     | SlackViewResponse
+    | SlackOptionsResponse
     | string
     | void,
 ): Response {
