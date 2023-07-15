@@ -35,12 +35,12 @@ npm i slack-cloudflare-workers
 A simple app that handles a slash command can be structured like this:
 
 ```typescript
-import { SlackApp, SlackAppEnv } from "slack-cloudflare-workers";
+import { SlackApp, SlackEdgeAppEnv } from "slack-cloudflare-workers";
 
 export default {
   async fetch(
     request: Request,
-    env: SlackAppEnv,
+    env: SlackEdgeAppEnv,
     ctx: ExecutionContext
   ): Promise<Response> {
     const app = new SlackApp({ env })
