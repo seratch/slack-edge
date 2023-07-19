@@ -70,7 +70,7 @@ SLACK_BOT_TOKEN=xoxb-...
 SLACK_LOGGING_LEVEL=DEBUG
 ```
 
-When you run `wrangler dev --port 3000`, your app process spins up, and it starts handling API requests at `http://localhost:3000/slack/events`. You may want to run ngrok or something equivalent to forward public endpoint requests to this local app process.
+When you run `wrangler dev --port 3000`, your app process spins up, and it starts handling API requests at `http://localhost:3000/slack/events`. You may want to run Cloudflare Tunnel or something equivalent to forward public endpoint requests to this local app process.
 
 Refer to https://github.com/seratch/slack-cloudflare-workers/blob/main/docs/index.md for further guidance.
 
@@ -134,7 +134,7 @@ export SLACK_BOT_TOKEN="your value here"
 npm run dev
 ```
 
-If you use ngrok or something equivalent, you may want to run `ngrok http 3000 --subdomain your-domain` in a different terminal window.
+If you use Cloudflare Tunnel or something equivalent, you may want to run `cloudflared tunnel --url http://localhost:3000` in a different terminal window.
 
 We are currently working on the **slack-vercel-edge-functions** package, which offers Vercel-specific features in addition to the core ones provided by **slack-edge**. Until its release, please use slack-edge directly and implement the missing features on your own as necessary.
 
@@ -168,8 +168,11 @@ export default {
 You can run the app by:
 
 ```bash
+# Terminal A
 bun run --watch my-app.ts
-ngrok http 3000 --subdomain your-domain
+# Terminal B
+brew install cloudflare/cloudflare/cloudflared
+cloudflared tunnel --url http://localhost:3000
 ```
 
 #### Run with Deno
@@ -199,8 +202,11 @@ await serve(
 You can run the app by:
 
 ```bash
+# Terminal A
 deno run --watch --allow-net --allow-env my-app.ts
-ngrok http 3000 --subdomain your-domain
+# Terminal B
+brew install cloudflare/cloudflare/cloudflared
+cloudflared tunnel --url http://localhost:3000
 ```
 
 #### Run with Deno (Socket Mode)
