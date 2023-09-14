@@ -44,7 +44,8 @@ app.shortcut(
 );
 
 // bun run --watch test/test-app-bun.ts
-// ngrok http 3000 --subdomain your-domain
+// brew install cloudflare/cloudflare/cloudflared
+// cloudflared tunnel --url http://localhost:3000
 export default {
   port: 3000,
   async fetch(request) {
