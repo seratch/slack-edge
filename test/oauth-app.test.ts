@@ -48,4 +48,35 @@ describe("SlackOAuthApp", () => {
     });
     assert.exists(app.client);
   });
+
+  test("Initialization with callback options", () => {
+    const app = new SlackOAuthApp({
+      env: {
+        SLACK_CLIENT_ID: "111.222",
+        SLACK_CLIENT_SECRET: "xxx",
+        SLACK_BOT_SCOPES: "commands,chat:write",
+        SLACK_SIGNING_SECRET: "test",
+      },
+      installationStore: new MemoryInstallationStore(),
+      oauth: {
+        start: async ({ authorizeUrl }) => {
+          const body = `The url is ${authorizeUrl}`;
+          return new Response(body, { status: 200 });
+        },
+        callback: async ({}) => {
+          return new Response("OK!", { status: 200 });
+        },
+      },
+      oidc: {
+        start: async ({ authorizeUrl }) => {
+          const body = `The url is ${authorizeUrl}`;
+          return new Response(body, { status: 200 });
+        },
+        callback: async ({}) => {
+          return new Response("OK!", { status: 200 });
+        },
+      },
+    });
+    assert.exists(app.client);
+  });
 });

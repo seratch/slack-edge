@@ -1,7 +1,7 @@
 import { OAuthErrorCode } from "./error-codes";
 import { escapeHtml } from "./escape-html";
 
-export function renderStartPage(url: string) {
+export function renderDefaultStartPage(url: string) {
   return (
     '<html><head><meta http-equiv="refresh" content="2;url=' +
     escapeHtml(url) +
@@ -11,7 +11,10 @@ export function renderStartPage(url: string) {
   );
 }
 
-export function renderErrorPage(installPath: string, reason: OAuthErrorCode) {
+export function renderDefaultErrorPage(
+  installPath: string,
+  reason: OAuthErrorCode
+) {
   return (
     '<html><head><style>body {{ padding: 10px 15px; font-family: verdana; text-align: center; }}</style></head><body><h2>Oops, Something Went Wrong!</h2><p>Please try again from <a href="' +
     escapeHtml(installPath) +
@@ -21,7 +24,7 @@ export function renderErrorPage(installPath: string, reason: OAuthErrorCode) {
   );
 }
 
-export function renderCompletionPage(
+export function renderDefaultCompletionPage(
   appId: string,
   teamId: string,
   isEnterpriseInstall: boolean | undefined,

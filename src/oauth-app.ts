@@ -3,10 +3,6 @@ import { SlackApp } from "./app";
 import { SlackOAuthEnv } from "./app-env";
 import { InstallationStore } from "./oauth/installation-store";
 import { NoStorageStateStore, StateStore } from "./oauth/state-store";
-import {
-  renderCompletionPage,
-  renderStartPage,
-} from "./oauth/oauth-page-renderer";
 import { generateAuthorizeUrl } from "./oauth/authorize-url-generator";
 import { parse as parseCookie } from "./cookie";
 import {
@@ -18,8 +14,12 @@ import { toInstallation } from "./oauth/installation";
 import {
   AfterInstallation,
   BeforeInstallation,
+  OAuthCallback,
+  OAuthStart,
   OnFailure,
   OnStateValidationError,
+  defaultOAuthCallback,
+  defaultOAuthStart,
   defaultOnFailure,
   defaultOnStateValidationError,
 } from "./oauth/callback";
@@ -47,9 +47,12 @@ export interface SlackOAuthAppOptions<E extends SlackOAuthEnv> {
     onFailure?: OnFailure;
     onStateValidationError?: OnStateValidationError;
     redirectUri?: string;
+    start?: OAuthStart;
+    callback?: OAuthCallback;
   };
   oidc?: {
     stateCookieName?: string;
+    start?: OAuthStart;
     callback: OpenIDConnectCallback;
     onFailure?: OnFailure;
     onStateValidationError?: OnStateValidationError;
@@ -73,9 +76,12 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     onFailure: OnFailure;
     onStateValidationError: OnStateValidationError;
     redirectUri?: string;
+    start: OAuthStart;
+    callback: OAuthCallback;
   };
   public oidc?: {
     stateCookieName?: string;
+    start: OAuthStart;
     callback: OpenIDConnectCallback;
     onFailure: OnFailure;
     onStateValidationError: OnStateValidationError;
@@ -103,6 +109,8 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
       onStateValidationError:
         options.oauth?.onStateValidationError ?? defaultOnStateValidationError,
       redirectUri: options.oauth?.redirectUri ?? this.env.SLACK_REDIRECT_URI,
+      start: options.oauth?.start ?? defaultOAuthStart,
+      callback: options.oauth?.callback ?? defaultOAuthCallback,
     };
     if (options.oidc) {
       this.oidc = {
@@ -110,7 +118,8 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
         onFailure: options.oidc.onFailure ?? defaultOnFailure,
         onStateValidationError:
           options.oidc.onStateValidationError ?? defaultOnStateValidationError,
-        callback: defaultOpenIDConnectCallback(this.env),
+        start: options.oidc?.start ?? defaultOAuthStart,
+        callback: options.oidc.callback ?? defaultOpenIDConnectCallback,
         redirectUri:
           options.oidc.redirectUri ?? this.env.SLACK_OIDC_REDIRECT_URI,
       };
@@ -165,17 +174,15 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     return await super.handleEventRequest(request, ctx);
   }
 
-  // deno-lint-ignore no-unused-vars
   async handleOAuthStartRequest(request: Request): Promise<Response> {
     const stateValue = await this.stateStore.issueNewState();
     const authorizeUrl = generateAuthorizeUrl(stateValue, this.env);
-    return new Response(renderStartPage(authorizeUrl), {
-      status: 302,
-      headers: {
-        Location: authorizeUrl,
-        "Set-Cookie": `${this.oauth.stateCookieName}=${stateValue}; Secure; HttpOnly; Path=/; Max-Age=300`,
-        "Content-Type": "text/html; charset=utf-8",
-      },
+    return await this.oauth.start({
+      env: this.env,
+      authorizeUrl,
+      stateCookieName: this.oauth.stateCookieName!,
+      stateValue,
+      request,
     });
   }
 
@@ -190,11 +197,12 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get("code");
     if (!code) {
-      return await this.oauth.onFailure(
-        this.routes.oauth.start,
-        MissingCode,
-        request
-      );
+      return await this.oauth.onFailure({
+        env: this.env,
+        startPath: this.routes.oauth.start,
+        reason: MissingCode,
+        request,
+      });
     }
 
     const client = new SlackAPIClient(undefined, {
@@ -211,11 +219,12 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
       });
     } catch (e) {
       console.log(e);
-      return await this.oauth.onFailure(
-        this.routes.oauth.start,
-        InstallationError,
-        request
-      );
+      return await this.oauth.onFailure({
+        env: this.env,
+        startPath: this.routes.oauth.start,
+        reason: InstallationError,
+        request,
+      });
     }
 
     try {
@@ -223,11 +232,12 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
       await this.installationStore.save(toInstallation(oauthAccess), request);
     } catch (e) {
       console.log(e);
-      return await this.oauth.onFailure(
-        this.routes.oauth.start,
-        InstallationStoreError,
-        request
-      );
+      return await this.oauth.onFailure({
+        env: this.env,
+        startPath: this.routes.oauth.start,
+        reason: InstallationStoreError,
+        request,
+      });
     }
 
     try {
@@ -236,45 +246,36 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
         token: oauthAccess.access_token,
       });
       const enterpriseUrl = authTest.url;
-      return new Response(
-        renderCompletionPage(
-          oauthAccess.app_id!,
-          oauthAccess.team?.id!,
-          oauthAccess.is_enterprise_install,
-          enterpriseUrl
-        ),
-        {
-          status: 200,
-          headers: {
-            "Set-Cookie": `${this.oauth.stateCookieName}=deleted; Secure; HttpOnly; Path=/; Max-Age=0`,
-            "Content-Type": "text/html; charset=utf-8",
-          },
-        }
-      );
+      return await this.oauth.callback({
+        env: this.env,
+        oauthAccess,
+        enterpriseUrl,
+        stateCookieName: this.oauth.stateCookieName!,
+        request,
+      });
     } catch (e) {
       console.log(e);
-      return await this.oauth.onFailure(
-        this.routes.oauth.start,
-        CompletionPageError,
-        request
-      );
+      return await this.oauth.onFailure({
+        env: this.env,
+        startPath: this.routes.oauth.start,
+        reason: CompletionPageError,
+        request,
+      });
     }
   }
 
-  // deno-lint-ignore no-unused-vars
   async handleOIDCStartRequest(request: Request): Promise<Response> {
     if (!this.oidc) {
       return new Response("Not found", { status: 404 });
     }
     const stateValue = await this.stateStore.issueNewState();
     const authorizeUrl = generateOIDCAuthorizeUrl(stateValue, this.env);
-    return new Response(renderStartPage(authorizeUrl), {
-      status: 302,
-      headers: {
-        Location: authorizeUrl,
-        "Set-Cookie": `${this.oidc.stateCookieName}=${stateValue}; Secure; HttpOnly; Path=/; Max-Age=300`,
-        "Content-Type": "text/html; charset=utf-8",
-      },
+    return await this.oauth.start({
+      env: this.env,
+      authorizeUrl,
+      stateCookieName: this.oidc.stateCookieName!,
+      stateValue,
+      request,
     });
   }
 
@@ -292,32 +293,38 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get("code");
     if (!code) {
-      return await this.oidc.onFailure(
-        this.routes.oidc.start,
-        MissingCode,
-        request
-      );
+      return await this.oidc.onFailure({
+        env: this.env,
+        startPath: this.routes.oidc.start,
+        reason: MissingCode,
+        request,
+      });
     }
 
     try {
       const client = new SlackAPIClient(undefined, {
         logLevel: this.env.SLACK_LOGGING_LEVEL,
       });
-      const apiResponse: OpenIDConnectTokenResponse =
+      const token: OpenIDConnectTokenResponse =
         await client.openid.connect.token({
           client_id: this.env.SLACK_CLIENT_ID,
           client_secret: this.env.SLACK_CLIENT_SECRET,
           redirect_uri: this.oidc.redirectUri,
           code,
         });
-      return await this.oidc.callback(apiResponse, request);
+      return await this.oidc.callback({
+        env: this.env,
+        token,
+        request,
+      });
     } catch (e) {
       console.log(e);
-      return await this.oidc.onFailure(
-        this.routes.oidc.start,
-        OpenIDConnectError,
-        request
-      );
+      return await this.oidc.onFailure({
+        env: this.env,
+        startPath: this.routes.oidc.start,
+        reason: OpenIDConnectError,
+        request,
+      });
     }
   }
 
@@ -335,13 +342,21 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
       !(await this.stateStore.consume(queryState))
     ) {
       if (startPath === this.routes.oauth.start) {
-        return await this.oauth.onStateValidationError(startPath, request);
+        return await this.oauth.onStateValidationError({
+          env: this.env,
+          startPath,
+          request,
+        });
       } else if (
         this.oidc &&
         this.routes.oidc &&
         startPath === this.routes.oidc.start
       ) {
-        return await this.oidc.onStateValidationError(startPath, request);
+        return await this.oidc.onStateValidationError({
+          env: this.env,
+          startPath,
+          request,
+        });
       }
     }
   }
