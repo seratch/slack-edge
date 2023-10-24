@@ -188,11 +188,14 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
 
   async handleOAuthCallbackRequest(request: Request): Promise<Response> {
     // State parameter validation
-    await this.#validateStateParameter(
+    const errorResponse = await this.#validateStateParameter(
       request,
       this.routes.oauth.start,
       this.oauth.stateCookieName!
     );
+    if (errorResponse) {
+      return errorResponse;
+    }
 
     const { searchParams } = new URL(request.url);
     const code = searchParams.get("code");
@@ -284,11 +287,14 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
       return new Response("Not found", { status: 404 });
     }
     // State parameter validation
-    await this.#validateStateParameter(
+    const errorResponse = await this.#validateStateParameter(
       request,
       this.routes.oidc.start,
       this.oidc.stateCookieName!
     );
+    if (errorResponse) {
+      return errorResponse;
+    }
 
     const { searchParams } = new URL(request.url);
     const code = searchParams.get("code");
@@ -332,7 +338,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     request: Request,
     startPath: string,
     cookieName: string
-  ) {
+  ): Promise<Response | undefined> {
     const { searchParams } = new URL(request.url);
     const queryState = searchParams.get("state");
     const cookie = parseCookie(request.headers.get("Cookie") || "");
@@ -359,5 +365,6 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
         });
       }
     }
+    return undefined;
   }
 }
