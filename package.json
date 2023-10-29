@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/seratch/slack-edge#readme",
   "dependencies": {
-    "slack-web-api-client": "^0.5"
+    "slack-web-api-client": "^0.5.2"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^0.32.2",
