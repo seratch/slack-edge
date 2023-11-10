@@ -185,7 +185,7 @@ export interface PlainTextInputAction
   value: string;
 }
 
-export type Actions =
+export type BlockElementActions =
   | ButtonAction
   | StaticSelectAction
   | MultiStaticSelectAction
@@ -203,4 +203,4 @@ export type Actions =
   | CheckboxesAction
   | PlainTextInputAction;
 
-export type BlockElementTypes = Actions["type"];
+export type BlockElementTypes = BlockElementActions["type"];

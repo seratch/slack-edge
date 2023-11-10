@@ -24,6 +24,8 @@ export interface PreAuthorizeSlackAppContext {
   };
 }
 
+export type Respond = (params: WebhookParams) => Promise<Response>;
+
 export type SlackAppContext = {
   client: SlackAPIClient;
   botToken: string;
@@ -40,11 +42,11 @@ export type SlackAppContextWithChannelId = {
 
 export type SlackAppContextWithRespond = {
   channelId: string;
-  respond: (params: WebhookParams) => Promise<Response>;
+  respond: Respond;
 } & SlackAppContext;
 
 export type SlackAppContextWithOptionalRespond = {
-  respond?: (params: WebhookParams) => Promise<Response>;
+  respond?: Respond;
 } & SlackAppContext;
 
 export function builtBaseContext(

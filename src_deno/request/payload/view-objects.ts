@@ -2,6 +2,7 @@ import {
   AnyActionBlockElementType,
   AnyModalBlock,
   PlainTextField,
+  RichTextBlock,
 } from "https://deno.land/x/slack_web_api_client@0.3.1/mod.ts";
 
 export interface ViewStateSelectedOption {
@@ -11,18 +12,20 @@ export interface ViewStateSelectedOption {
 
 export interface ViewStateValue {
   type: AnyActionBlockElementType;
-  value?: string | null;
-  selected_date?: string | null;
-  selected_time?: string | null;
-  selected_date_time?: number | null;
-  selected_conversation?: string | null;
-  selected_channel?: string | null;
-  selected_user?: string | null;
-  selected_option?: ViewStateSelectedOption | null;
+  value?: string;
+  selected_date?: string;
+  selected_time?: string;
+  selected_date_time?: number;
+  selected_conversation?: string;
+  selected_channel?: string;
+  selected_user?: string;
+  selected_option?: ViewStateSelectedOption;
   selected_conversations?: string[];
   selected_channels?: string[];
   selected_users?: string[];
   selected_options?: ViewStateSelectedOption[];
+  timezone?: string; // timepicker
+  rich_text_value?: RichTextBlock; // rich_text_input
 }
 
 export interface DataSubmissionView {
