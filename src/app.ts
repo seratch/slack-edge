@@ -323,8 +323,8 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     constraints:
       | StringOrRegExp
       | { type: T; block_id?: string; action_id: string },
-    ack: BlockActionAckHandler<T, A, E>,
-    lazy: BlockActionLazyHandler<T, A, E> = noopLazyHandler
+    ack: BlockActionAckHandler<T, E, A>,
+    lazy: BlockActionLazyHandler<T, E, A> = noopLazyHandler
   ): SlackApp<E> {
     const handler: SlackHandler<E, A> = { ack, lazy };
     this.#blockActions.push((body) => {

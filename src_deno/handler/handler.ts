@@ -90,18 +90,18 @@ export type MessageShortcutLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
 
 export type BlockActionAckHandler<
   T extends BlockElementTypes,
+  E extends SlackAppEnv = SlackAppEnv,
   A extends BlockAction<
     Extract<BlockElementActions, { type: T }>
   > = BlockAction<Extract<BlockElementActions, { type: T }>>,
-  E extends SlackAppEnv = SlackAppEnv,
 > = (req: SlackRequestWithOptionalRespond<E, A>) => Promise<AckResponse>;
 
 export type BlockActionLazyHandler<
   T extends BlockElementTypes,
+  E extends SlackAppEnv = SlackAppEnv,
   A extends BlockAction<
     Extract<BlockElementActions, { type: T }>
   > = BlockAction<Extract<BlockElementActions, { type: T }>>,
-  E extends SlackAppEnv = SlackAppEnv,
 > = (req: SlackRequestWithOptionalRespond<E, A>) => Promise<void>;
 
 export type BlockSuggestionAckHandler<E extends SlackAppEnv = SlackAppEnv> = (

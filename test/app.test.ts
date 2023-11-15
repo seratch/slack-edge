@@ -2,7 +2,6 @@ import { assert, test, describe } from "vitest";
 import {
   BlockActionAckHandler,
   BlockActionLazyHandler,
-  BlockElementAction,
   BlockSuggestionAckHandler,
   ButtonAction,
   EventLazyHandler,
@@ -14,6 +13,7 @@ import {
   Respond,
   ShortcutAckHandler,
   SlackApp,
+  SlackAppEnv,
   SlashCommandAckHandler,
   SlashCommandLazyHandler,
   ViewAckHandler,
@@ -24,6 +24,12 @@ import {
   ViewSubmissionLazyHandler,
 } from "../src/index";
 
+interface MyEnv extends SlackAppEnv {
+  SLACK_SIGNING_SECRET: string;
+  SLACK_BOT_TOKEN: string;
+  MyValue: string;
+}
+
 describe("SlackApp", () => {
   test("initialization", () => {
     const app = new SlackApp({
@@ -32,8 +38,13 @@ describe("SlackApp", () => {
     assert.exists(app.client);
   });
   test("handler type aliases", () => {
+    const env: MyEnv = {
+      SLACK_SIGNING_SECRET: "test",
+      SLACK_BOT_TOKEN: "xoxb-",
+      MyValue: "foo",
+    };
     const app = new SlackApp({
-      env: { SLACK_SIGNING_SECRET: "test", SLACK_BOT_TOKEN: "xoxb-" },
+      env,
     });
 
     // Slash commands
@@ -96,17 +107,23 @@ describe("SlackApp", () => {
 
     // Block actions
 
-    const button: BlockActionAckHandler<"button"> = async ({ payload }) => {
-      const type: "block_actions" = payload.type;
-      const action: ButtonAction = payload.actions[0];
-      const label: string | undefined = action.accessibility_label;
-    };
-    const buttonLazy: BlockActionLazyHandler<"button"> = async ({
+    const button: BlockActionAckHandler<"button", MyEnv> = async ({
       payload,
+      env,
     }) => {
       const type: "block_actions" = payload.type;
       const action: ButtonAction = payload.actions[0];
       const label: string | undefined = action.accessibility_label;
+      const myValue: string = env.MyValue;
+    };
+    const buttonLazy: BlockActionLazyHandler<"button", MyEnv> = async ({
+      payload,
+      env,
+    }) => {
+      const type: "block_actions" = payload.type;
+      const action: ButtonAction = payload.actions[0];
+      const label: string | undefined = action.accessibility_label;
+      const myValue: string = env.MyValue;
     };
     app.action("action_id", button);
     app.action("action_id", button, buttonLazy);
