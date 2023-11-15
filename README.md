@@ -178,7 +178,7 @@ cloudflared tunnel --url http://localhost:3000
 #### Run with Deno
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.6.0/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.7.1/mod.ts";
 
 const app = new SlackApp({
   env: {
@@ -190,7 +190,7 @@ const app = new SlackApp({
 
 // Add listeners here
 
-import { serve } from "https://deno.land/std@0.205.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.206.0/http/server.ts";
 await serve(
   async (request) => {
     return await app.run(request);
