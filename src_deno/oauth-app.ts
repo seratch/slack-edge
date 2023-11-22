@@ -9,7 +9,7 @@ import {
   OAuthV2AccessResponse,
   OpenIDConnectTokenResponse,
   SlackAPIClient,
-} from "https://deno.land/x/slack_web_api_client@0.3.1/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.7.2/mod.ts";
 import { toInstallation } from "./oauth/installation.ts";
 import {
   AfterInstallation,

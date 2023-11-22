@@ -103,7 +103,10 @@ export class SocketModeClient {
               waitUntil: async (promise) => {
                 promise
                   .then((res) => {
-                    console.info(`Completed a lazy listener execution: ${res}`);
+                    const result = res ? ": " + res : "";
+                    console.info(
+                      `Completed a lazy listener execution${result}`
+                    );
                   })
                   .catch((err) => {
                     console.error(`Failed to run a lazy listener: ${err}`);

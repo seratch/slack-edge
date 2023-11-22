@@ -19,4 +19,18 @@ export interface ViewClosed {
   is_cleared: boolean;
   is_enterprise_install?: boolean;
   enterprise?: { id: string; name: string };
+  // remote functions
+  bot_access_token?: string;
+  function_data?: {
+    execution_id: string;
+    function: { callback_id: string };
+    inputs: {
+      // deno-lint-ignore no-explicit-any
+      [key: string]: any;
+    };
+  };
+  interactivity?: {
+    interactivity_pointer: string;
+    interactor: { id: string; secret: string };
+  };
 }

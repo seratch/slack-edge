@@ -1,7 +1,7 @@
 import {
   isDebugLogEnabled,
   SlackAPIClient,
-} from "https://deno.land/x/slack_web_api_client@0.3.1/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.7.2/mod.ts";
 import { SlackApp } from "../app.ts";
 import { ConfigError, SocketModeError } from "../errors.ts";
 import { ExecutionContext } from "../execution-context.ts";
@@ -110,7 +110,10 @@ export class SocketModeClient {
               waitUntil: async (promise) => {
                 promise
                   .then((res) => {
-                    console.info(`Completed a lazy listener execution: ${res}`);
+                    const result = res ? ": " + res : "";
+                    console.info(
+                      `Completed a lazy listener execution${result}`,
+                    );
                   })
                   .catch((err) => {
                     console.error(`Failed to run a lazy listener: ${err}`);

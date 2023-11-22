@@ -3,7 +3,7 @@ import {
   HomeTabView,
   MessageAttachment,
   MessageMetadata,
-} from "https://deno.land/x/slack_web_api_client@0.3.1/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.7.2/mod.ts";
 
 export type AnySlackEvent =
   | AppRequestedEvent
@@ -31,6 +31,7 @@ export type AnySlackEvent =
   | FilePublicEvent
   | FileSharedEvent
   | FileUnsharedEvent
+  | FunctionExecutedEvent
   | GridMigrationFinishedEvent
   | GridMigrationStartedEvent
   | GroupArchiveEvent
@@ -405,6 +406,46 @@ export interface FileUnsharedEvent extends SlackEvent<"file_unshared"> {
   user_id: string;
   file: { id: string };
   channel_id: string;
+  event_ts: string;
+}
+
+export interface FunctionExecutedEvent extends SlackEvent<"function_executed"> {
+  type: "function_executed";
+  function: {
+    id: string;
+    callback_id: string;
+    title: string;
+    description?: string;
+    type: "app";
+    input_parameters: {
+      type: string;
+      name: string;
+      description?: string;
+      title?: string;
+      is_required: boolean;
+      hint?: string;
+    }[];
+    output_parameters: {
+      type: string;
+      name: string;
+      description?: string;
+      title?: string;
+      is_required: boolean;
+      hint?: string;
+    }[];
+    app_id: string;
+    date_created: number;
+    date_updated: number;
+    date_deleted: number;
+    form_enabled: boolean;
+  };
+  inputs: {
+    // deno-lint-ignore no-explicit-any
+    [key: string]: any;
+  };
+  function_execution_id: string;
+  workflow_execution_id: string;
+  bot_access_token: string; // xwfp-...
   event_ts: string;
 }
 

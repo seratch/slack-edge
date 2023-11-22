@@ -2,7 +2,7 @@ import {
   AnyOption,
   Confirm,
   PlainTextField,
-} from "https://deno.land/x/slack_web_api_client@0.3.1/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.7.2/mod.ts";
 import { DataSubmissionView, ViewStateValue } from "./view-objects.ts";
 
 export interface BlockAction<A extends BlockElementAction> {
@@ -51,6 +51,20 @@ export interface BlockAction<A extends BlockElementAction> {
   enterprise?: {
     id: string;
     name: string;
+  };
+  // remote functions
+  bot_access_token?: string;
+  function_data?: {
+    execution_id: string;
+    function: { callback_id: string };
+    inputs: {
+      // deno-lint-ignore no-explicit-any
+      [key: string]: any;
+    };
+  };
+  interactivity?: {
+    interactivity_pointer: string;
+    interactor: { id: string; secret: string };
   };
 }
 

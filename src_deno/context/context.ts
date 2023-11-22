@@ -4,7 +4,7 @@ import {
   ChatPostMessageResponse,
   SlackAPIClient,
   WebhookParams,
-} from "https://deno.land/x/slack_web_api_client@0.3.1/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.7.2/mod.ts";
 
 export interface PreAuthorizeSlackAppContext {
   isEnterpriseinstall?: boolean;
@@ -18,6 +18,9 @@ export interface PreAuthorizeSlackAppContext {
   botUserId?: string;
   responseUrl?: string;
   channelId?: string;
+  triggerId?: string;
+  functionExecutionId?: string;
+  functionBotAccessToken?: string;
   custom: {
     // deno-lint-ignore no-explicit-any
     [key: string]: any; // custom properties
@@ -65,6 +68,9 @@ export function builtBaseContext(
     botUserId: undefined, // will be set later
     responseUrl: extractResponseUrl(body),
     channelId: extractChannelId(body),
+    triggerId: extractTriggerId(body),
+    functionExecutionId: extractFunctionExecutionId(body),
+    functionBotAccessToken: extractFunctionBotAccessToken(body),
     custom: {},
   };
 }
@@ -278,6 +284,48 @@ export function extractChannelId(
   } else if (body.item) {
     // reaction_added: body["event"]["item"]
     return extractChannelId(body.item);
+  }
+  return undefined;
+}
+
+export function extractTriggerId(
+  // deno-lint-ignore no-explicit-any
+  body: Record<string, any>,
+): string | undefined {
+  if (body.trigger_id) {
+    return body.trigger_id;
+  }
+  if (body.interactivity) {
+    return body.interactivity.interactivity_pointer;
+  }
+  return undefined;
+}
+
+export function extractFunctionExecutionId(
+  // deno-lint-ignore no-explicit-any
+  body: Record<string, any>,
+): string | undefined {
+  if (body.event) {
+    return extractFunctionExecutionId(body.event);
+  }
+  if (body.function_execution_id) {
+    return body.function_execution_id;
+  }
+  if (body.function_data) {
+    return body.function_data.execution_id;
+  }
+  return undefined;
+}
+
+export function extractFunctionBotAccessToken(
+  // deno-lint-ignore no-explicit-any
+  body: Record<string, any>,
+): string | undefined {
+  if (body.event) {
+    return extractFunctionBotAccessToken(body.event);
+  }
+  if (body.bot_access_token) {
+    return body.bot_access_token;
   }
   return undefined;
 }

@@ -71,6 +71,7 @@ import { ExecutionContext, NoopExecutionContext } from "./execution-context";
 import { PayloadType } from "./request/payload-types";
 import { isPostedMessageEvent } from "./utility/message-events";
 import { SocketModeClient } from "./socket-mode/socket-mode-client";
+import { isFunctionExecutedEvent } from "./utility/function-executed-event";
 
 export interface SlackAppOptions<
   E extends SlackEdgeAppEnv | SlackSocketModeAppEnv
@@ -195,6 +196,39 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         body.command.match(pattern)
       ) {
         return handler;
+      }
+      return null;
+    });
+    return this;
+  }
+
+  function(
+    callbackId: FunctionExecutedEventCallbackIdPattern,
+    lazy: EventLazyHandler<"function_executed", E>
+  ) {
+    this.#events.push((body) => {
+      if (
+        body.type !== PayloadType.EventsAPI ||
+        !body.event ||
+        body.event.type !== "function_executed"
+      ) {
+        return null;
+      }
+      if (isFunctionExecutedEvent(body.event)) {
+        let matched = true;
+        if (callbackId !== undefined) {
+          if (typeof callbackId === "string") {
+            matched = body.event.function.callback_id.includes(callbackId);
+          }
+          if (typeof callbackId === "object") {
+            matched =
+              body.event.function.callback_id.match(callbackId) !== null;
+          }
+        }
+        if (matched) {
+          // deno-lint-ignore require-await
+          return { ack: async (_: EventRequest<E, "message">) => "", lazy };
+        }
       }
       return null;
     });
@@ -556,10 +590,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       const authorizeResult: AuthorizeResult = await this.authorize(
         preAuthorizeRequest
       );
+      const primaryToken =
+        preAuthorizeRequest.context.functionBotAccessToken ||
+        authorizeResult.botToken;
       const authorizedContext: SlackAppContext = {
         ...preAuthorizeRequest.context,
         authorizeResult,
-        client: new SlackAPIClient(authorizeResult.botToken, {
+        client: new SlackAPIClient(primaryToken, {
           logLevel: this.env.SLACK_LOGGING_LEVEL,
         }),
         botToken: authorizeResult.botToken,
@@ -569,7 +606,8 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       };
       if (authorizedContext.channelId) {
         const context = authorizedContext as SlackAppContextWithChannelId;
-        const client = new SlackAPIClient(context.botToken);
+        const primaryToken = context.functionBotAccessToken || context.botToken;
+        const client = new SlackAPIClient(primaryToken);
         context.say = async (params) =>
           await client.chat.postMessage({
             channel: context.channelId,
@@ -777,6 +815,11 @@ export type EventRequest<E extends SlackAppEnv, T> = Extract<
       E,
       Extract<AnySlackEventWithChannelId, { type: T }>
     >;
+
+export type FunctionExecutedEventCallbackIdPattern =
+  | string
+  | RegExp
+  | undefined;
 
 export type MessageEventPattern = string | RegExp | undefined;
 
