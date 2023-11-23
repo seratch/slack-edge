@@ -178,7 +178,7 @@ cloudflared tunnel --url http://localhost:3000
 #### Run with Deno
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.8.0/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.8.1/mod.ts";
 
 const app = new SlackApp({
   env: {
