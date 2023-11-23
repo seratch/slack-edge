@@ -30,14 +30,14 @@ export type SlackMiddlwareRequest<E extends SlackAppEnv> =
 
 export type SlackRequest<
   E extends SlackAppEnv,
-  Payload
+  Payload,
 > = SlackMiddlwareRequest<E> & {
   payload: Payload;
 };
 
 export type SlackRequestWithChannelId<
   E extends SlackAppEnv,
-  Payload
+  Payload,
 > = SlackMiddlwareRequest<E> & {
   context: SlackAppContextWithChannelId;
   payload: Payload;
@@ -45,7 +45,7 @@ export type SlackRequestWithChannelId<
 
 export type SlackRequestWithRespond<
   E extends SlackAppEnv,
-  Payload
+  Payload,
 > = SlackMiddlwareRequest<E> & {
   context: SlackAppContextWithRespond;
   payload: Payload;
@@ -53,7 +53,7 @@ export type SlackRequestWithRespond<
 
 export type SlackRequestWithOptionalRespond<
   E extends SlackAppEnv,
-  Payload
+  Payload,
 > = SlackMiddlwareRequest<E> & {
   context: SlackAppContextWithOptionalRespond;
   payload: Payload;

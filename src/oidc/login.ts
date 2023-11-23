@@ -18,7 +18,7 @@ export interface Login {
 
 export function toLogin(
   token: OpenIDConnectTokenResponse,
-  userInfo: OpenIDConnectUserInfoResponse
+  userInfo: OpenIDConnectUserInfoResponse,
 ): Login {
   return {
     enterprise_id: userInfo["https://slack.com/enterprise_id"],

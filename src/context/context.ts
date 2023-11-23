@@ -39,7 +39,7 @@ export type SlackAppContext = {
 export type SlackAppContextWithChannelId = {
   channelId: string;
   say: (
-    params: Omit<ChatPostMessageRequest, "channel">
+    params: Omit<ChatPostMessageRequest, "channel">,
   ) => Promise<ChatPostMessageResponse>;
 } & SlackAppContext;
 
@@ -54,7 +54,7 @@ export type SlackAppContextWithOptionalRespond = {
 
 export function builtBaseContext(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): PreAuthorizeSlackAppContext {
   return {
     isEnterpriseinstall: extractIsEnterpriseInstall(body),
@@ -77,7 +77,7 @@ export function builtBaseContext(
 
 export function extractIsEnterpriseInstall(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): boolean | undefined {
   if (body.authorizations && body.authorizations.length > 0) {
     return body.authorizations[0].is_enterprise_install;
@@ -93,7 +93,7 @@ export function extractIsEnterpriseInstall(
 
 export function extractEnterpriseId(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): string | undefined {
   if (body.enterprise) {
     if (typeof body.enterprise === "string") {
@@ -170,7 +170,7 @@ export function extractUserId(body: Record<string, any>): string | undefined {
 
 export function extractActorEnterpriseId(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): string | undefined {
   if (body.is_ext_shared_channel) {
     if (body.type === "event_callback") {
@@ -187,7 +187,7 @@ export function extractActorEnterpriseId(
 
 export function extractActorTeamId(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): string | undefined {
   if (body.is_ext_shared_channel) {
     if (body.type === "event_callback") {
@@ -237,7 +237,7 @@ export function extractActorTeamId(
 
 export function extractActorUserId(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): string | undefined {
   if (body.is_ext_shared_channel) {
     if (body.type === "event_callback") {
@@ -257,7 +257,7 @@ export function extractActorUserId(
 
 export function extractResponseUrl(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): string | undefined {
   if (body.response_url) {
     return body.response_url;
@@ -269,7 +269,7 @@ export function extractResponseUrl(
 
 export function extractChannelId(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): string | undefined {
   if (body.channel) {
     if (typeof body.channel === "string") {
@@ -290,7 +290,7 @@ export function extractChannelId(
 
 export function extractTriggerId(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): string | undefined {
   if (body.trigger_id) {
     return body.trigger_id;
@@ -303,7 +303,7 @@ export function extractTriggerId(
 
 export function extractFunctionExecutionId(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): string | undefined {
   if (body.event) {
     return extractFunctionExecutionId(body.event);
@@ -319,7 +319,7 @@ export function extractFunctionExecutionId(
 
 export function extractFunctionBotAccessToken(
   // deno-lint-ignore no-explicit-any
-  body: Record<string, any>
+  body: Record<string, any>,
 ): string | undefined {
   if (body.event) {
     return extractFunctionBotAccessToken(body.event);

@@ -27,7 +27,7 @@ export interface Installation {
 }
 
 export function toInstallation(
-  oauthAccess: OAuthV2AccessResponse
+  oauthAccess: OAuthV2AccessResponse,
 ): Installation {
   const installation: Installation = {
     app_id: oauthAccess.app_id!,

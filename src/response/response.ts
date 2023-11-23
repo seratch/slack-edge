@@ -33,7 +33,7 @@ export function toCompleteResponse(
     | SlackViewResponse
     | SlackOptionsResponse
     | string
-    | void
+    | void,
 ): Response {
   if (!slackResponse) {
     return new Response("", {

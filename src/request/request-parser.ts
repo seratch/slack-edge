@@ -1,7 +1,7 @@
 // deno-lint-ignore require-await
 export async function parseRequestBody(
   requestHeaders: Headers,
-  requestBody: string
+  requestBody: string,
 ): // deno-lint-ignore no-explicit-any
 Promise<Record<string, any>> {
   const contentType = requestHeaders.get("content-type");

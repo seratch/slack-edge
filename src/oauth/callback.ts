@@ -14,7 +14,7 @@ export interface BeforeInstallationArgs {
 }
 
 export type BeforeInstallation = (
-  args: BeforeInstallationArgs
+  args: BeforeInstallationArgs,
 ) => Promise<Response | undefined | void>;
 
 export interface AfterInstallationArgs {
@@ -24,7 +24,7 @@ export interface AfterInstallationArgs {
 }
 
 export type AfterInstallation = (
-  args: AfterInstallationArgs
+  args: AfterInstallationArgs,
 ) => Promise<Response | undefined | void>;
 
 export interface OnStateValidationErrorArgs {
@@ -34,7 +34,7 @@ export interface OnStateValidationErrorArgs {
 }
 
 export type OnStateValidationError = (
-  args: OnStateValidationErrorArgs
+  args: OnStateValidationErrorArgs,
 ) => Promise<Response>;
 
 // deno-lint-ignore require-await
@@ -46,7 +46,7 @@ export const defaultOnStateValidationError: OnStateValidationError = async ({
     {
       status: 400,
       headers: { "Content-Type": "text/html; charset=utf-8" },
-    }
+    },
   );
 };
 
@@ -114,7 +114,7 @@ export const defaultOAuthCallback: OAuthCallback = async ({
       oauthAccess.app_id!,
       oauthAccess.team?.id!,
       oauthAccess.is_enterprise_install,
-      enterpriseUrl
+      enterpriseUrl,
     ),
     {
       status: 200,
@@ -122,6 +122,6 @@ export const defaultOAuthCallback: OAuthCallback = async ({
         "Set-Cookie": `${stateCookieName}=deleted; Secure; HttpOnly; Path=/; Max-Age=0`,
         "Content-Type": "text/html; charset=utf-8",
       },
-    }
+    },
   );
 };

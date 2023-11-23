@@ -143,7 +143,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
 
   async run(
     request: Request,
-    ctx: ExecutionContext = new NoopExecutionContext()
+    ctx: ExecutionContext = new NoopExecutionContext(),
   ): Promise<Response> {
     const url = new URL(request.url);
     if (request.method === "GET") {
@@ -169,7 +169,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
 
   async handleEventRequest(
     request: Request,
-    ctx: ExecutionContext
+    ctx: ExecutionContext,
   ): Promise<Response> {
     return await super.handleEventRequest(request, ctx);
   }
@@ -191,7 +191,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     const errorResponse = await this.#validateStateParameter(
       request,
       this.routes.oauth.start,
-      this.oauth.stateCookieName!
+      this.oauth.stateCookieName!,
     );
     if (errorResponse) {
       return errorResponse;
@@ -290,7 +290,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     const errorResponse = await this.#validateStateParameter(
       request,
       this.routes.oidc.start,
-      this.oidc.stateCookieName!
+      this.oidc.stateCookieName!,
     );
     if (errorResponse) {
       return errorResponse;
@@ -337,7 +337,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
   async #validateStateParameter(
     request: Request,
     startPath: string,
-    cookieName: string
+    cookieName: string,
   ): Promise<Response | undefined> {
     const { searchParams } = new URL(request.url);
     const queryState = searchParams.get("state");

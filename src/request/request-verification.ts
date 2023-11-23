@@ -1,7 +1,7 @@
 export async function verifySlackRequest(
   signingSecret: string,
   requsetHeaders: Headers,
-  requestBody: string
+  requestBody: string,
 ) {
   const timestampHeader = requsetHeaders.get("x-slack-request-timestamp");
   if (!timestampHeader) {
@@ -27,10 +27,10 @@ export async function verifySlackRequest(
       textEncoder.encode(signingSecret),
       { name: "HMAC", hash: "SHA-256" },
       false,
-      ["verify"]
+      ["verify"],
     ),
     fromHexStringToBytes(signatureHeader.substring(3)),
-    textEncoder.encode(`v0:${timestampHeader}:${requestBody}`)
+    textEncoder.encode(`v0:${timestampHeader}:${requestBody}`),
   );
 }
 

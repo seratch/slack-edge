@@ -13,11 +13,11 @@ export interface InstallationStore<E extends SlackOAuthEnv> {
   save(installation: Installation, request: Request | undefined): Promise<void>;
 
   findBotInstallation(
-    query: InstallationStoreQuery
+    query: InstallationStoreQuery,
   ): Promise<Installation | undefined>;
 
   findUserInstallation(
-    query: InstallationStoreQuery
+    query: InstallationStoreQuery,
   ): Promise<Installation | undefined>;
 
   toAuthorize(): Authorize<E>;

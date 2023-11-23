@@ -29,7 +29,7 @@ export const singleTeamAuthorize: Authorize = async (req) => {
     };
   } catch (e) {
     throw new AuthorizeError(
-      `Failed to call auth.test API due to ${(e as SlackAPIError).message}`
+      `Failed to call auth.test API due to ${(e as SlackAPIError).message}`,
     );
   }
 };

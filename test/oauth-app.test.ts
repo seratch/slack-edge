@@ -11,19 +11,19 @@ import {
 class MemoryInstallationStore implements InstallationStore<SlackOAuthEnv> {
   async save(
     installation: Installation,
-    request: Request | undefined
+    request: Request | undefined,
   ): Promise<void> {
     throw new Error();
   }
 
   async findBotInstallation(
-    query: InstallationStoreQuery
+    query: InstallationStoreQuery,
   ): Promise<Installation | undefined> {
     throw new Error();
   }
 
   async findUserInstallation(
-    query: InstallationStoreQuery
+    query: InstallationStoreQuery,
   ): Promise<Installation | undefined> {
     throw new Error();
   }

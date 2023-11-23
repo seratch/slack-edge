@@ -40,7 +40,7 @@ app.shortcut(
         ],
       },
     });
-  }
+  },
 );
 
 // bun run --watch test/test-app-bun.ts

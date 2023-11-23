@@ -45,7 +45,7 @@ app.shortcut(
         ],
       },
     });
-  }
+  },
 );
 
 // -----------------------
@@ -104,7 +104,7 @@ app.action(
       ts: payload.container.message_ts,
       text: "Thank you!",
     });
-  }
+  },
 );
 app.view(
   "remote-function-modal",
@@ -119,7 +119,7 @@ app.view(
       function_execution_id: context.functionExecutionId,
       outputs: { user_id },
     });
-  }
+  },
 );
 
 // -----------------------

@@ -6,9 +6,9 @@ import {
 import { SlackResponse } from "../response/response";
 
 export type PreAuthorizeMiddleware<E extends SlackAppEnv = SlackAppEnv> = (
-  req: PreAuthorizeSlackMiddlwareRequest<E>
+  req: PreAuthorizeSlackMiddlwareRequest<E>,
 ) => Promise<SlackResponse | void>;
 
 export type Middleware<E extends SlackAppEnv = SlackAppEnv> = (
-  req: SlackMiddlwareRequest<E>
+  req: SlackMiddlwareRequest<E>,
 ) => Promise<SlackResponse | void>;

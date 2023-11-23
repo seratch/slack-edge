@@ -12,24 +12,24 @@ import {
 class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
   async save(
     installation: Installation,
-    _request: Request | undefined
+    _request: Request | undefined,
   ): Promise<void> {
     await Bun.write(
       `./tmp/${installation.team_id}.json`,
-      JSON.stringify(installation)
+      JSON.stringify(installation),
     );
     await Bun.write(
       `./tmp/${installation.team_id}-${installation.user_id}.json`,
-      JSON.stringify(installation)
+      JSON.stringify(installation),
     );
   }
   async findBotInstallation(
-    query: InstallationStoreQuery
+    query: InstallationStoreQuery,
   ): Promise<Installation | undefined> {
     return await Bun.file(`./tmp/${query.teamId}.json`).json();
   }
   async findUserInstallation(
-    query: InstallationStoreQuery
+    query: InstallationStoreQuery,
   ): Promise<Installation | undefined> {
     return await Bun.file(`./tmp/${query.teamId}-${query.userId}.json`).json();
   }
@@ -52,7 +52,7 @@ class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
         };
       }
       throw new AuthorizeError(
-        `Failed to resolve the associated installation: ${req.context.teamId}`
+        `Failed to resolve the associated installation: ${req.context.teamId}`,
       );
     };
   }
@@ -101,7 +101,7 @@ app.shortcut(
         ],
       },
     });
-  }
+  },
 );
 
 // bun run --watch test/test-app-bun-oauth.ts

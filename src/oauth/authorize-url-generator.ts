@@ -3,7 +3,7 @@ import { SlackOAuthEnv } from "../app-env";
 export function generateAuthorizeUrl<E extends SlackOAuthEnv>(
   state: string,
   env: E,
-  team: string | undefined = undefined
+  team: string | undefined = undefined,
 ): string {
   let url = `https://slack.com/oauth/v2/authorize?state=${state}`;
   url += `&client_id=${env.SLACK_CLIENT_ID}`;

@@ -39,7 +39,7 @@ app.shortcut(
         ],
       },
     });
-  }
+  },
 );
 
 // deno run --watch --allow-net --allow-env test/test-app-deno.ts
@@ -49,5 +49,5 @@ await serve(
   async (request) => {
     return await app.run(request);
   },
-  { port: 3000 }
+  { port: 3000 },
 );

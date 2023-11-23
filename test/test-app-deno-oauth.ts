@@ -12,28 +12,28 @@ import {
 class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
   async save(
     installation: Installation,
-    _request: Request | undefined
+    _request: Request | undefined,
   ): Promise<void> {
     const encoder = new TextEncoder();
     await Deno.writeFile(
       `./tmp/${installation.team_id}.json`,
-      encoder.encode(JSON.stringify(installation))
+      encoder.encode(JSON.stringify(installation)),
     );
     await Deno.writeFile(
       `./tmp/${installation.team_id}-${installation.user_id}.json`,
-      encoder.encode(JSON.stringify(installation))
+      encoder.encode(JSON.stringify(installation)),
     );
   }
   async findBotInstallation(
-    query: InstallationStoreQuery
+    query: InstallationStoreQuery,
   ): Promise<Installation | undefined> {
     return JSON.parse(await Deno.readTextFile(`./tmp/${query.teamId}.json`));
   }
   async findUserInstallation(
-    query: InstallationStoreQuery
+    query: InstallationStoreQuery,
   ): Promise<Installation | undefined> {
     return JSON.parse(
-      await Deno.readTextFile(`./tmp/${query.teamId}-${query.userId}.json`)
+      await Deno.readTextFile(`./tmp/${query.teamId}-${query.userId}.json`),
     );
   }
   toAuthorize(): Authorize<SlackOAuthEnv> {
@@ -55,7 +55,7 @@ class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
         };
       }
       throw new AuthorizeError(
-        `Failed to resolve the associated installation: ${req.context.teamId}`
+        `Failed to resolve the associated installation: ${req.context.teamId}`,
       );
     };
   }
@@ -104,7 +104,7 @@ app.shortcut(
         ],
       },
     });
-  }
+  },
 );
 
 // deno run --watch --allow-net --allow-env --allow-read --allow-write test/test-app-deno-oauth.ts
@@ -114,5 +114,5 @@ await serve(
   async (request) => {
     return await app.run(request);
   },
-  { port: 3000 }
+  { port: 3000 },
 );

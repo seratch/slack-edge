@@ -43,10 +43,26 @@ export interface BlockAction<A extends BlockElementAction> {
   response_url: string;
   trigger_id: string;
   api_app_id: string;
-  // deno-lint-ignore no-explicit-any
-  container: any;
-  // deno-lint-ignore no-explicit-any
-  app_unfurl?: any;
+  container: {
+    type: string;
+    message_ts?: string;
+    attachment_id?: number;
+    channel_id?: string;
+    view_id?: string;
+    text?: string;
+    is_ephemeral?: boolean;
+    is_app_unfurl?: boolean;
+    app_unfurl_url?: string;
+    thread_ts?: string;
+  };
+  app_unfurl?: {
+    id: string;
+    fallback: string;
+    bot_id: string;
+    app_unfurl_url: string;
+    is_app_unfurl: boolean;
+    app_id: string;
+  };
   is_enterprise_install?: boolean;
   enterprise?: {
     id: string;

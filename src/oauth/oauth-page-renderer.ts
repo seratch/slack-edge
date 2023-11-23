@@ -13,7 +13,7 @@ export function renderDefaultStartPage(url: string) {
 
 export function renderDefaultErrorPage(
   installPath: string,
-  reason: OAuthErrorCode
+  reason: OAuthErrorCode,
 ) {
   return (
     '<html><head><style>body {{ padding: 10px 15px; font-family: verdana; text-align: center; }}</style></head><body><h2>Oops, Something Went Wrong!</h2><p>Please try again from <a href="' +
@@ -28,7 +28,7 @@ export function renderDefaultCompletionPage(
   appId: string,
   teamId: string,
   isEnterpriseInstall: boolean | undefined,
-  enterpriseUrl: string | undefined
+  enterpriseUrl: string | undefined,
 ) {
   let url = `slack://app?team=${teamId}&id=${appId}`;
   if (isEnterpriseInstall && enterpriseUrl !== undefined) {

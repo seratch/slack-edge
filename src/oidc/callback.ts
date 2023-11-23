@@ -12,7 +12,7 @@ export interface OpenIDConnectCallbackArgs {
 }
 
 export type OpenIDConnectCallback = (
-  args: OpenIDConnectCallbackArgs
+  args: OpenIDConnectCallbackArgs,
 ) => Promise<Response>;
 
 export const defaultOpenIDConnectCallback: OpenIDConnectCallback = async ({
@@ -24,7 +24,7 @@ export const defaultOpenIDConnectCallback: OpenIDConnectCallback = async ({
   });
   const userInfo = await client.openid.connect.userInfo();
   const body = `<html><head><style>body {{ padding: 10px 15px; font-family: verdana; text-align: center; }}</style></head><body><h1>It works!</h1><p>This is the default handler. To change this, pass \`oidc: { callback: async (token, req) => new Response("TODO") }\` to your SlackOAuthApp constructor.</p><pre>${prettyPrint(
-    userInfo
+    userInfo,
   )}</pre></body></html>`;
 
   return new Response(body, {

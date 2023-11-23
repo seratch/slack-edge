@@ -14,7 +14,7 @@
 export function parse(
   str: string,
   // deno-lint-ignore no-explicit-any
-  options: any | undefined = undefined
+  options: any | undefined = undefined,
 ): Record<string, string> {
   if (typeof str !== "string") {
     throw new TypeError("argument str must be a string");
