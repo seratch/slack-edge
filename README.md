@@ -12,24 +12,26 @@ This framework draws significant inspiration from Slack's [Bolt framework](https
 
 Key differences include:
 
-* _Edge function ready_: Out-of-the-box edge function (e.g., Cloudflare Workers) support
-* _TypeScript focused_: Enhances type safety and clarifies typings for developers
-* _Lazy listener enabled_: [bolt-python's lazy listener feature](https://slack.dev/bolt-python/concepts#lazy-listeners) is provided out of the box
-* _Zero additional dependencies_: No other dependencies required beyond TypeScript types and [slack-web-api-client](https://github.com/seratch/slack-web-api-client) (our fetch-function-based Slack API client)
+* **Edge function ready**: Out-of-the-box edge function (e.g., Cloudflare Workers) support
+* **TypeScript focused**: Enhances type safety and clarifies typings for developers
+* **Lazy listener enabled**: [bolt-python's lazy listener feature](https://slack.dev/bolt-python/concepts#lazy-listeners) is provided out of the box
+* **Zero additional dependencies**: No other dependencies required beyond TypeScript types and [slack-web-api-client](https://github.com/seratch/slack-web-api-client) (our fetch-function-based Slack API client)
 
 ## Getting Started
 
-You can use **slack-edge** for two different platforms.
+Currently, you can use this library for two different platforms.
 
 ### Cloudflare Workers
+
+[Cloudflare Workers](https://workers.cloudflare.com/) is an edge function platform for quickly deploying an app.
 
 The only additional thing you need to do is to add [the **slack-cloudflare-workers** package](https://github.com/seratch/slack-cloudflare-workers) to your Cloudflare Workers app project. The **slack-cloudflare-workers** package enhances **slack-edge** with Cloudflare Workers-specific features, such as KV-based installation stores.
 
 ```bash
-npm install -g wrangler
+npm install -g wrangler@latest
 npx wrangler generate my-slack-app
 cd my-slack-app
-npm i slack-cloudflare-workers
+npm i slack-cloudflare-workers@latest
 ```
 
 A simple app that handles a slash command can be structured like this:
@@ -76,7 +78,9 @@ Refer to https://github.com/seratch/slack-cloudflare-workers/blob/main/docs/inde
 
 ### Vercel Edge Functions
 
-Create a new project by following these steps:
+[Vercel Edge Functions](https://vercel.com/docs/functions/edge-functions) is an edge function platform, which is part of [Vercel](https://vercel.com/)'s Frontend Cloud.
+
+Create a new Next.js project w/ slack-edge library by following these steps:
 
 ```bash
 npx create-next-app@latest --typescript
@@ -140,7 +144,7 @@ We are currently working on the **slack-vercel-edge-functions** package, which o
 
 ### Run Your App with Deno / Bun
 
-This library is available not only for edge function use cases but also for novel JavaScript runtime use cases. Specifically, you can run an app with Deno and Bun, both of which are new JS runtimes. To learn more about this, please check the example files under the `./test` directory.
+This library is available not only for edge function use cases but also for novel JavaScript runtime use cases. Specifically, you can run an app with [Deno](https://deno.com/) and [Bun](https://bun.sh/), both of which are up-and-coming JS runtimes. To learn more about this, please check the example files under the `./test` directory.
 
 #### Run with Bun
 
@@ -178,7 +182,7 @@ cloudflared tunnel --url http://localhost:3000
 #### Run with Deno
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.8.1/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.8.2/mod.ts";
 
 const app = new SlackApp({
   env: {
@@ -190,7 +194,7 @@ const app = new SlackApp({
 
 // Add listeners here
 
-import { serve } from "https://deno.land/std@0.206.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 await serve(
   async (request) => {
     return await app.run(request);
@@ -216,7 +220,7 @@ cloudflared tunnel --url http://localhost:3000
 Thanks to Deno's stable WebSocket implementation, you can quickly and easily run a Socket Mode app too!
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.6.0/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.8.2/mod.ts";
 
 const app = new SlackApp({
   env: {
