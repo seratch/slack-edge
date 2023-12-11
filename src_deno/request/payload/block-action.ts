@@ -1,9 +1,13 @@
 import {
+  AnyMessageBlock,
   AnyOption,
   Confirm,
+  MessageAttachment,
+  MessageMetadata,
   PlainTextField,
-} from "https://deno.land/x/slack_web_api_client@0.7.2/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.7.4/mod.ts";
 import { DataSubmissionView, ViewStateValue } from "./view-objects.ts";
+import { BotProfile } from "./event.ts";
 
 export interface BlockAction<A extends BlockElementAction> {
   type: "block_actions";
@@ -27,7 +31,17 @@ export interface BlockAction<A extends BlockElementAction> {
     type: "message";
     user?: string;
     ts: string;
+    thread_ts?: string;
     text?: string;
+    metadata?: MessageMetadata;
+    blocks?: AnyMessageBlock[];
+    attachments?: MessageAttachment[];
+    bot_id?: string;
+    bot_profile?: BotProfile;
+    edited?: {
+      user: string;
+      ts: string;
+    };
     // deno-lint-ignore no-explicit-any
     [key: string]: any;
   };

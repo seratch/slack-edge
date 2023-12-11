@@ -4,7 +4,7 @@ import {
   MessageAttachment,
   MessageMetadata,
   ModalView,
-} from "https://deno.land/x/slack_web_api_client@0.7.2/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.7.4/mod.ts";
 
 export interface MessageResponse {
   response_type?: "ephemeral" | "in_channel";
