@@ -1,6 +1,6 @@
 {
   "name": "slack-edge",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "Slack app development framework for edge functions with streamlined TypeScript support",
   "main": "dist/index.js",
   "scripts": {
@@ -18,8 +18,12 @@
     "Slack",
     "ChatBot",
     "TypeScript",
+    "Deno",
+    "Bun",
+    "Edge Functions",
     "Cloudflare",
     "Cloudflare Workers",
+    "Vercel",
     "Vercel Edge Functions",
     "Serverless"
   ],
