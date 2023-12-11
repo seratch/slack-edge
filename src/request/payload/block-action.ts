@@ -1,5 +1,13 @@
-import { Confirm, AnyOption, PlainTextField } from "slack-web-api-client";
+import {
+  Confirm,
+  AnyOption,
+  PlainTextField,
+  MessageMetadata,
+  AnyMessageBlock,
+  MessageAttachment,
+} from "slack-web-api-client";
 import { DataSubmissionView, ViewStateValue } from "./view-objects";
+import { BotProfile } from "./event";
 
 export interface BlockAction<A extends BlockElementAction> {
   type: "block_actions";
@@ -23,7 +31,17 @@ export interface BlockAction<A extends BlockElementAction> {
     type: "message";
     user?: string;
     ts: string;
+    thread_ts?: string;
     text?: string;
+    metadata?: MessageMetadata;
+    blocks?: AnyMessageBlock[];
+    attachments?: MessageAttachment[];
+    bot_id?: string;
+    bot_profile?: BotProfile;
+    edited?: {
+      user: string;
+      ts: string;
+    };
     // deno-lint-ignore no-explicit-any
     [key: string]: any;
   };
