@@ -1227,7 +1227,7 @@ export interface GenericMessageEvent extends SlackEvent<"message"> {
   channel_type: AnyChannelType;
   attachments?: MessageAttachment[];
   blocks?: AnyMessageBlock[];
-  files?: File[];
+  files?: FileElement[];
   edited?: {
     user: string;
     ts: string;
@@ -1387,7 +1387,7 @@ export interface FileShareMessageEvent extends SlackEvent<"message"> {
   text: string;
   attachments?: MessageAttachment[];
   blocks?: AnyMessageBlock[];
-  files?: File[];
+  files?: FileElement[];
   upload?: boolean;
   display_as_bot?: boolean;
   x_files?: string[];
