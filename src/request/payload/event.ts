@@ -1,8 +1,8 @@
 import {
   AnyMessageBlock,
+  HomeTabView,
   MessageAttachment,
   MessageMetadata,
-  HomeTabView,
 } from "slack-web-api-client";
 
 export type AnySlackEvent =
@@ -1205,7 +1205,8 @@ export type AnyMessageItem =
   | FileShareMessageEvent
   | MeMessageEvent
   | MessageRepliedEvent
-  | ThreadBroadcastMessageEvent;
+  | ThreadBroadcastMessageEvent
+  | TombstoneMessageEvent;
 
 export type AnyMessageMetadataEvent =
   | MessageMetadataPostedEvent
@@ -1473,6 +1474,25 @@ export interface ThreadBroadcastMessageEvent extends SlackEvent<"message"> {
   client_msg_id: string;
   channel: string;
   channel_type: AnyChannelType;
+}
+
+// One reproducible tombstone example is deleting a message which contains threaded replies.
+
+export interface TombstoneMessageEvent extends SlackEvent<"message"> {
+  type: "message";
+  subtype: "tombstone";
+  text: string;
+  user: string;
+  hidden: boolean;
+  ts: string;
+  thread_ts: string;
+  parent_user_id: string;
+  reply_count: number;
+  reply_users_count: number;
+  latest_reply: string;
+  reply_users: string[];
+  is_locked: boolean;
+  subscribed: boolean;
 }
 
 export interface MessageMetadataPostedEvent
