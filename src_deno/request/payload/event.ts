@@ -1476,7 +1476,6 @@ export interface ThreadBroadcastMessageEvent extends SlackEvent<"message"> {
   channel_type: AnyChannelType;
 }
 
-// Tombstone is currently an undocumented message subtype.
 // One reproducible tombstone example is deleting a message which contains threaded replies.
 
 export interface TombstoneMessageEvent extends SlackEvent<"message"> {
