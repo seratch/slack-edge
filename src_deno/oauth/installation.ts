@@ -1,4 +1,4 @@
-import { OAuthV2AccessResponse } from "https://deno.land/x/slack_web_api_client@0.7.4/mod.ts";
+import { OAuthV2AccessResponse } from "https://deno.land/x/slack_web_api_client@0.7.5/mod.ts";
 
 export interface Installation {
   app_id: string;
