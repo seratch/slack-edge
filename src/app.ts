@@ -82,6 +82,7 @@ export interface SlackAppOptions<
     events: string;
   };
   socketMode?: boolean;
+  startLazyListenerAfterAck?: boolean;
 }
 
 export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
@@ -92,8 +93,10 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
   public signingSecret: string;
 
   public appLevelToken: string | undefined;
-  public socketMode: boolean;
+  public socketMode: boolean; // default: false
   public socketModeClient: SocketModeClient | undefined;
+
+  public startLazyListenerAfterAck: boolean; // default: false
 
   // deno-lint-ignore no-explicit-any
   public preAuthorizeMiddleware: PreAuthorizeMiddleware<any>[] = [
@@ -156,6 +159,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       }
       this.signingSecret = this.env.SLACK_SIGNING_SECRET;
     }
+    this.startLazyListenerAfterAck = options.startLazyListenerAfterAck ?? false;
     this.authorize = options.authorize ?? singleTeamAuthorize;
     this.routes = { events: options.routes?.events };
   }
@@ -645,12 +649,17 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         for (const matcher of this.#events) {
           const handler = matcher(payload);
           if (handler) {
-            ctx.waitUntil(handler.lazy(slackRequest));
+            if (!this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
+            }
             const slackResponse = await handler.ack(slackRequest);
             if (isDebugLogEnabled(this.env.SLACK_LOGGING_LEVEL)) {
               console.log(
                 `*** Slack response ***\n${prettyPrint(slackResponse)}`,
               );
+            }
+            if (this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
             }
             return toCompleteResponse(slackResponse);
           }
@@ -664,12 +673,17 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         for (const matcher of this.#slashCommands) {
           const handler = matcher(payload);
           if (handler) {
-            ctx.waitUntil(handler.lazy(slackRequest));
+            if (!this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
+            }
             const slackResponse = await handler.ack(slackRequest);
             if (isDebugLogEnabled(this.env.SLACK_LOGGING_LEVEL)) {
               console.log(
                 `*** Slack response ***\n${prettyPrint(slackResponse)}`,
               );
+            }
+            if (this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
             }
             return toCompleteResponse(slackResponse);
           }
@@ -683,12 +697,17 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         for (const matcher of this.#globalShorcuts) {
           const handler = matcher(payload);
           if (handler) {
-            ctx.waitUntil(handler.lazy(slackRequest));
+            if (!this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
+            }
             const slackResponse = await handler.ack(slackRequest);
             if (isDebugLogEnabled(this.env.SLACK_LOGGING_LEVEL)) {
               console.log(
                 `*** Slack response ***\n${prettyPrint(slackResponse)}`,
               );
+            }
+            if (this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
             }
             return toCompleteResponse(slackResponse);
           }
@@ -702,12 +721,17 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         for (const matcher of this.#messageShorcuts) {
           const handler = matcher(payload);
           if (handler) {
-            ctx.waitUntil(handler.lazy(slackRequest));
+            if (!this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
+            }
             const slackResponse = await handler.ack(slackRequest);
             if (isDebugLogEnabled(this.env.SLACK_LOGGING_LEVEL)) {
               console.log(
                 `*** Slack response ***\n${prettyPrint(slackResponse)}`,
               );
+            }
+            if (this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
             }
             return toCompleteResponse(slackResponse);
           }
@@ -723,12 +747,17 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         for (const matcher of this.#blockActions) {
           const handler = matcher(payload);
           if (handler) {
-            ctx.waitUntil(handler.lazy(slackRequest));
+            if (!this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
+            }
             const slackResponse = await handler.ack(slackRequest);
             if (isDebugLogEnabled(this.env.SLACK_LOGGING_LEVEL)) {
               console.log(
                 `*** Slack response ***\n${prettyPrint(slackResponse)}`,
               );
+            }
+            if (this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
             }
             return toCompleteResponse(slackResponse);
           }
@@ -763,12 +792,17 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         for (const matcher of this.#viewSubmissions) {
           const handler = matcher(payload);
           if (handler) {
-            ctx.waitUntil(handler.lazy(slackRequest));
+            if (!this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
+            }
             const slackResponse = await handler.ack(slackRequest);
             if (isDebugLogEnabled(this.env.SLACK_LOGGING_LEVEL)) {
               console.log(
                 `*** Slack response ***\n${prettyPrint(slackResponse)}`,
               );
+            }
+            if (this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
             }
             return toCompleteResponse(slackResponse);
           }
@@ -782,12 +816,17 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         for (const matcher of this.#viewClosed) {
           const handler = matcher(payload);
           if (handler) {
-            ctx.waitUntil(handler.lazy(slackRequest));
+            if (!this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
+            }
             const slackResponse = await handler.ack(slackRequest);
             if (isDebugLogEnabled(this.env.SLACK_LOGGING_LEVEL)) {
               console.log(
                 `*** Slack response ***\n${prettyPrint(slackResponse)}`,
               );
+            }
+            if (this.startLazyListenerAfterAck) {
+              ctx.waitUntil(handler.lazy(slackRequest));
             }
             return toCompleteResponse(slackResponse);
           }

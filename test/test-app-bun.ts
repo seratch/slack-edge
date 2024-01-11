@@ -6,6 +6,7 @@ const app = new SlackApp({
     SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN,
     SLACK_LOGGING_LEVEL: "DEBUG",
   },
+  // startLazyListenerAfterAck: true,
 });
 
 app.event("app_mention", async ({ context, payload }) => {
@@ -40,6 +41,22 @@ app.shortcut(
         ],
       },
     });
+  },
+);
+
+// Enable startLazyListenerAfterAck: true for testing this
+app.shortcut(
+  "ack-then-lazy",
+  async () => {
+    console.log("ack() started...");
+    const sleep = (seconds: number) => {
+      return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+    };
+    await sleep(2);
+    console.log("ack() is done!");
+  },
+  async () => {
+    console.log("lazy() is called!");
   },
 );
 
