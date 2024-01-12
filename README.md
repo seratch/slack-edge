@@ -182,7 +182,7 @@ cloudflared tunnel --url http://localhost:3000
 #### Run with Deno
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.8.6/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.9.0/mod.ts";
 
 const app = new SlackApp({
   env: {
@@ -220,7 +220,7 @@ cloudflared tunnel --url http://localhost:3000
 Thanks to Deno's stable WebSocket implementation, you can quickly and easily run a Socket Mode app too!
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.8.6/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.9.0/mod.ts";
 
 const app = new SlackApp({
   env: {
@@ -254,7 +254,9 @@ This framework offers ways to globally customize your app's behavior, like you d
 
 You may be unfamiliar with the "lazy listener" concept in this framework. To learn more about it, please read bolt-python's documentation: https://slack.dev/bolt-python/concepts#lazy-listeners
 
-The `ack` function must complete within 3 seconds, while the `lazy` function can perform time-consuming tasks. It's important to note that not all request handlers support the ack or lazy functions. For more information, please refer to the following table, which covers all the patterns in detail. 
+The `ack` function must complete within 3 seconds, while the `lazy` function can perform time-consuming tasks. It's important to note that not all request handlers support the ack or lazy functions. For more information, please refer to the following table, which covers all the patterns in detail.
+
+Starting from v0.9, if desired, you can execute lazy listeners after the completion of their ack function. To customize the behavior in this manner, you can pass `startLazyListenerAfterAck: true` as one of the arguments in the `App` constructor.
 
 |Pattern|Description|`ack` function|`lazy` function|
 |-|-|-|-|
