@@ -844,15 +844,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
 
 export type StringOrRegExp = string | RegExp;
 
-export type EventRequest<E extends SlackAppEnv, T> = Extract<
-  AnySlackEventWithChannelId,
-  { type: T }
-> extends never
-  ? SlackRequest<E, Extract<AnySlackEvent, { type: T }>>
-  : SlackRequestWithChannelId<
-      E,
-      Extract<AnySlackEventWithChannelId, { type: T }>
-    >;
+export type EventRequest<E extends SlackAppEnv, T> =
+  Extract<AnySlackEventWithChannelId, { type: T }> extends never
+    ? SlackRequest<E, Extract<AnySlackEvent, { type: T }>>
+    : SlackRequestWithChannelId<
+        E,
+        Extract<AnySlackEventWithChannelId, { type: T }>
+      >;
 
 export type FunctionExecutedEventCallbackIdPattern =
   | string

@@ -67,6 +67,18 @@ const app = new SlackOAuthApp({
     SLACK_LOGGING_LEVEL: "DEBUG",
   },
   installationStore: new FileInstallationStore(),
+  oauth: {
+    beforeInstallation: async (args) => {
+      console.log(
+        `!!! beforeInstallation !!!\n\n${JSON.stringify(args, null, 2)}\n\n`,
+      );
+    },
+    afterInstallation: async (args) => {
+      console.log(
+        `!!! afterInstallation !!!\n\n${JSON.stringify(args, null, 2)}\n\n`,
+      );
+    },
+  },
 });
 
 app.event("app_mention", async ({ context, payload }) => {

@@ -63,6 +63,8 @@ describe("SlackOAuthApp", () => {
           const body = `The url is ${authorizeUrl}`;
           return new Response(body, { status: 200 });
         },
+        beforeInstallation: async ({ env, request }) => {},
+        afterInstallation: async ({ env, request, installation }) => {},
         callback: async ({}) => {
           return new Response("OK!", { status: 200 });
         },

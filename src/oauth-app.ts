@@ -110,6 +110,8 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
         options.oauth?.onStateValidationError ?? defaultOnStateValidationError,
       redirectUri: options.oauth?.redirectUri ?? this.env.SLACK_REDIRECT_URI,
       start: options.oauth?.start ?? defaultOAuthStart,
+      beforeInstallation: options.oauth?.beforeInstallation,
+      afterInstallation: options.oauth?.afterInstallation,
       callback: options.oauth?.callback ?? defaultOAuthCallback,
     };
     if (options.oidc) {
@@ -208,6 +210,15 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
       });
     }
 
+    if (this.oauth.beforeInstallation) {
+      const response = await this.oauth.beforeInstallation({
+        env: this.env,
+        request,
+      });
+      if (response) {
+        return response;
+      }
+    }
     const client = new SlackAPIClient(undefined, {
       logLevel: this.env.SLACK_LOGGING_LEVEL,
     });
@@ -229,10 +240,21 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
         request,
       });
     }
+    const installation = toInstallation(oauthAccess);
+    if (this.oauth.afterInstallation) {
+      const response = await this.oauth.afterInstallation({
+        env: this.env,
+        request,
+        installation,
+      });
+      if (response) {
+        return response;
+      }
+    }
 
     try {
       // Store the installation data on this app side
-      await this.installationStore.save(toInstallation(oauthAccess), request);
+      await this.installationStore.save(installation, request);
     } catch (e) {
       console.log(e);
       return await this.oauth.onFailure({
