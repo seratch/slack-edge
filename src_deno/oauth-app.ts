@@ -9,7 +9,7 @@ import {
   OAuthV2AccessResponse,
   OpenIDConnectTokenResponse,
   SlackAPIClient,
-} from "https://deno.land/x/slack_web_api_client@0.7.5/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.7.6/mod.ts";
 import { toInstallation } from "./oauth/installation.ts";
 import {
   AfterInstallation,
@@ -206,6 +206,15 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
       });
     }
 
+    if (this.oauth.beforeInstallation) {
+      const response = await this.oauth.beforeInstallation({
+        env: this.env,
+        request,
+      });
+      if (response) {
+        return response;
+      }
+    }
     const client = new SlackAPIClient(undefined, {
       logLevel: this.env.SLACK_LOGGING_LEVEL,
     });
@@ -227,10 +236,21 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
         request,
       });
     }
+    const installation = toInstallation(oauthAccess);
+    if (this.oauth.afterInstallation) {
+      const response = await this.oauth.afterInstallation({
+        env: this.env,
+        request,
+        installation,
+      });
+      if (response) {
+        return response;
+      }
+    }
 
     try {
       // Store the installation data on this app side
-      await this.installationStore.save(toInstallation(oauthAccess), request);
+      await this.installationStore.save(installation, request);
     } catch (e) {
       console.log(e);
       return await this.oauth.onFailure({
