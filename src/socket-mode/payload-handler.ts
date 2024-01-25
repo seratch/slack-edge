@@ -9,7 +9,10 @@ export function fromSocketModeToRequest({
   body,
   retryNum,
   retryReason,
-}: fromSocketModeToRequestArgs): Request {
+}: fromSocketModeToRequestArgs): Request | undefined {
+  if (!body) {
+    return undefined;
+  }
   const payload = JSON.stringify(body);
   const headers: Record<string, string> = {
     "content-type": "application/json",

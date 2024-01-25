@@ -29,13 +29,15 @@ app.anyMessage(async ({ context }) => {
   socketMode.on(
     "slack_event",
     async ({ body, ack, retry_num, retry_reason }) => {
-      const response = await app.run(
-        fromSocketModeToRequest({
-          body,
-          retryNum: retry_num,
-          retryReason: retry_reason,
-        }),
-      );
+      const request = fromSocketModeToRequest({
+        body,
+        retryNum: retry_num,
+        retryReason: retry_reason,
+      });
+      if (!request) {
+        return;
+      }
+      const response = await app.run(request);
       await ack(await fromResponseToSocketModePayload({ response }));
     },
   );

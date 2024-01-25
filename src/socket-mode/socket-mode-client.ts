@@ -94,14 +94,16 @@ export class SocketModeClient {
               }
               return;
             }
-            const response = await app.run(
-              fromSocketModeToRequest({
-                url: ws.url,
-                body: data.payload,
-                retryNum: data.retry_attempt,
-                retryReason: data.retry_reason,
-              }),
-            );
+            const request = fromSocketModeToRequest({
+              url: ws.url,
+              body: data.payload,
+              retryNum: data.retry_attempt,
+              retryReason: data.retry_reason,
+            });
+            if (!request) {
+              return;
+            }
+            const response = await app.run(request);
             const message: Record<string, unknown> = {
               envelope_id: data.envelope_id,
             };
