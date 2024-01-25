@@ -1,10 +1,10 @@
 import { SocketModeClient } from "@slack/socket-mode";
 import { LogLevel } from "@slack/logger";
-import { SlackApp } from "slack-edge";
 import {
+  SlackApp,
   fromSocketModeToRequest,
   fromResponseToSocketModePayload,
-} from "./wip";
+} from "slack-edge";
 
 const app = new SlackApp({
   socketMode: true,
