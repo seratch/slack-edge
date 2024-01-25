@@ -4,7 +4,8 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "start": "npm run build:live",
+    "local": "npm run build:live",
+    "start": "npm run build && node lib/main.js",
     "build": "tsc -p .",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec \"ts-node\" src/main.ts"
   },
