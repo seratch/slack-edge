@@ -1,8 +1,11 @@
 import { SlackAPIClient, isDebugLogEnabled } from "slack-web-api-client";
 import { SlackApp } from "../app";
 import { ConfigError, SocketModeError } from "../errors";
-import { ExecutionContext } from "../execution-context";
 import { SlackSocketModeAppEnv } from "../app-env";
+import {
+  fromSocketModeToRequest,
+  fromResponseToSocketModePayload,
+} from "./payload-handler";
 
 // TODO: Implement proper reconnection logic
 // TODO: Add connection monitor like 1st party SDKs do
@@ -91,42 +94,22 @@ export class SocketModeClient {
               }
               return;
             }
-            const payload = JSON.stringify(data.payload);
-            console.log(payload);
-            const request: Request = new Request(ws.url, {
-              method: "POST",
-              headers: new Headers({ "content-type": "application/json" }),
-              body: new Blob([payload]).stream(),
-            });
-            const context: ExecutionContext = {
-              // deno-lint-ignore require-await
-              waitUntil: async (promise) => {
-                promise
-                  .then((res) => {
-                    const result = res ? ": " + res : "";
-                    console.info(
-                      `Completed a lazy listener execution${result}`,
-                    );
-                  })
-                  .catch((err) => {
-                    console.error(`Failed to run a lazy listener: ${err}`);
-                  });
-              },
+            const response = await app.run(
+              fromSocketModeToRequest({
+                url: ws.url,
+                body: data.payload,
+                retryNum: data.retry_attempt,
+                retryReason: data.retry_reason,
+              }),
+            );
+            const message: Record<string, unknown> = {
+              envelope_id: data.envelope_id,
             };
-            const response = await app.run(request, context);
-            // deno-lint-ignore no-explicit-any
-            let ack: any = { envelope_id: data.envelope_id };
-            if (response.body) {
-              const contentType = response.headers.get("Content-Type");
-              if (contentType && contentType.startsWith("text/plain")) {
-                const text = await response.text();
-                ack = { envelope_id: data.envelope_id, payload: { text } };
-              } else {
-                const json = await response.json();
-                ack = { envelope_id: data.envelope_id, payload: { ...json } };
-              }
+            const payload = await fromResponseToSocketModePayload({ response });
+            if (payload) {
+              message.payload = payload;
             }
-            ws.send(JSON.stringify(ack));
+            ws.send(JSON.stringify(message));
           } else {
             if (isDebugLogEnabled(app.env.SLACK_LOGGING_LEVEL)) {
               console.log(`*** Received non-JSON data ***\n ${ev.data}`);

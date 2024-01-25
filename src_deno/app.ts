@@ -44,7 +44,7 @@ import {
 import {
   ResponseUrlSender,
   SlackAPIClient,
-} from "https://deno.land/x/slack_web_api_client@0.7.6/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.8.0/mod.ts";
 import {
   builtBaseContext,
   SlackAppContext,
@@ -55,7 +55,7 @@ import { Middleware, PreAuthorizeMiddleware } from "./middleware/middleware.ts";
 import {
   isDebugLogEnabled,
   prettyPrint,
-} from "https://deno.land/x/slack_web_api_client@0.7.6/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.8.0/mod.ts";
 import { Authorize } from "./authorization/authorize.ts";
 import { AuthorizeResult } from "./authorization/authorize-result.ts";
 import {
@@ -855,14 +855,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
 
 export type StringOrRegExp = string | RegExp;
 
-export type EventRequest<E extends SlackAppEnv, T> = Extract<
-  AnySlackEventWithChannelId,
-  { type: T }
-> extends never ? SlackRequest<E, Extract<AnySlackEvent, { type: T }>>
-  : SlackRequestWithChannelId<
-    E,
-    Extract<AnySlackEventWithChannelId, { type: T }>
-  >;
+export type EventRequest<E extends SlackAppEnv, T> =
+  Extract<AnySlackEventWithChannelId, { type: T }> extends never
+    ? SlackRequest<E, Extract<AnySlackEvent, { type: T }>>
+    : SlackRequestWithChannelId<
+      E,
+      Extract<AnySlackEventWithChannelId, { type: T }>
+    >;
 
 export type FunctionExecutedEventCallbackIdPattern =
   | string

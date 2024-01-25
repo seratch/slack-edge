@@ -239,6 +239,56 @@ setTimeout(() => {}, Number.MAX_SAFE_INTEGER);
 You can run this app by `deno run --watch --allow-net --allow-env my-app.ts`.
 
 
+#### Run with Node.js (Stable Socket Mode)
+
+If you need a stable Socket Mode integration, we recommend using `@slack/socket-mode` along with this package. With Node 20+, the following example works for you:
+
+```typescript
+// npm i slack-edge @slack/socket-mode
+import {
+  SlackApp,
+  fromSocketModeToRequest,
+  buildSimpleExecutionContext,
+  fromResponseToSocketModePayload,
+} from "slack-edge";
+
+const app = new SlackApp({
+  socketMode: true,
+  env: {
+    SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN!,
+    SLACK_APP_TOKEN: process.env.SLACK_APP_TOKEN!,
+    SLACK_LOGGING_LEVEL: "DEBUG",
+  },
+});
+
+// Add listeners here
+app.command("/hello", async ({}) => {
+  return "Hi!";
+});
+
+import { SocketModeClient } from "@slack/socket-mode";
+import { LogLevel } from "@slack/logger";
+
+// Start a Socket Mode client
+(async () => {
+  const socketMode = new SocketModeClient({
+    appToken: process.env.SLACK_APP_TOKEN!,
+    logLevel: LogLevel.DEBUG,
+  });
+  socketMode.on("slack_event", async ({ body, ack, retry_num, retry_reason }) => {
+      const response = await app.run(
+        fromSocketModeToRequest({
+          body,
+          retryNum: retry_num,
+          retryReason: retry_reason,
+        }),
+      );
+      await ack(await fromResponseToSocketModePayload({ response }));
+  });
+  await socketMode.start();
+})();
+```
+
 ### Reference
 
 #### Middleware
