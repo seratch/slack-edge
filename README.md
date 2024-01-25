@@ -288,6 +288,8 @@ import { LogLevel } from "@slack/logger";
 })();
 ```
 
+A complete example project is available [here](https://github.com/seratch/slack-edge/tree/main/test/node-socket-mode).
+
 ### Reference
 
 #### Middleware
