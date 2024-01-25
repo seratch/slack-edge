@@ -248,7 +248,6 @@ If you need a stable Socket Mode integration, we recommend using `@slack/socket-
 import {
   SlackApp,
   fromSocketModeToRequest,
-  buildSimpleExecutionContext,
   fromResponseToSocketModePayload,
 } from "slack-edge";
 
