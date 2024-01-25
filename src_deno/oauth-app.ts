@@ -9,7 +9,7 @@ import {
   OAuthV2AccessResponse,
   OpenIDConnectTokenResponse,
   SlackAPIClient,
-} from "https://deno.land/x/slack_web_api_client@0.7.6/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.8.0/mod.ts";
 import { toInstallation } from "./oauth/installation.ts";
 import {
   AfterInstallation,
@@ -110,6 +110,8 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
         defaultOnStateValidationError,
       redirectUri: options.oauth?.redirectUri ?? this.env.SLACK_REDIRECT_URI,
       start: options.oauth?.start ?? defaultOAuthStart,
+      beforeInstallation: options.oauth?.beforeInstallation,
+      afterInstallation: options.oauth?.afterInstallation,
       callback: options.oauth?.callback ?? defaultOAuthCallback,
     };
     if (options.oidc) {

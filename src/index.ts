@@ -51,5 +51,6 @@ export * from "./request/payload/view-objects";
 
 export * from "./response/response";
 export * from "./socket-mode/socket-mode-client";
+export * from "./socket-mode/payload-handler";
 
 export * from "./utility/message-events";
