@@ -22,18 +22,14 @@ app.anyMessage(async ({ context }) => {
 });
 
 (async () => {
-  const socketMode = new SocketModeClient({
+  const sm = new SocketModeClient({
     appToken: process.env.SLACK_APP_TOKEN!,
     logLevel: LogLevel.DEBUG,
   });
-  socketMode.on(
+  sm.on(
     "slack_event",
-    async ({ body, ack, retry_num, retry_reason }) => {
-      const request = fromSocketModeToRequest({
-        body,
-        retryNum: retry_num,
-        retryReason: retry_reason,
-      });
+    async ({ body, ack, retry_num: retryNum, retry_reason: retryReason }) => {
+      const request = fromSocketModeToRequest({ body, retryNum, retryReason });
       if (!request) {
         return;
       }
@@ -41,5 +37,5 @@ app.anyMessage(async ({ context }) => {
       await ack(await fromResponseToSocketModePayload({ response }));
     },
   );
-  await socketMode.start();
+  await sm.start();
 })();

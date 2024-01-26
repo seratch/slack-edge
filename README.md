@@ -250,6 +250,8 @@ import {
   fromSocketModeToRequest,
   fromResponseToSocketModePayload,
 } from "slack-edge";
+import { SocketModeClient } from "@slack/socket-mode";
+import { LogLevel } from "@slack/logger";
 
 const app = new SlackApp({
   socketMode: true,
@@ -265,28 +267,21 @@ app.command("/hello", async ({}) => {
   return "Hi!";
 });
 
-import { SocketModeClient } from "@slack/socket-mode";
-import { LogLevel } from "@slack/logger";
-
 // Start a Socket Mode client
 (async () => {
-  const socketMode = new SocketModeClient({
+  const sm = new SocketModeClient({
     appToken: process.env.SLACK_APP_TOKEN!,
     logLevel: LogLevel.DEBUG,
   });
-  socketMode.on("slack_event", async ({ body, ack, retry_num, retry_reason }) => {
-    const request = fromSocketModeToRequest({
-      body,
-      retryNum: retry_num,
-      retryReason: retry_reason,
-    });
+  sm.on("slack_event", async ({ body, ack, retry_num: retryNum, retry_reason: retryReason }) => {
+    const request = fromSocketModeToRequest({ body, retryNum, retryReason });
     if (!request) {
       return;
     }
     const response = await app.run(request);
     await ack(await fromResponseToSocketModePayload({ response }));
   });
-  await socketMode.start();
+  await sm.start();
 })();
 ```
 
