@@ -8,6 +8,8 @@ The **slack-edge** library is a Slack app development framework designed specifi
 * [Cloudflare Workers](https://workers.cloudflare.com/)
 * [Vercel Edge Functions](https://vercel.com/docs/concepts/functions/edge-functions/quickstart)
 
+Not only does it work with the above, but it also functions with the latest versions of [Deno](https://deno.com/), [Bun](https://bun.sh/), and [Node.js](https://nodejs.org/en/about).
+
 This framework draws significant inspiration from Slack's [Bolt framework](https://api.slack.com/tools/bolt), but its design does not strictly follow the [bolt-js](https://github.com/slackapi/bolt-js) blueprint.
 
 Key differences include:
