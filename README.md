@@ -144,7 +144,7 @@ If you use Cloudflare Tunnel or something equivalent, you may want to run `cloud
 
 We are currently working on the **slack-vercel-edge-functions** package, which offers Vercel-specific features in addition to the core ones provided by **slack-edge**. Until its release, please use slack-edge directly and implement the missing features on your own as necessary.
 
-### Run Your App with Deno / Bun
+### Run Your App with Deno / Bun / Node.js
 
 This library is available not only for edge function use cases but also for novel JavaScript runtime use cases. Specifically, you can run an app with [Deno](https://deno.com/) and [Bun](https://bun.sh/), both of which are up-and-coming JS runtimes. To learn more about this, please check the example files under the `./test` directory.
 
