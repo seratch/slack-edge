@@ -146,7 +146,7 @@ We are currently working on the **slack-vercel-edge-functions** package, which o
 
 ### Run Your App with Deno / Bun / Node.js
 
-This library is available not only for edge function use cases but also for novel JavaScript runtime use cases. Specifically, you can run an app with [Deno](https://deno.com/) and [Bun](https://bun.sh/), both of which are up-and-coming JS runtimes. To learn more about this, please check the example files under the `./test` directory.
+This library is available not only for edge function use cases but also for any JavaScript runtime use cases. Specifically, you can run an app with [Deno](https://deno.com/), [Bun](https://bun.sh/), and [Node.js](https://nodejs.org/en/about). To learn more about this, please check the example files under the `./test` directory.
 
 #### Run with Bun
 
