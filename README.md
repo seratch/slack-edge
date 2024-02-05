@@ -10,9 +10,7 @@ The **slack-edge** library is a Slack app development framework designed specifi
 
 Not only does it work with the above, but it also functions with the latest versions of [Deno](https://deno.com/), [Bun](https://bun.sh/), and [Node.js](https://nodejs.org/en/about).
 
-This framework draws significant inspiration from Slack's [Bolt framework](https://api.slack.com/tools/bolt), but its design does not strictly follow the [bolt-js](https://github.com/slackapi/bolt-js) blueprint.
-
-Key differences include:
+This framework draws significant inspiration from Slack's [Bolt framework](https://api.slack.com/tools/bolt), but its design does not strictly follow the [bolt-js](https://github.com/slackapi/bolt-js) blueprint. Key differences include:
 
 * **Edge function ready**: Out-of-the-box edge function (e.g., Cloudflare Workers) support
 * **TypeScript focused**: Enhances type safety and clarifies typings for developers
@@ -215,7 +213,7 @@ brew install cloudflare/cloudflare/cloudflared
 cloudflared tunnel --url http://localhost:3000
 ```
 
-#### Run with Deno (Socket Mode)
+#### Run with Deno (Socket Mode: Experimental)
 
 **Important Notice:** The Socket Mode support provided by slack-edge is still experimental and is not designed to handle reconnections for production-grade applications. It is recommended to use this mode only for local development and testing purposes.
 
@@ -241,7 +239,7 @@ setTimeout(() => {}, Number.MAX_SAFE_INTEGER);
 You can run this app by `deno run --watch --allow-net --allow-env my-app.ts`.
 
 
-#### Run with Node.js (Stable Socket Mode)
+#### Run with Node.js (Socket Mode: Production-ready)
 
 If you need a stable Socket Mode integration, we recommend using `@slack/socket-mode` along with this package. With Node 20+, the following example works for you:
 
