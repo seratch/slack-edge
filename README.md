@@ -287,6 +287,36 @@ app.command("/hello", async ({}) => {
 
 A complete example project is available [here](https://github.com/seratch/slack-edge/tree/main/test/node-socket-mode).
 
+#### Run with Remix + Node.js
+
+If you're looking for a way to serve Slack app using [Remix](https://remix.run/), slack-edge is the best way to go! Here is a simple example to run your Slack app as part of a Remix app:
+
+```typescript
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { SlackApp } from "slack-edge";
+
+export async function action({ request }: LoaderFunctionArgs) {
+  const app = new SlackApp({
+    env: {
+      SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN,
+      SLACK_SIGNING_SECRET: process.env.SLACK_SIGNING_SECRET!,
+    }
+  });
+  // Add listeners here
+
+  return await app.run(request);
+}
+```
+
+You can run the app by following these steps:
+* `npx create-remix@latest`
+* `cd my-remix-app`
+* `npm i @remix-run/serve @remix-run/node slack-edge`
+* Add `app/routes/api.slack.tsx` (if you go with `POST /api/slack`) with the above code
+* `export SLACK_SIGNING_SECRET=...`
+* `export SLACK_BOT_TOKEN=xoxb-...`
+* `npm run dev`
+
 ### Reference
 
 #### Middleware
