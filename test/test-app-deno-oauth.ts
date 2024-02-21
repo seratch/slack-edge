@@ -1,4 +1,4 @@
-import { SlackAPIClient } from "https://deno.land/x/slack_web_api_client@0.3.1/mod.ts";
+import { SlackAPIClient } from "https://deno.land/x/slack_web_api_client@0.8.0/mod.ts";
 import {
   Authorize,
   SlackOAuthApp,
@@ -109,7 +109,7 @@ app.shortcut(
 
 // deno run --watch --allow-net --allow-env --allow-read --allow-write test/test-app-deno-oauth.ts
 // ngrok http 3000 --subdomain your-domain
-import { serve } from "https://deno.land/std@0.212.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.216.0/http/server.ts";
 await serve(
   async (request) => {
     return await app.run(request);

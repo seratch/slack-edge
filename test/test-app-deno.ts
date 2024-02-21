@@ -44,7 +44,7 @@ app.shortcut(
 
 // deno run --watch --allow-net --allow-env test/test-app-deno.ts
 // ngrok http 3000 --subdomain your-domain
-import { serve } from "https://deno.land/std@0.212.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.216.0/http/server.ts";
 await serve(
   async (request) => {
     return await app.run(request);
