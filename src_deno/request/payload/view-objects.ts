@@ -70,8 +70,8 @@ export interface UploadedFile {
   num_stars?: number;
   org_or_workspace_access?: string;
   original_attachment_count?: number;
-  original_h?: string;
-  original_w?: string;
+  original_h?: number;
+  original_w?: number;
   permalink_public?: string;
   pinned_to?: string[];
   pjpeg?: string;

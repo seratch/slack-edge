@@ -1793,8 +1793,8 @@ export interface FileItem {
   non_owner_editable?: boolean;
   num_stars?: number;
   original_attachment_count?: number;
-  original_h?: string;
-  original_w?: string;
+  original_h?: number;
+  original_w?: number;
   permalink: string;
   permalink_public?: string;
   pinned_to?: string[];
@@ -2006,8 +2006,8 @@ export interface FileElement {
   non_owner_editable?: boolean;
   num_stars?: number;
   original_attachment_count?: number;
-  original_h?: string;
-  original_w?: string;
+  original_h?: number;
+  original_w?: number;
   permalink: string;
   permalink_public?: string;
   pinned_to?: string[];
