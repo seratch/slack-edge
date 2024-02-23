@@ -1,7 +1,7 @@
 import {
   isDebugLogEnabled,
   SlackAPIClient,
-} from "https://deno.land/x/slack_web_api_client@0.8.0/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.8.1/mod.ts";
 import { SlackApp } from "../app.ts";
 import { ConfigError, SocketModeError } from "../errors.ts";
 import { SlackSocketModeAppEnv } from "../app-env.ts";
@@ -101,14 +101,16 @@ export class SocketModeClient {
               }
               return;
             }
-            const response = await app.run(
-              fromSocketModeToRequest({
-                url: ws.url,
-                body: data.payload,
-                retryNum: data.retry_attempt,
-                retryReason: data.retry_reason,
-              }),
-            );
+            const request = fromSocketModeToRequest({
+              url: ws.url,
+              body: data.payload,
+              retryNum: data.retry_attempt,
+              retryReason: data.retry_reason,
+            });
+            if (!request) {
+              return;
+            }
+            const response = await app.run(request);
             const message: Record<string, unknown> = {
               envelope_id: data.envelope_id,
             };

@@ -5,7 +5,7 @@ import {
   MessageAttachment,
   MessageMetadata,
   PlainTextField,
-} from "https://deno.land/x/slack_web_api_client@0.8.0/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.8.1/mod.ts";
 import { DataSubmissionView, ViewStateValue } from "./view-objects.ts";
 import { BotProfile } from "./event.ts";
 
