@@ -217,7 +217,7 @@ cloudflared tunnel --url http://localhost:3000
 
 **Important Notice:** The Socket Mode support provided by slack-edge is still experimental and is not designed to handle reconnections for production-grade applications. It is recommended to use this mode only for local development and testing purposes.
 
-Thanks to Deno's stable WebSocket implementation, you can quickly and easily run a Socket Mode app too!
+Thanks to Deno's built-in WebSocket implementation, you can quickly and easily run a Socket Mode app as below:
 
 ```typescript
 import { SlackApp } from "https://deno.land/x/slack_edge@0.10.2/mod.ts";
