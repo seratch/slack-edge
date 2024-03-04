@@ -268,20 +268,18 @@ app.command("/hello", async ({}) => {
 });
 
 // Start a Socket Mode client
+const socketModeClient = new SocketModeClient({
+  appToken: process.env.SLACK_APP_TOKEN!,
+  logLevel: LogLevel.DEBUG,
+});
+socketModeClient.on("slack_event", async ({ body, ack, retry_num: retryNum, retry_reason: retryReason }) => {
+  const request = fromSocketModeToRequest({ body, retryNum, retryReason });
+  if (!request) { return; }
+  const response = await app.run(request);
+  await ack(await fromResponseToSocketModePayload({ response }));
+},);
 (async () => {
-  const sm = new SocketModeClient({
-    appToken: process.env.SLACK_APP_TOKEN!,
-    logLevel: LogLevel.DEBUG,
-  });
-  sm.on("slack_event", async ({ body, ack, retry_num: retryNum, retry_reason: retryReason }) => {
-    const request = fromSocketModeToRequest({ body, retryNum, retryReason });
-    if (!request) {
-      return;
-    }
-    const response = await app.run(request);
-    await ack(await fromResponseToSocketModePayload({ response }));
-  });
-  await sm.start();
+  await socketModeClient.start();
 })();
 ```
 

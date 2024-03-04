@@ -66,7 +66,7 @@ describe("Socket Mode", () => {
           status: 200,
         }),
       });
-      assert.deepEqual(payload, { text: "" });
+      assert.deepEqual(payload, {});
     });
     test("200 ok; body is a string", async () => {
       const payload = await fromResponseToSocketModePayload({

@@ -4,7 +4,6 @@
     "module": "commonjs",
     "lib": ["es2022", "dom"],
     "outDir": "lib",
-    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true

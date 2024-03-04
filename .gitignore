@@ -172,5 +172,5 @@ dist
 .wrangler/
 
 tmp/
-
 .DS_Store
+.slack/

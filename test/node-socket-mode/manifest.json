@@ -1,0 +1,73 @@
+{
+  "display_information": {
+    "name": "TestApp",
+    "description": "You can update this later",
+    "background_color": "#4361ba",
+    "long_description": ""
+  },
+  "features": {
+    "app_home": {
+      "home_tab_enabled": true,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": true
+    },
+    "bot_user": {
+      "display_name": "TestApp Bot",
+      "always_online": true
+    },
+    "shortcuts": [
+      {
+        "name": "Run TestApp",
+        "type": "message",
+        "callback_id": "message_example",
+        "description": "Run TestApp for this message"
+      },
+      {
+        "name": "Run TestApp Everywhere",
+        "type": "global",
+        "callback_id": "global_example",
+        "description": "Run TestApp from everywhere"
+      }
+    ],
+    "slash_commands": [
+      {
+        "command": "/run-test-app",
+        "description": "Run TestApp now",
+        "usage_hint": "",
+        "should_escape": true
+      }
+    ],
+    "unfurl_domains": []
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "commands",
+        "chat:write",
+        "chat:write.public",
+        "app_mentions:read",
+        "reactions:read",
+        "channels:history",
+        "groups:history"
+      ]
+    }
+  },
+  "settings": {
+    "interactivity": {
+      "is_enabled": true
+    },
+    "event_subscriptions": {
+      "bot_events": [
+        "app_home_opened",
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "reaction_added"
+      ]
+    },
+    "org_deploy_enabled": true,
+    "socket_mode_enabled": true,
+    "token_rotation_enabled": false
+  },
+  "outgoing_domains": []
+}

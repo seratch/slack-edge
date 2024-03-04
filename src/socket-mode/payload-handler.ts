@@ -43,7 +43,9 @@ export async function fromResponseToSocketModePayload({
     const contentType = response.headers.get("Content-Type");
     if (contentType && contentType.startsWith("text/plain")) {
       const text = await response.text();
-      message = { text };
+      if (text) {
+        message = { text };
+      }
     } else {
       message = await response.json();
     }
