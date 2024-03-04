@@ -182,7 +182,7 @@ cloudflared tunnel --url http://localhost:3000
 #### Run with Deno
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.10.2/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.10.5/mod.ts";
 
 const app = new SlackApp({
   env: {
@@ -220,7 +220,7 @@ cloudflared tunnel --url http://localhost:3000
 Thanks to Deno's built-in WebSocket implementation, you can quickly and easily run a Socket Mode app as below:
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.10.2/mod.ts";
+import { SlackApp } from "https://deno.land/x/slack_edge@0.10.5/mod.ts";
 
 const app = new SlackApp({
   env: {
