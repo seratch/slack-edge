@@ -283,7 +283,7 @@ socketModeClient.on("slack_event", async ({ body, ack, retry_num: retryNum, retr
 })();
 ```
 
-A complete example project is available [here](https://github.com/seratch/slack-edge/tree/main/test/node-socket-mode).
+If you want to build a Slack app this way, [this project template](https://github.com/seratch/slack-edge-app-template) should be pretty useful for you!
 
 #### Run with Remix + Node.js
 
