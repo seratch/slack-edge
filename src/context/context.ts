@@ -14,8 +14,8 @@ export interface PreAuthorizeSlackAppContext {
   actorEnterpriseId?: string;
   actorTeamId?: string;
   actorUserId?: string;
-  botId?: string;
-  botUserId?: string;
+  botId?: string; // this will always exist when initializing SlackAppContext
+  botUserId?: string; // this will always exist when initializing SlackAppContext
   responseUrl?: string;
   channelId?: string;
   triggerId?: string;
@@ -32,6 +32,8 @@ export type Respond = (params: WebhookParams) => Promise<Response>;
 export type SlackAppContext = {
   client: SlackAPIClient;
   botToken: string;
+  botId: string; // this must exist here
+  botUserId: string; // this must exist here
   userToken?: string;
   authorizeResult: AuthorizeResult;
 } & PreAuthorizeSlackAppContext;
