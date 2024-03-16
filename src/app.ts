@@ -79,6 +79,7 @@ export interface SlackAppOptions<
   env: E;
   authorize?: Authorize<E>;
   routes?: {
+    // The name "events" could be somewhat confusing, but this path handles all types of request patterns
     events: string;
   };
   socketMode?: boolean;
@@ -89,7 +90,10 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
   public env: E;
   public client: SlackAPIClient;
   public authorize: Authorize<E>;
-  public routes: { events: string | undefined };
+  public routes: {
+    // The name "events" could be somewhat confusing, but this path handles all types of request patterns
+    events: string | undefined;
+  };
   public signingSecret: string;
 
   public appLevelToken: string | undefined;
