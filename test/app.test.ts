@@ -62,8 +62,11 @@ describe("SlackApp", () => {
     // Events API
     const appMentionEvent: EventLazyHandler<"app_mention"> = async ({
       payload,
+      context,
     }) => {
       const type: "app_mention" = payload.type;
+      const botUserId: string = context.botUserId;
+      const botId: string = context.botId;
     };
     app.event("app_mention", appMentionEvent);
 
