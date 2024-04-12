@@ -2,8 +2,8 @@ import { SlackLoggingLevel } from "../app-env.ts";
 import {
   OpenIDConnectTokenResponse,
   SlackAPIClient,
-} from "https://deno.land/x/slack_web_api_client@0.8.2/mod.ts";
-import { prettyPrint } from "https://deno.land/x/slack_web_api_client@0.8.2/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.9.2/mod.ts";
+import { prettyPrint } from "https://deno.land/x/slack_web_api_client@0.9.2/mod.ts";
 
 export interface OpenIDConnectCallbackArgs {
   env: SlackLoggingLevel;

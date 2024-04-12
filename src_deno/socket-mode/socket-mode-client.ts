@@ -1,7 +1,7 @@
 import {
   isDebugLogEnabled,
   SlackAPIClient,
-} from "https://deno.land/x/slack_web_api_client@0.8.2/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.9.2/mod.ts";
 import { SlackApp } from "../app.ts";
 import { ConfigError, SocketModeError } from "../errors.ts";
 import { SlackSocketModeAppEnv } from "../app-env.ts";
