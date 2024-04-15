@@ -182,11 +182,11 @@ cloudflared tunnel --url http://localhost:3000
 #### Run with Deno
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.10.8/mod.ts";
+import { SlackApp, SlackEdgeAppEnv } from "https://deno.land/x/slack_edge@0.10.9/mod.ts";
 
-const app = new SlackApp({
+const app = new SlackApp<SlackEdgeAppEnv>({
   env: {
-    SLACK_SIGNING_SECRET: Deno.env.get("SLACK_SIGNING_SECRET"),
+    SLACK_SIGNING_SECRET: Deno.env.get("SLACK_SIGNING_SECRET")!,
     SLACK_BOT_TOKEN: Deno.env.get("SLACK_BOT_TOKEN"),
     SLACK_LOGGING_LEVEL: "DEBUG",
   },
@@ -194,12 +194,9 @@ const app = new SlackApp({
 
 // Add listeners here
 
-import { serve } from "https://deno.land/std@0.221.0/http/server.ts";
-await serve(
-  async (request) => {
-    return await app.run(request);
-  },
-  { port: 3000 }
+await Deno.serve(
+  { port: 3000 },
+  async (request) => { return await app.run(request); },
 );
 ```
 
@@ -220,12 +217,12 @@ cloudflared tunnel --url http://localhost:3000
 Thanks to Deno's built-in WebSocket implementation, you can quickly and easily run a Socket Mode app as below:
 
 ```typescript
-import { SlackApp } from "https://deno.land/x/slack_edge@0.10.8/mod.ts";
+import { SlackApp, SlackSocketModeAppEnv } from "https://deno.land/x/slack_edge@0.10.9/mod.ts";
 
-const app = new SlackApp({
+const app = new SlackApp<SlackSocketModeAppEnv>({
   env: {
+    SLACK_APP_TOKEN: Deno.env.get("SLACK_APP_TOKEN")!,
     SLACK_BOT_TOKEN: Deno.env.get("SLACK_BOT_TOKEN"),
-    SLACK_APP_TOKEN: Deno.env.get("SLACK_APP_TOKEN"),
     SLACK_LOGGING_LEVEL: "DEBUG",
   },
 });

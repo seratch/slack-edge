@@ -1,8 +1,8 @@
-import { SlackApp } from "../src_deno/app.ts";
+import { SlackApp, SlackEdgeAppEnv } from "../src_deno/mod.ts";
 
-const app = new SlackApp({
+const app = new SlackApp<SlackEdgeAppEnv>({
   env: {
-    SLACK_SIGNING_SECRET: Deno.env.get("SLACK_SIGNING_SECRET"),
+    SLACK_SIGNING_SECRET: Deno.env.get("SLACK_SIGNING_SECRET")!,
     SLACK_BOT_TOKEN: Deno.env.get("SLACK_BOT_TOKEN"),
     SLACK_LOGGING_LEVEL: "DEBUG",
   },
@@ -44,10 +44,9 @@ app.shortcut(
 
 // deno run --watch --allow-net --allow-env test/test-app-deno.ts
 // ngrok http 3000 --subdomain your-domain
-import { serve } from "https://deno.land/std@0.216.0/http/server.ts";
-await serve(
+await Deno.serve(
+  { port: 3000 },
   async (request) => {
     return await app.run(request);
   },
-  { port: 3000 },
 );

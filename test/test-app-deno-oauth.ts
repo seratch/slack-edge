@@ -1,4 +1,4 @@
-import { SlackAPIClient } from "https://deno.land/x/slack_web_api_client@0.8.0/mod.ts";
+import { SlackAPIClient } from "https://deno.land/x/slack_web_api_client@0.10.2/mod.ts";
 import {
   Authorize,
   SlackOAuthApp,
@@ -48,10 +48,10 @@ class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
         return {
           enterpriseId: installation?.enterprise_id,
           teamId: installation?.team_id,
-          botId: authTest.bot_id,
-          botUserId: installation.bot_user_id,
-          botToken: installation.bot_token,
-          botScopes: installation.bot_scopes,
+          botId: authTest.bot_id!,
+          botUserId: installation.bot_user_id!,
+          botToken: installation.bot_token!,
+          botScopes: installation.bot_scopes!,
         };
       }
       throw new AuthorizeError(
@@ -61,11 +61,11 @@ class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
   }
 }
 
-const app = new SlackOAuthApp({
+const app = new SlackOAuthApp<SlackOAuthEnv>({
   env: {
-    SLACK_SIGNING_SECRET: Deno.env.get("SLACK_SIGNING_SECRET"),
-    SLACK_CLIENT_ID: Deno.env.get("SLACK_CLIENT_ID"),
-    SLACK_CLIENT_SECRET: Deno.env.get("SLACK_CLIENT_SECRET"),
+    SLACK_SIGNING_SECRET: Deno.env.get("SLACK_SIGNING_SECRET")!,
+    SLACK_CLIENT_ID: Deno.env.get("SLACK_CLIENT_ID")!,
+    SLACK_CLIENT_SECRET: Deno.env.get("SLACK_CLIENT_SECRET")!,
     SLACK_BOT_SCOPES: "app_mentions:read,chat:write,channels:history,commands",
     SLACK_LOGGING_LEVEL: "DEBUG",
   },
@@ -109,10 +109,9 @@ app.shortcut(
 
 // deno run --watch --allow-net --allow-env --allow-read --allow-write test/test-app-deno-oauth.ts
 // ngrok http 3000 --subdomain your-domain
-import { serve } from "https://deno.land/std@0.216.0/http/server.ts";
-await serve(
+await Deno.serve(
+  { port: 3000 },
   async (request) => {
     return await app.run(request);
   },
-  { port: 3000 },
 );

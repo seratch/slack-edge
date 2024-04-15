@@ -1,9 +1,9 @@
-import { SlackApp } from "../src_deno/mod.ts";
+import { SlackApp, SlackSocketModeAppEnv } from "../src_deno/mod.ts";
 
-const app = new SlackApp({
+const app = new SlackApp<SlackSocketModeAppEnv>({
   env: {
+    SLACK_APP_TOKEN: Deno.env.get("SLACK_APP_TOKEN")!,
     SLACK_BOT_TOKEN: Deno.env.get("SLACK_BOT_TOKEN"),
-    SLACK_APP_TOKEN: Deno.env.get("SLACK_APP_TOKEN"),
     SLACK_LOGGING_LEVEL: "DEBUG",
   },
 });
@@ -81,7 +81,7 @@ app.action(
   async ({ context, payload }) => {
     const { client } = context;
     await client.views.open({
-      trigger_id: context.triggerId,
+      trigger_id: context.triggerId!,
       view: {
         type: "modal",
         callback_id: "remote-function-modal",
@@ -100,8 +100,8 @@ app.action(
       },
     });
     await client.chat.update({
-      channel: payload.container.channel_id,
-      ts: payload.container.message_ts,
+      channel: payload.container.channel_id!,
+      ts: payload.container.message_ts!,
       text: "Thank you!",
     });
   },
@@ -116,7 +116,7 @@ app.view(
     const user_id = payload.function_data!.inputs.user_id;
     const { client } = context;
     await client.functions.completeSuccess({
-      function_execution_id: context.functionExecutionId,
+      function_execution_id: context.functionExecutionId!,
       outputs: { user_id },
     });
   },
