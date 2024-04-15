@@ -194,10 +194,9 @@ const app = new SlackApp<SlackEdgeAppEnv>({
 
 // Add listeners here
 
-await Deno.serve(
-  { port: 3000 },
-  async (request) => { return await app.run(request); },
-);
+await Deno.serve({ port: 3000 }, async (request) => {
+  return await app.run(request);
+});
 ```
 
 You can run the app by:

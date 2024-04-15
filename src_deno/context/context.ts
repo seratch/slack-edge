@@ -4,7 +4,7 @@ import {
   ChatPostMessageResponse,
   SlackAPIClient,
   WebhookParams,
-} from "https://deno.land/x/slack_web_api_client@0.10.1/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.10.4/mod.ts";
 
 export interface PreAuthorizeSlackAppContext {
   isEnterpriseinstall?: boolean;

@@ -44,9 +44,6 @@ app.shortcut(
 
 // deno run --watch --allow-net --allow-env test/test-app-deno.ts
 // ngrok http 3000 --subdomain your-domain
-await Deno.serve(
-  { port: 3000 },
-  async (request) => {
-    return await app.run(request);
-  },
-);
+await Deno.serve({ port: 3000 }, async (request) => {
+  return await app.run(request);
+});
