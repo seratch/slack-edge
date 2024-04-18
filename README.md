@@ -181,58 +181,7 @@ cloudflared tunnel --url http://localhost:3000
 
 #### Run with Deno
 
-```typescript
-import { SlackApp, SlackEdgeAppEnv } from "https://deno.land/x/slack_edge@0.10.9/mod.ts";
-
-const app = new SlackApp<SlackEdgeAppEnv>({
-  env: {
-    SLACK_SIGNING_SECRET: Deno.env.get("SLACK_SIGNING_SECRET")!,
-    SLACK_BOT_TOKEN: Deno.env.get("SLACK_BOT_TOKEN"),
-    SLACK_LOGGING_LEVEL: "DEBUG",
-  },
-});
-
-// Add listeners here
-
-await Deno.serve({ port: 3000 }, async (request) => {
-  return await app.run(request);
-});
-```
-
-You can run the app by:
-
-```bash
-# Terminal A
-deno run --watch --allow-net --allow-env my-app.ts
-# Terminal B
-brew install cloudflare/cloudflare/cloudflared
-cloudflared tunnel --url http://localhost:3000
-```
-
-#### Run with Deno (Socket Mode: Experimental)
-
-**Important Notice:** The Socket Mode support provided by slack-edge is still experimental and is not designed to handle reconnections for production-grade applications. It is recommended to use this mode only for local development and testing purposes.
-
-Thanks to Deno's built-in WebSocket implementation, you can quickly and easily run a Socket Mode app as below:
-
-```typescript
-import { SlackApp, SlackSocketModeAppEnv } from "https://deno.land/x/slack_edge@0.10.9/mod.ts";
-
-const app = new SlackApp<SlackSocketModeAppEnv>({
-  env: {
-    SLACK_APP_TOKEN: Deno.env.get("SLACK_APP_TOKEN")!,
-    SLACK_BOT_TOKEN: Deno.env.get("SLACK_BOT_TOKEN"),
-    SLACK_LOGGING_LEVEL: "DEBUG",
-  },
-});
-
-// Add listeners here
-
-await app.connect();
-setTimeout(() => {}, Number.MAX_SAFE_INTEGER);
-```
-
-You can run this app by `deno run --watch --allow-net --allow-env my-app.ts`.
+Please refer to [README for the Deno module](https://github.com/seratch/slack-edge/blob/main/src_deno/README.md).
 
 
 #### Run with Node.js (Socket Mode: Production-ready)
