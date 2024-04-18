@@ -39,5 +39,5 @@ function fromHexStringToBytes(hexString: string) {
   for (let idx = 0; idx < hexString.length; idx += 2) {
     bytes[idx / 2] = parseInt(hexString.substring(idx, idx + 2), 16);
   }
-  return bytes.buffer;
+  return bytes;
 }
