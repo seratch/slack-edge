@@ -9,3 +9,5 @@ scripts/
 test/
 vite.config.ts
 tmp/
+.github/
+.idea/
