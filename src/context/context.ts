@@ -6,8 +6,11 @@ import {
   WebhookParams,
 } from "slack-web-api-client";
 
+/**
+ * SlackApp context object that provides data available before performing authorize()
+ */
 export interface PreAuthorizeSlackAppContext {
-  isEnterpriseinstall?: boolean;
+  isEnterpriseInstall?: boolean;
   enterpriseId?: string;
   teamId?: string;
   userId?: string;
@@ -27,8 +30,14 @@ export interface PreAuthorizeSlackAppContext {
   };
 }
 
+/**
+ * respond() utility for easily utilizing response_url to post a channel message.
+ */
 export type Respond = (params: WebhookParams) => Promise<Response>;
 
+/**
+ * SlackApp context object that provides data available after performing authorize()
+ */
 export type SlackAppContext = {
   client: SlackAPIClient;
   botToken: string;
@@ -38,6 +47,9 @@ export type SlackAppContext = {
   authorizeResult: AuthorizeResult;
 } & PreAuthorizeSlackAppContext;
 
+/**
+ * SlackApp context object that provides channelId and say() utility
+ */
 export type SlackAppContextWithChannelId = {
   channelId: string;
   say: (
@@ -45,21 +57,30 @@ export type SlackAppContextWithChannelId = {
   ) => Promise<ChatPostMessageResponse>;
 } & SlackAppContext;
 
+/**
+ * SlackApp context object that provides channelId and respond() utility.
+ */
 export type SlackAppContextWithRespond = {
   channelId: string;
   respond: Respond;
 } & SlackAppContext;
 
+/**
+ * SlackApp context object that may provide respond() utility.
+ */
 export type SlackAppContextWithOptionalRespond = {
   respond?: Respond;
 } & SlackAppContext;
 
+/**
+ * Internal method that sets a context object's basic properties.
+ */
 export function builtBaseContext(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,
 ): PreAuthorizeSlackAppContext {
   return {
-    isEnterpriseinstall: extractIsEnterpriseInstall(body),
+    isEnterpriseInstall: extractIsEnterpriseInstall(body),
     enterpriseId: extractEnterpriseId(body),
     teamId: extractTeamId(body),
     userId: extractUserId(body),
@@ -77,6 +98,11 @@ export function builtBaseContext(
   };
 }
 
+/**
+ * Extracts is_enterprise_install: boolean property from payload.
+ * @param body the whole request payload data
+ * @returns is_enterprise_install if exists
+ */
 export function extractIsEnterpriseInstall(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,
@@ -93,6 +119,11 @@ export function extractIsEnterpriseInstall(
   return undefined;
 }
 
+/**
+ * Extracts enterprise_id: string property from payload.
+ * @param body the whole request payload data
+ * @returns enterprise_id if exists
+ */
 export function extractEnterpriseId(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,
@@ -119,6 +150,11 @@ export function extractEnterpriseId(
   return undefined;
 }
 
+/**
+ * Extracts team_id: string property from payload.
+ * @param body the whole request payload data
+ * @returns team_id if exists
+ */
 // deno-lint-ignore no-explicit-any
 export function extractTeamId(body: Record<string, any>): string | undefined {
   if (body.view && body.view.app_installed_team_id) {
@@ -149,6 +185,11 @@ export function extractTeamId(body: Record<string, any>): string | undefined {
   return undefined;
 }
 
+/**
+ * Extracts user_id: string property from payload.
+ * @param body the whole request payload data
+ * @returns user_id if exists
+ */
 // deno-lint-ignore no-explicit-any
 export function extractUserId(body: Record<string, any>): string | undefined {
   if (body.user) {
@@ -170,6 +211,11 @@ export function extractUserId(body: Record<string, any>): string | undefined {
   return undefined;
 }
 
+/**
+ * Extracts enterprise_id of the organization to which the actor of the event belongs.
+ * @param body the whole request payload data
+ * @returns enterprise_id if exists
+ */
 export function extractActorEnterpriseId(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,
@@ -187,6 +233,11 @@ export function extractActorEnterpriseId(
   return extractEnterpriseId(body);
 }
 
+/**
+ * Extracts team_id of the workspace to which the actor of the event belongs.
+ * @param body the whole request payload data
+ * @returns team_id if exists
+ */
 export function extractActorTeamId(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,
@@ -237,6 +288,11 @@ export function extractActorTeamId(
   return extractTeamId(body);
 }
 
+/**
+ * Extracts user_id of the actor of the event belongs.
+ * @param body the whole request payload data
+ * @returns user_id if exists
+ */
 export function extractActorUserId(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,
@@ -257,6 +313,11 @@ export function extractActorUserId(
   return extractUserId(body);
 }
 
+/**
+ * Extracts response_url: string property from payload.
+ * @param body the whole request payload data
+ * @returns response_url if exists
+ */
 export function extractResponseUrl(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,
@@ -269,6 +330,11 @@ export function extractResponseUrl(
   return undefined;
 }
 
+/**
+ * Extracts channel_id: string property from payload.
+ * @param body the whole request payload data
+ * @returns channel_id if exists
+ */
 export function extractChannelId(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,
@@ -290,6 +356,11 @@ export function extractChannelId(
   return undefined;
 }
 
+/**
+ * Extracts trigger_id/interactivity_pointer property from payload.
+ * @param body the whole request payload data
+ * @returns trigger_id if exists
+ */
 export function extractTriggerId(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,
@@ -303,6 +374,11 @@ export function extractTriggerId(
   return undefined;
 }
 
+/**
+ * Extracts function_execution_id property from payload.
+ * @param body the whole request payload data
+ * @returns function_execution_id if exists
+ */
 export function extractFunctionExecutionId(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,
@@ -319,6 +395,11 @@ export function extractFunctionExecutionId(
   return undefined;
 }
 
+/**
+ * Extracts JIT bot_access_token property for a custom function invocation from payload.
+ * @param body the whole request payload data
+ * @returns function's JIT bot_access_token if exists
+ */
 export function extractFunctionBotAccessToken(
   // deno-lint-ignore no-explicit-any
   body: Record<string, any>,

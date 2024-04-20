@@ -1,3 +1,6 @@
+/**
+ * Global shortcut payload data
+ */
 export interface GlobalShortcut {
   type: "shortcut";
   callback_id: string;

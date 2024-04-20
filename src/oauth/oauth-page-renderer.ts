@@ -1,6 +1,11 @@
 import { OAuthErrorCode } from "./error-codes";
 import { escapeHtml } from "./escape-html";
 
+/**
+ * Generates an HTML data for the /slack/install page.
+ * @param url the URL to start the OAuth flow
+ * @returns HTML data
+ */
 export function renderDefaultStartPage(url: string) {
   return (
     '<html><head><meta http-equiv="refresh" content="2;url=' +
@@ -11,6 +16,12 @@ export function renderDefaultStartPage(url: string) {
   );
 }
 
+/**
+ * Generates an HTML data indicating an error for the /slack/oauth_redirect page.
+ * @param installPath the path to start the OAuth flow again
+ * @param reason the error reason code
+ * @returns HTML data
+ */
 export function renderDefaultErrorPage(
   installPath: string,
   reason: OAuthErrorCode,
@@ -24,6 +35,14 @@ export function renderDefaultErrorPage(
   );
 }
 
+/**
+ * Generates an HTML data indicating app installation successfully completed for the /slack/oauth_redirect page.
+ * @param appId the app's ID
+ * @param teamId workspace ID to head to
+ * @param isEnterpriseInstall org-wide installation or not
+ * @param enterpriseUrl the management console URL for Enterprise Grid admins
+ * @returns HTML data
+ */
 export function renderDefaultCompletionPage(
   appId: string,
   teamId: string,

@@ -1,20 +1,32 @@
-import { SlackLoggingLevel } from "../app-env.ts";
+import { LoggingEnv } from "../app-env.ts";
 import {
   OpenIDConnectTokenResponse,
   SlackAPIClient,
 } from "https://deno.land/x/slack_web_api_client@0.10.5/mod.ts";
 import { prettyPrint } from "https://deno.land/x/slack_web_api_client@0.10.5/mod.ts";
 
+/**
+ * OpenIDConnectCallback args
+ */
 export interface OpenIDConnectCallbackArgs {
-  env: SlackLoggingLevel;
+  env: LoggingEnv;
   token: OpenIDConnectTokenResponse;
   request: Request;
 }
 
+/**
+ * OpenIDConnectCallback hook
+ */
 export type OpenIDConnectCallback = (
   args: OpenIDConnectCallbackArgs,
 ) => Promise<Response>;
 
+/**
+ * The default OpenIDConnectCallback implementation.
+ * @param env env variables
+ * @param token
+ * @returns response
+ */
 export const defaultOpenIDConnectCallback: OpenIDConnectCallback = async ({
   env,
   token,

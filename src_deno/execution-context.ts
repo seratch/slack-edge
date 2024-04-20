@@ -9,6 +9,9 @@ export interface ExecutionContext {
   waitUntil(promise: Promise<any>): void;
 }
 
+/**
+ * Default ExecutionContext with simple settings.
+ */
 export class NoopExecutionContext implements ExecutionContext {
   // deno-lint-ignore no-explicit-any
   waitUntil(promise: Promise<any>): void {

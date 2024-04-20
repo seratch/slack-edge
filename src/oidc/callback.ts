@@ -1,20 +1,32 @@
-import { SlackLoggingLevel } from "../app-env";
+import { LoggingEnv } from "../app-env";
 import {
   SlackAPIClient,
   OpenIDConnectTokenResponse,
 } from "slack-web-api-client";
 import { prettyPrint } from "slack-web-api-client";
 
+/**
+ * OpenIDConnectCallback args
+ */
 export interface OpenIDConnectCallbackArgs {
-  env: SlackLoggingLevel;
+  env: LoggingEnv;
   token: OpenIDConnectTokenResponse;
   request: Request;
 }
 
+/**
+ * OpenIDConnectCallback hook
+ */
 export type OpenIDConnectCallback = (
   args: OpenIDConnectCallbackArgs,
 ) => Promise<Response>;
 
+/**
+ * The default OpenIDConnectCallback implementation.
+ * @param env env variables
+ * @param token
+ * @returns response
+ */
 export const defaultOpenIDConnectCallback: OpenIDConnectCallback = async ({
   env,
   token,

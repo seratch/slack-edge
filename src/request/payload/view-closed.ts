@@ -1,5 +1,8 @@
 import { DataSubmissionView } from "./view-objects";
 
+/**
+ * view_closed payload data
+ */
 export interface ViewClosed {
   type: "view_closed";
   team: {

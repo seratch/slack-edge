@@ -10,9 +10,16 @@ import {
   fromSocketModeToRequest,
 } from "./payload-handler.ts";
 
-// TODO: Implement proper reconnection logic
-// TODO: Add connection monitor like 1st party SDKs do
-// TODO: Add Bun support (the runtime does not work well with Socket Mode)
+/**
+ * An experimental Socket Mode client
+ *
+ * Please note that this is still experimental and it's not recommended to use it for production apps.
+ * If you need a reliable Socket Mode client, please use @slack/socket-mode library on Node.js along with slack-edge.
+ *
+ * @todo Implement proper reconnection logic
+ * @todo Add connection monitor like 1st party SDKs do
+ * @todo Add Bun support (the runtime does not work well with Socket Mode)
+ */
 export class SocketModeClient {
   public app: SlackApp<SlackSocketModeAppEnv>;
   public appLevelToken: string;

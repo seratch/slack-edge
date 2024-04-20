@@ -1,6 +1,12 @@
 import { SlackOAuthEnv } from "../app-env.ts";
 import { ConfigError } from "../errors.ts";
 
+/**
+ * Generates slack.com/openid/connect/authorize URL with sufficient information.
+ * @param state state parameter string
+ * @param env env variables
+ * @returns slack.com/openid/connect/authorize URL
+ */
 export function generateOIDCAuthorizeUrl<E extends SlackOAuthEnv>(
   state: string,
   env: E,

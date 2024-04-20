@@ -1,3 +1,6 @@
+/**
+ * Slash command payload data
+ */
 export interface SlashCommand {
   token: string;
   command: string;

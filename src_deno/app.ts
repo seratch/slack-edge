@@ -29,8 +29,8 @@ import {
 } from "./handler/handler.ts";
 import { SlackRequestBody } from "./request/request-body.ts";
 import {
-  PreAuthorizeSlackMiddlwareRequest,
-  SlackMiddlwareRequest,
+  PreAuthorizeSlackMiddlewareRequest,
+  SlackMiddlewareRequest,
   SlackRequest,
   SlackRequestWithChannelId,
 } from "./request/request.ts";
@@ -83,42 +83,117 @@ import { isPostedMessageEvent } from "./utility/message-events.ts";
 import { SocketModeClient } from "./socket-mode/socket-mode-client.ts";
 import { isFunctionExecutedEvent } from "./utility/function-executed-event.ts";
 
+/**
+ * Options for initializing SlackApp instance.
+ */
 export interface SlackAppOptions<
   E extends SlackEdgeAppEnv | SlackSocketModeAppEnv,
 > {
+  /**
+   * Passed env variables for configuring the app.
+   */
   env: E;
+
+  /**
+   * The function that resolves the OAuth token associated with an incoming request.
+   */
   authorize?: Authorize<E>;
+
+  /**
+   * The endpoint routes to handle requests from Slack's API server.
+   * When this app connects to Slack through Socket Mode, this setting won't be used.
+   */
   routes?: {
     // The name "events" could be somewhat confusing, but this path handles all types of request patterns
     events: string;
   };
+
+  /**
+   * True when Socket Mode is enabled.
+   */
   socketMode?: boolean;
+
+  /**
+   * When this is set to true, all lazy listeners are invoked after the ack function completion.
+   * The default is set to false.
+   */
   startLazyListenerAfterAck?: boolean;
 }
 
+/**
+ * The class representing a Slack app process that handles requests from Slack's API server.
+ */
 export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
+  /**
+   * Passed env variables for configuring the app.
+   */
   public env: E;
+
+  /**
+   * The singleton SlackAPIClient instance that embodies a bot token.
+   * SlackOAuthApp initializes this property without a token.
+   */
   public client: SlackAPIClient;
+
+  /**
+   * The function that resolves the OAuth token associated with an incoming request.
+   */
   public authorize: Authorize<E>;
+
+  /**
+   * The endpoint routes to handle requests from Slack's API server.
+   * When this app connects to Slack through Socket Mode, this setting won't be used.
+   */
   public routes: {
     // The name "events" could be somewhat confusing, but this path handles all types of request patterns
     events: string | undefined;
   };
+
+  /**
+   * The credential used for verifying a request's signature.
+   */
   public signingSecret: string;
 
+  /**
+   * The app-level token for Socket Mode.
+   * When Socket Mode is not enabled, this can be undefined.
+   */
   public appLevelToken: string | undefined;
+
+  /**
+   * True when Socket Mode is enabled.
+   */
   public socketMode: boolean; // default: false
+
+  /**
+   * The underlying Socket Mode client
+   * that manages WebSocket connections and dispatches messages from Slack.
+   */
   public socketModeClient: SocketModeClient | undefined;
 
+  /**
+   * When this is set to true, all lazy listeners are invoked after the ack function completion.
+   * The default is set to false.
+   */
   public startLazyListenerAfterAck: boolean; // default: false
 
+  /**
+   * The custom middleware that are called before authorize() function.
+   */
   // deno-lint-ignore no-explicit-any
   public preAuthorizeMiddleware: PreAuthorizeMiddleware<any>[] = [
     urlVerification,
   ];
 
+  /**
+   * The custom middleware that are called after authorize() function.
+   */
   // deno-lint-ignore no-explicit-any
   public postAuthorizeMiddleware: Middleware<any>[] = [ignoringSelfEvents];
+
+  // --------------------------
+  // Enabled listener functions
+  // --------------------------
 
   #slashCommands: ((
     body: SlackRequestBody,
@@ -149,6 +224,8 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     body: SlackRequestBody,
   ) => SlackViewHandler<E, ViewClosed> | null)[] = [];
 
+  // --------------------------
+
   constructor(options: SlackAppOptions<E>) {
     if (
       options.env.SLACK_BOT_TOKEN === undefined &&
@@ -160,12 +237,17 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       );
     }
     this.env = options.env;
+    // Note that options.env.SLACK_BOT_TOKEN is absent for SlackOAuthApp
     this.client = new SlackAPIClient(options.env.SLACK_BOT_TOKEN, {
       logLevel: this.env.SLACK_LOGGING_LEVEL,
     });
+
+    // Socket Mode settings
     this.appLevelToken = options.env.SLACK_APP_TOKEN;
     this.socketMode = options.socketMode ?? this.appLevelToken !== undefined;
     if (this.socketMode) {
+      // Socket Mode does not require request signature verification
+      // because the underlying WS connection are securely established.
       this.signingSecret = "";
     } else {
       if (!this.env.SLACK_SIGNING_SECRET) {
@@ -180,24 +262,51 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     this.routes = { events: options.routes?.events };
   }
 
+  /**
+   * Registers a pre-authorize middleware.
+   * @param middleware middleware
+   * @returns this instance
+   */
   beforeAuthorize(middleware: PreAuthorizeMiddleware<E>): SlackApp<E> {
     this.preAuthorizeMiddleware.push(middleware);
     return this;
   }
 
+  /**
+   * Registers a post-authorize middleware. This naming is for consistency with bolt-js.
+   * @param middleware middleware
+   * @returns this instance
+   */
   middleware(middleware: Middleware<E>): SlackApp<E> {
     return this.afterAuthorize(middleware);
   }
 
+  /**
+   * Registers a post-authorize middleware. This naming is for consistency with bolt-js.
+   * @param middleware middleware
+   * @returns this instance
+   */
   use(middleware: Middleware<E>): SlackApp<E> {
     return this.afterAuthorize(middleware);
   }
 
+  /**
+   * Registers a post-authorize middleware.
+   * @param middleware middleware
+   * @returns this instance
+   */
   afterAuthorize(middleware: Middleware<E>): SlackApp<E> {
     this.postAuthorizeMiddleware.push(middleware);
     return this;
   }
 
+  /**
+   * Registers a listener that handles slash command executions.
+   * @param pattern the pattern to match slash command name
+   * @param ack ack function that must complete within 3 seconds
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   command(
     pattern: StringOrRegExp,
     ack: SlashCommandAckHandler<E>,
@@ -222,6 +331,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
+  /**
+   * Registers a listener that handles custom function calls within Workflow Builder.
+   * Please be aware that this feature is still in beta as of April 2024.
+   * @param callbackId the pattern to match callback_id in a payload
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   function(
     callbackId: FunctionExecutedEventCallbackIdPattern,
     lazy: EventLazyHandler<"function_executed", E>,
@@ -255,6 +371,12 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
+  /**
+   * Registers a listener that handles Events API request.
+   * @param event the pattern to match event type in a payload
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   event<Type extends string>(
     event: Type,
     lazy: EventLazyHandler<Type, E>,
@@ -272,10 +394,21 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
+  /**
+   * Registers a listener that handles all newly posted message events.
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   anyMessage(lazy: MessageEventLazyHandler<E>): SlackApp<E> {
     return this.message(undefined, lazy);
   }
 
+  /**
+   * Registers a listener that handles newly posted message events that matches the pattern.
+   * @param pattern the pattern to match a message event's text
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   message(
     pattern: MessageEventPattern,
     lazy: MessageEventLazyHandler<E>,
@@ -308,6 +441,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
+  /**
+   * Registers a listener that handles global/message shortcut executions.
+   * @param callbackId the pattern to match callback_id in a payload
+   * @param ack ack function that must complete within 3 seconds
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   shortcut(
     callbackId: StringOrRegExp,
     ack: ShortcutAckHandler<E>,
@@ -320,6 +460,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     );
   }
 
+  /**
+   * Registers a listener that handles global shortcut executions.
+   * @param callbackId the pattern to match callback_id in a payload
+   * @param ack ack function that must complete within 3 seconds
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   globalShortcut(
     callbackId: StringOrRegExp,
     ack: GlobalShortcutAckHandler<E>,
@@ -344,6 +491,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
+  /**
+   * Registers a listener that handles message shortcut executions.
+   * @param callbackId the pattern to match callback_id in a payload
+   * @param ack ack function that must complete within 3 seconds
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   messageShortcut(
     callbackId: StringOrRegExp,
     ack: MessageShortcutAckHandler<E>,
@@ -368,6 +522,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
+  /**
+   * Registers a listener that handles type: "block_actions" requests.
+   * @param constraints the constraints to match block_id/action_id in a payload
+   * @param ack ack function that must complete within 3 seconds
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   action<
     T extends BlockElementTypes,
     A extends BlockAction<
@@ -416,6 +577,14 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
+  /**
+   * Registers a listener that handles type: "block_suggestion" requests.
+   * Note that your app must return the options/option_groups within 3 seconds,
+   * so slack-edge intentionally does not accept lazy here.
+   * @param constraints the constraints to match block_id/action_id in a payload
+   * @param ack ack function that must complete within 3 seconds
+   * @returns this instance
+   */
   options(
     constraints: StringOrRegExp | { block_id?: string; action_id: string },
     ack: BlockSuggestionAckHandler<E>,
@@ -448,6 +617,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
+  /**
+   * Registers a listener that handles type: "view_submission"/"view_closed" requests.
+   * @param callbackId the constraints to match callback_id in a payload
+   * @param ack ack function that must complete within 3 seconds
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   view(
     callbackId: StringOrRegExp,
     ack: ViewAckHandler<E>,
@@ -460,6 +636,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     );
   }
 
+  /**
+   * Registers a listener that handles type: "view_submission" requests.
+   * @param callbackId the constraints to match callback_id in a payload
+   * @param ack ack function that must complete within 3 seconds
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   viewSubmission(
     callbackId: StringOrRegExp,
     ack: ViewSubmissionAckHandler<E>,
@@ -487,6 +670,13 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
+  /**
+   * Registers a listener that handles type: "view_closed" requests.
+   * @param callbackId the constraints to match callback_id in a payload
+   * @param ack ack function that must complete within 3 seconds
+   * @param lazy lazy function that can do anything asynchronously
+   * @returns this instance
+   */
   viewClosed(
     callbackId: StringOrRegExp,
     ack: ViewClosedAckHandler<E>,
@@ -514,6 +704,12 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
+  /**
+   * Handles an http request and returns a response to it.
+   * @param request request
+   * @param ctx execution context
+   * @returns response
+   */
   async run(
     request: Request,
     ctx: ExecutionContext = new NoopExecutionContext(),
@@ -521,6 +717,9 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return await this.handleEventRequest(request, ctx);
   }
 
+  /**
+   * Establishes a WebSocket connection for Socket Mode.
+   */
   async connect(): Promise<void> {
     if (!this.socketMode) {
       throw new ConfigError(
@@ -531,12 +730,21 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     await this.socketModeClient.connect();
   }
 
+  /**
+   * Disconnect a WebSocket connection for Socket Mode.
+   */
   async disconnect(): Promise<void> {
     if (this.socketModeClient) {
       await this.socketModeClient.disconnect();
     }
   }
 
+  /**
+   * Handles an HTTP request from Slack's API server and returns a response to it.
+   * @param request request
+   * @param ctx execution context
+   * @returns response
+   */
   async handleEventRequest(
     request: Request,
     ctx: ExecutionContext,
@@ -588,7 +796,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       }
       const retryReason = request.headers.get("x-slack-retry-reason") ??
         body.retry_reason;
-      const preAuthorizeRequest: PreAuthorizeSlackMiddlwareRequest<E> = {
+      const preAuthorizeRequest: PreAuthorizeSlackMiddlewareRequest<E> = {
         body,
         rawBody,
         retryNum,
@@ -642,7 +850,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         };
       }
 
-      const baseRequest: SlackMiddlwareRequest<E> = {
+      const baseRequest: SlackMiddlewareRequest<E> = {
         ...preAuthorizeRequest,
         context: authorizedContext,
       };
@@ -859,6 +1067,11 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
 
 export type StringOrRegExp = string | RegExp;
 
+export type MessageEventPattern = string | RegExp | undefined;
+
+/**
+ * Events API request
+ */
 export type EventRequest<E extends SlackAppEnv, T> =
   Extract<AnySlackEventWithChannelId, { type: T }> extends never
     ? SlackRequest<E, Extract<AnySlackEvent, { type: T }>>
@@ -867,13 +1080,17 @@ export type EventRequest<E extends SlackAppEnv, T> =
       Extract<AnySlackEventWithChannelId, { type: T }>
     >;
 
+/**
+ * Events API: "function_executed" event for custom functions in Workflow Builder
+ */
 export type FunctionExecutedEventCallbackIdPattern =
   | string
   | RegExp
   | undefined;
 
-export type MessageEventPattern = string | RegExp | undefined;
-
+/**
+ * Events API: "message" event
+ */
 export type MessageEventRequest<
   E extends SlackAppEnv,
   ST extends string | undefined,
@@ -888,8 +1105,14 @@ export type MessageEventSubtypes =
   | "thread_broadcast"
   | "file_share";
 
+/**
+ * Handler function for "message" events
+ */
 export type MessageEventHandler<E extends SlackAppEnv> = (
   req: MessageEventRequest<E, MessageEventSubtypes>,
 ) => Promise<void>;
 
+/**
+ * Singleton lazy listener that does not do anything
+ */
 export const noopLazyHandler = async () => {};

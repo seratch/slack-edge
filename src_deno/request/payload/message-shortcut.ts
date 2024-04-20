@@ -1,3 +1,6 @@
+/**
+ * Message shortcut payload data
+ */
 export interface MessageShortcut {
   type: "message_action";
   callback_id: string;

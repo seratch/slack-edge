@@ -126,6 +126,9 @@ export type AnySlackEventWithChannelId =
   | StarAddedEvent
   | StarRemovedEvent;
 
+/**
+ * Events API payload data
+ */
 export interface SlackEvent<Type extends string> {
   type: Type;
   subtype?: string;

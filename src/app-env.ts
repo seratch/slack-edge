@@ -1,8 +1,10 @@
-export interface SlackLoggingLevel {
-  SLACK_LOGGING_LEVEL?: "DEBUG" | "INFO" | "WARN" | "ERROR";
+export type SlackAppLogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR";
+
+export interface LoggingEnv {
+  SLACK_LOGGING_LEVEL?: SlackAppLogLevel;
 }
 
-export type SlackAppEnv = SlackLoggingLevel & {
+export type SlackAppEnv = LoggingEnv & {
   SLACK_SIGNING_SECRET?: string;
   SLACK_BOT_TOKEN?: string;
   SLACK_APP_TOKEN?: string;
@@ -19,6 +21,8 @@ export type SlackSocketModeAppEnv = SlackAppEnv & {
   SLACK_APP_TOKEN: string;
 };
 
+export type SlackAppUserTokenResolutionType = "installer" | "actor";
+
 export type SlackOAuthEnv = (SlackEdgeAppEnv | SlackSocketModeAppEnv) & {
   SLACK_CLIENT_ID: string;
   SLACK_CLIENT_SECRET: string;
@@ -27,7 +31,7 @@ export type SlackOAuthEnv = (SlackEdgeAppEnv | SlackSocketModeAppEnv) & {
   SLACK_REDIRECT_URI?: string;
   SLACK_OIDC_SCOPES?: string;
   SLACK_OIDC_REDIRECT_URI?: string;
-  SLACK_USER_TOKEN_RESOLUTION?: "installer" | "actor";
+  SLACK_USER_TOKEN_RESOLUTION?: SlackAppUserTokenResolutionType;
 };
 
 export type SlackOIDCEnv = SlackAppEnv & {

@@ -4,6 +4,11 @@ interface fromSocketModeToRequestArgs {
   retryNum?: string;
   retryReason?: string;
 }
+/**
+ * Converts a raw Socket Mode message data to slack-edge's request data.
+ * @param message Socket Mode message data
+ * @returns slack-edge's request representation
+ */
 export function fromSocketModeToRequest({
   url,
   body,
@@ -35,6 +40,11 @@ export function fromSocketModeToRequest({
 interface fromResponseToSocketModePayloadArgs {
   response: Response;
 }
+/**
+ * Converts slack-edge's response representation to a Socket Mode message.
+ * @param response slack-edge's response representation
+ * @returns WebSocket message data
+ */
 export async function fromResponseToSocketModePayload({
   response,
 }: fromResponseToSocketModePayloadArgs): Promise<Record<string, unknown>> {

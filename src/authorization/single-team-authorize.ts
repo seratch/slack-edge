@@ -6,6 +6,11 @@ import {
 } from "slack-web-api-client";
 import { Authorize } from "./authorize";
 
+/**
+ * Authorize function for an app tha is installed only into a single workspace.
+ * @param req request from Slack
+ * @returns valid AuthorizeResult object
+ */
 export const singleTeamAuthorize: Authorize = async (req) => {
   // This authorize function supports only the bot token for a workspace
   const botToken = req.env.SLACK_BOT_TOKEN!;

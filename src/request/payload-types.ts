@@ -1,3 +1,6 @@
+/**
+ * Types of payload data
+ */
 export enum PayloadType {
   BlockAction = "block_actions",
   BlockSuggestion = "block_suggestion",

@@ -3,6 +3,9 @@ import {
   OpenIDConnectUserInfoResponse,
 } from "slack-web-api-client";
 
+/**
+ * Data type representing the SIWS login result.
+ */
 export interface Login {
   enterprise_id?: string;
   team_id: string;
@@ -16,6 +19,12 @@ export interface Login {
   token_expires_at?: number; // token rotation (epoch time seconds)
 }
 
+/**
+ * Build a login data by combining two API response data
+ * @param token openid.connect.token API response
+ * @param userInfo openid.connect.userInfo API response
+ * @returns login data
+ */
 export function toLogin(
   token: OpenIDConnectTokenResponse,
   userInfo: OpenIDConnectUserInfoResponse,

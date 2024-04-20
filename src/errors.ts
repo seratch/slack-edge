@@ -1,3 +1,6 @@
+/**
+ * Exception that occurred during the configuration of the app.
+ */
 export class ConfigError extends Error {
   constructor(message: string) {
     super(message);
@@ -5,6 +8,9 @@ export class ConfigError extends Error {
   }
 }
 
+/**
+ * Exception that occurred during an authorize() call.
+ */
 export class AuthorizeError extends Error {
   constructor(message: string) {
     super(message);
@@ -12,6 +18,9 @@ export class AuthorizeError extends Error {
   }
 }
 
+/**
+ * Exception that occurred during the configuration of Socket Mode.
+ */
 export class SocketModeError extends Error {
   constructor(message: string) {
     super(message);

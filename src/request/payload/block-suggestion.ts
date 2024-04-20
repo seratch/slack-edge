@@ -1,6 +1,9 @@
 import { AnyOption } from "slack-web-api-client";
 import { DataSubmissionView } from "./view-objects";
 
+/**
+ * block_suggestion payload data
+ */
 export interface BlockSuggestion {
   type: "block_suggestion";
   block_id: string;

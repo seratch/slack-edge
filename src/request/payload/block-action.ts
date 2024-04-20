@@ -9,6 +9,9 @@ import {
 import { DataSubmissionView, ViewStateValue } from "./view-objects";
 import { BotProfile } from "./event";
 
+/**
+ * block_actions payload data
+ */
 export interface BlockAction<A extends BlockElementAction> {
   type: "block_actions";
   actions: A[];

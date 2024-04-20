@@ -1,5 +1,8 @@
 import { OAuthV2AccessResponse } from "https://deno.land/x/slack_web_api_client@0.10.5/mod.ts";
 
+/**
+ * Slack app installation data.
+ */
 export interface Installation {
   app_id: string;
   is_enterprise_install?: boolean;
@@ -26,6 +29,11 @@ export interface Installation {
   incoming_webhook_configuration_url?: string;
 }
 
+/**
+ * Converts a response from oauth.v2.access API endpoint to an installation data.
+ * @param oauthAccess oauth.v2.access API response data
+ * @returns installation data
+ */
 export function toInstallation(
   oauthAccess: OAuthV2AccessResponse,
 ): Installation {

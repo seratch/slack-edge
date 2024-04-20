@@ -1,5 +1,8 @@
 import { DataSubmissionView } from "./view-objects.ts";
 
+/**
+ * view_submission payload data
+ */
 export interface ViewSubmission {
   type: "view_submission";
   team: {

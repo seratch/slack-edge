@@ -1,3 +1,9 @@
+/**
+ * Parses a request payload data.
+ * @param requestHeaders request headers
+ * @param requestBody request body
+ * @returns parsed object
+ */
 // deno-lint-ignore require-await
 export async function parseRequestBody(
   requestHeaders: Headers,

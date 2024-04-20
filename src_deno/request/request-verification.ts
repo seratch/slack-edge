@@ -1,9 +1,16 @@
+/**
+ * Verifies if a request's signature is correct.
+ * @param signingSecret signing secret
+ * @param requestHeaders request headers
+ * @param requestBody request body
+ * @returns true if the given signature is valid
+ */
 export async function verifySlackRequest(
   signingSecret: string,
-  requsetHeaders: Headers,
+  requestHeaders: Headers,
   requestBody: string,
-) {
-  const timestampHeader = requsetHeaders.get("x-slack-request-timestamp");
+): Promise<boolean> {
+  const timestampHeader = requestHeaders.get("x-slack-request-timestamp");
   if (!timestampHeader) {
     console.log("x-slack-request-timestamp header is missing!");
     return false;
@@ -13,7 +20,7 @@ export async function verifySlackRequest(
     return false;
   }
 
-  const signatureHeader = requsetHeaders.get("x-slack-signature");
+  const signatureHeader = requestHeaders.get("x-slack-signature");
   if (!timestampHeader || !signatureHeader) {
     console.log("x-slack-signature header is missing!");
     return false;

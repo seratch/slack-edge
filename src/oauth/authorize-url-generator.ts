@@ -1,5 +1,12 @@
 import { SlackOAuthEnv } from "../app-env";
 
+/**
+ * Generates slack.com/oauth/v2/authorize URL with sufficient information.
+ * @param state state parameter string
+ * @param env env variables
+ * @param team team_id if it needs to be set in the URL
+ * @returns slack.com/oauth/v2/authorize URL
+ */
 export function generateAuthorizeUrl<E extends SlackOAuthEnv>(
   state: string,
   env: E,

@@ -4,6 +4,9 @@ import {
   AnyViewResponse,
 } from "./response-body";
 
+/**
+ * Response from ack function.
+ */
 export interface SlackResponse {
   status?: number;
   contentType?: string;
@@ -11,6 +14,9 @@ export interface SlackResponse {
   body?: string | MessageResponse | Record<string, any>;
 }
 
+/**
+ * Response for view_submission requests.
+ */
 export type SlackViewResponse =
   | (SlackResponse & {
       body: "" | AnyViewResponse;
@@ -20,12 +26,20 @@ export type SlackViewResponse =
   | undefined
   | void;
 
+/**
+ * Response for block_suggestion requests.
+ */
 export type SlackOptionsResponse =
   | (SlackResponse & {
       body: AnyOptionsResponse;
     })
   | AnyOptionsResponse;
 
+/**
+ * Builds a complete HTTP response data
+ * @param slackResponse slack-edge's response representation
+ * @returns an HTTP response
+ */
 export function toCompleteResponse(
   slackResponse:
     | SlackResponse

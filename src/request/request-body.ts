@@ -1,3 +1,6 @@
+/**
+ * The whole payload data.
+ */
 export interface SlackRequestBody {
   type?: string;
 

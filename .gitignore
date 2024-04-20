@@ -175,3 +175,4 @@ tmp/
 .DS_Store
 .slack/
 .vscode/
+.idea/

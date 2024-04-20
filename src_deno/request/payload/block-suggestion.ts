@@ -1,6 +1,9 @@
 import { AnyOption } from "https://deno.land/x/slack_web_api_client@0.10.5/mod.ts";
 import { DataSubmissionView } from "./view-objects.ts";
 
+/**
+ * block_suggestion payload data
+ */
 export interface BlockSuggestion {
   type: "block_suggestion";
   block_id: string;

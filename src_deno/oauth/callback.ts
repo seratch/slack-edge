@@ -6,37 +6,60 @@ import {
   renderDefaultErrorPage,
   renderDefaultStartPage,
 } from "./oauth-page-renderer.ts";
-import { SlackLoggingLevel } from "../app-env.ts";
+import { LoggingEnv } from "../app-env.ts";
 
+/**
+ * beforeInstallation args
+ */
 export interface BeforeInstallationArgs {
-  env: SlackLoggingLevel;
+  env: LoggingEnv;
   request: Request;
 }
 
+/**
+ * beforeInstallation hook
+ */
 export type BeforeInstallation = (
   args: BeforeInstallationArgs,
 ) => Promise<Response | undefined | void>;
 
+/**
+ * afterInstallation args
+ */
 export interface AfterInstallationArgs {
-  env: SlackLoggingLevel;
+  env: LoggingEnv;
   installation: Installation;
   request: Request;
 }
 
+/**
+ * afterInstallation hook
+ */
 export type AfterInstallation = (
   args: AfterInstallationArgs,
 ) => Promise<Response | undefined | void>;
 
+/**
+ * onStateValidationError args
+ */
 export interface OnStateValidationErrorArgs {
-  env: SlackLoggingLevel;
+  env: LoggingEnv;
   startPath: string;
   request: Request;
 }
 
+/**
+ * onStateValidationError hook
+ */
 export type OnStateValidationError = (
   args: OnStateValidationErrorArgs,
 ) => Promise<Response>;
 
+/**
+ * The default onStateValidationError implementation.
+ * @param startPath the path to start the OAuth flow again
+ * @returns response
+ */
 // deno-lint-ignore require-await
 export const defaultOnStateValidationError: OnStateValidationError = async ({
   startPath,
@@ -50,15 +73,27 @@ export const defaultOnStateValidationError: OnStateValidationError = async ({
   );
 };
 
+/**
+ * onFailure args
+ */
 export interface OnFailureArgs {
-  env: SlackLoggingLevel;
+  env: LoggingEnv;
   startPath: string;
   reason: OAuthErrorCode;
   request: Request;
 }
 
+/**
+ * onFailure hook
+ */
 export type OnFailure = (args: OnFailureArgs) => Promise<Response>;
 
+/**
+ * The default onFailure implementation.
+ * @param startPath the path to start the OAuth flow again
+ * @param reason the error reason code
+ * @returns response
+ */
 // deno-lint-ignore require-await
 export const defaultOnFailure: OnFailure = async ({ startPath, reason }) => {
   return new Response(renderDefaultErrorPage(startPath, reason), {
@@ -67,16 +102,29 @@ export const defaultOnFailure: OnFailure = async ({ startPath, reason }) => {
   });
 };
 
+/**
+ * OAuthStart args
+ */
 export interface OAuthStartArgs {
-  env: SlackLoggingLevel;
+  env: LoggingEnv;
   authorizeUrl: string;
   stateCookieName: string;
   stateValue: string;
   request: Request;
 }
 
+/**
+ * OAuthStart hook
+ */
 export type OAuthStart = (args: OAuthStartArgs) => Promise<Response>;
 
+/**
+ * The default OAuthStart implementation.
+ * @param authorizeUrl the authorize URL to redirect the installing user
+ * @param stateCookieName cookie name used for the state parameter validation
+ * @param stateValue state parameter string data
+ * @returns response
+ */
 // deno-lint-ignore require-await
 export const defaultOAuthStart: OAuthStart = async ({
   authorizeUrl,
@@ -94,16 +142,29 @@ export const defaultOAuthStart: OAuthStart = async ({
   });
 };
 
+/**
+ * OAuthCallback args
+ */
 export interface OAuthCallbackArgs {
-  env: SlackLoggingLevel;
+  env: LoggingEnv;
   oauthAccess: OAuthV2AccessResponse;
   enterpriseUrl: string | undefined;
   stateCookieName: string;
   request: Request;
 }
 
+/**
+ * OAuthCallback hook
+ */
 export type OAuthCallback = (args: OAuthCallbackArgs) => Promise<Response>;
 
+/**
+ * The default OAuthCallback implementation.
+ * @param oauthAccess oauth.v2.access API response
+ * @param enterpriseUrl the management console URL for Enterprise Grid admins
+ * @param stateCookieName cookie name used for the state parameter validation
+ * @returns response
+ */
 // deno-lint-ignore require-await
 export const defaultOAuthCallback: OAuthCallback = async ({
   oauthAccess,

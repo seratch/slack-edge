@@ -36,10 +36,29 @@ import {
   OpenIDConnectError,
 } from "./oauth/error-codes";
 
+/**
+ * Options for initializing SlackOAuthApp instance.
+ */
 export interface SlackOAuthAppOptions<E extends SlackOAuthEnv> {
+  /**
+   * Passed env variables for configuring the app.
+   */
   env: E;
+
+  /**
+   * InstallationStore for managing installation data such as issued OAUth tokens.
+   */
   installationStore: InstallationStore<E>;
+
+  /**
+   * Server-side store for managing the state parameter string used for general OAuth security.
+   * When this is absent, the OAuth flow uses only web browser cookies to ensure security.
+   */
   stateStore?: StateStore;
+
+  /**
+   * Settings for app-installation OAuth flow.
+   */
   oauth?: {
     stateCookieName?: string;
     beforeInstallation?: BeforeInstallation;
@@ -50,6 +69,12 @@ export interface SlackOAuthAppOptions<E extends SlackOAuthEnv> {
     start?: OAuthStart;
     callback?: OAuthCallback;
   };
+
+  /**
+   * Settings for Sign in with Slack (SIWS / OpenID Connect)
+   *
+   * @see https://api.slack.com/authentication/sign-in-with-slack
+   */
   oidc?: {
     stateCookieName?: string;
     start?: OAuthStart;
@@ -58,17 +83,43 @@ export interface SlackOAuthAppOptions<E extends SlackOAuthEnv> {
     onStateValidationError?: OnStateValidationError;
     redirectUri?: string;
   };
+
+  /**
+   * The endpoint routes to handle requests from Slack's API server.
+   * When this app connects to Slack through Socket Mode, this setting won't be used.
+   */
   routes?: {
+    // The name "events" could be somewhat confusing, but this path handles all types of request patterns
     events: string;
     oauth: { start: string; callback: string };
     oidc?: { start: string; callback: string };
   };
 }
 
+/**
+ * The class representing a Slack app process
+ * that handles both event requests and the OAuth flow for app installation.
+ */
 export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
+  /**
+   * Passed env variables for configuring the app.
+   */
   public env: E;
+
+  /**
+   * InstallationStore for managing installation data such as issued OAUth tokens.
+   */
   public installationStore: InstallationStore<E>;
+
+  /**
+   * Server-side store for managing the state parameter string used for general OAuth security.
+   * When this is absent, the OAuth flow uses only web browser cookies to ensure security.
+   */
   public stateStore: StateStore;
+
+  /**
+   * Settings for app-installation OAuth flow.
+   */
   public oauth: {
     stateCookieName?: string;
     beforeInstallation?: BeforeInstallation;
@@ -79,6 +130,12 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     start: OAuthStart;
     callback: OAuthCallback;
   };
+
+  /**
+   * Settings for Sign in with Slack (SIWS / OpenID Connect)
+   *
+   * @see https://api.slack.com/authentication/sign-in-with-slack
+   */
   public oidc?: {
     stateCookieName?: string;
     start: OAuthStart;
@@ -87,7 +144,13 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     onStateValidationError: OnStateValidationError;
     redirectUri?: string;
   };
+
+  /**
+   * The endpoint routes to handle requests from Slack's API server.
+   * When this app connects to Slack through Socket Mode, this setting won't be used.
+   */
   public routes: {
+    // The name "events" could be somewhat confusing, but this path handles all types of request patterns
     events: string;
     oauth: { start: string; callback: string };
     oidc?: { start: string; callback: string };
@@ -169,6 +232,12 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     return new Response("Not found", { status: 404 });
   }
 
+  /**
+   * Handles an HTTP request from Slack's API server and returns a response to it.
+   * @param request request
+   * @param ctx execution context
+   * @returns response
+   */
   async handleEventRequest(
     request: Request,
     ctx: ExecutionContext,
@@ -176,6 +245,11 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     return await super.handleEventRequest(request, ctx);
   }
 
+  /**
+   * Handles an HTTP request to initiate the app-installation OAuth flow within a web browser.
+   * @param request request
+   * @returns response
+   */
   async handleOAuthStartRequest(request: Request): Promise<Response> {
     const stateValue = await this.stateStore.issueNewState();
     const authorizeUrl = generateAuthorizeUrl(stateValue, this.env);
@@ -188,6 +262,11 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     });
   }
 
+  /**
+   * Handles an HTTP request to handle the app-installation OAuth flow callback within a web browser.
+   * @param request request
+   * @returns response
+   */
   async handleOAuthCallbackRequest(request: Request): Promise<Response> {
     // State parameter validation
     const errorResponse = await this.#validateStateParameter(
@@ -289,6 +368,11 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     }
   }
 
+  /**
+   * Handles an HTTP request to initiate the SIWS flow within a web browser.
+   * @param request request
+   * @returns response
+   */
   async handleOIDCStartRequest(request: Request): Promise<Response> {
     if (!this.oidc) {
       return new Response("Not found", { status: 404 });
@@ -304,6 +388,11 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     });
   }
 
+  /**
+   * Handles an HTTP request to handle the SIWS callback within a web browser.
+   * @param request request
+   * @returns response
+   */
   async handleOIDCCallbackRequest(request: Request): Promise<Response> {
     if (!this.oidc || !this.routes.oidc) {
       return new Response("Not found", { status: 404 });
