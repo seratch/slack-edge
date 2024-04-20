@@ -23,7 +23,7 @@ export * from "./context/context.ts";
 
 export * from "./oauth-app.ts";
 export * from "./oauth/authorize-url-generator.ts";
-export * from "./oauth/callback.ts";
+export * from "./oauth/hook.ts";
 export * from "./oauth/escape-html.ts";
 export * from "./oauth/installation.ts";
 export * from "./oauth/installation-store.ts";
@@ -31,7 +31,7 @@ export * from "./oauth/oauth-page-renderer.ts";
 export * from "./oauth/state-store.ts";
 
 export * from "./oidc/authorize-url-generator.ts";
-export * from "./oidc/callback.ts";
+export * from "./oidc/hook.ts";
 export * from "./oidc/login.ts";
 
 export * from "./request/request-body.ts";

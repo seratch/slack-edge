@@ -22,11 +22,11 @@ import {
   defaultOAuthStart,
   defaultOnFailure,
   defaultOnStateValidationError,
-} from "./oauth/callback";
+} from "./oauth/hook";
 import {
   OpenIDConnectCallback,
   defaultOpenIDConnectCallback,
-} from "./oidc/callback";
+} from "./oidc/hook";
 import { generateOIDCAuthorizeUrl } from "./oidc/authorize-url-generator";
 import {
   InstallationError,
@@ -35,6 +35,11 @@ import {
   InstallationStoreError,
   OpenIDConnectError,
 } from "./oauth/error-codes";
+import {
+  OAuthStartPageRenderer,
+  OAuthCompletionPageRenderer,
+  OAuthErrorPageRenderer,
+} from "./oauth/oauth-page-renderer";
 
 /**
  * Options for initializing SlackOAuthApp instance.
@@ -64,10 +69,15 @@ export interface SlackOAuthAppOptions<E extends SlackOAuthEnv> {
     beforeInstallation?: BeforeInstallation;
     afterInstallation?: AfterInstallation;
     onFailure?: OnFailure;
+    onFailureRenderer?: OAuthErrorPageRenderer;
     onStateValidationError?: OnStateValidationError;
+    onStateValidationRenderer?: OAuthErrorPageRenderer;
     redirectUri?: string;
     start?: OAuthStart;
+    startImmediateRedirect?: boolean; // default: true
+    startRenderer?: OAuthStartPageRenderer;
     callback?: OAuthCallback;
+    callbackRenderer?: OAuthCompletionPageRenderer;
   };
 
   /**
@@ -78,9 +88,15 @@ export interface SlackOAuthAppOptions<E extends SlackOAuthEnv> {
   oidc?: {
     stateCookieName?: string;
     start?: OAuthStart;
+    startImmediateRedirect?: boolean; // default: true
+    startRenderer?: OAuthStartPageRenderer;
+    // We intentionally don't provide callbackRenderer
+    // because your app will need to handle the whole response to make it meaningful
     callback: OpenIDConnectCallback;
     onFailure?: OnFailure;
+    onFailureRenderer?: OAuthErrorPageRenderer;
     onStateValidationError?: OnStateValidationError;
+    onStateValidationRenderer?: OAuthErrorPageRenderer;
     redirectUri?: string;
   };
 
@@ -168,22 +184,42 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     this.oauth = {
       stateCookieName:
         options.oauth?.stateCookieName ?? "slack-app-oauth-state",
-      onFailure: options.oauth?.onFailure ?? defaultOnFailure,
+      onFailure:
+        options.oauth?.onFailure ??
+        defaultOnFailure(options.oauth?.onFailureRenderer),
       onStateValidationError:
-        options.oauth?.onStateValidationError ?? defaultOnStateValidationError,
+        options.oauth?.onStateValidationError ??
+        defaultOnStateValidationError(options.oauth?.onStateValidationRenderer),
       redirectUri: options.oauth?.redirectUri ?? this.env.SLACK_REDIRECT_URI,
-      start: options.oauth?.start ?? defaultOAuthStart,
+      start:
+        options.oauth?.start ??
+        defaultOAuthStart(
+          options.oauth?.startImmediateRedirect,
+          options.oauth?.startRenderer,
+        ),
       beforeInstallation: options.oauth?.beforeInstallation,
       afterInstallation: options.oauth?.afterInstallation,
-      callback: options.oauth?.callback ?? defaultOAuthCallback,
+      callback:
+        options.oauth?.callback ??
+        defaultOAuthCallback(options.oauth?.callbackRenderer),
     };
     if (options.oidc) {
       this.oidc = {
         stateCookieName: options.oidc.stateCookieName ?? "slack-app-oidc-state",
-        onFailure: options.oidc.onFailure ?? defaultOnFailure,
+        onFailure:
+          options.oidc.onFailure ??
+          defaultOnFailure(options.oidc?.onFailureRenderer),
         onStateValidationError:
-          options.oidc.onStateValidationError ?? defaultOnStateValidationError,
-        start: options.oidc?.start ?? defaultOAuthStart,
+          options.oidc.onStateValidationError ??
+          defaultOnStateValidationError(
+            options.oidc?.onStateValidationRenderer,
+          ),
+        start:
+          options.oidc?.start ??
+          defaultOAuthStart(
+            options.oidc?.startImmediateRedirect,
+            options.oidc?.startRenderer,
+          ),
         callback: options.oidc.callback ?? defaultOpenIDConnectCallback,
         redirectUri:
           options.oidc.redirectUri ?? this.env.SLACK_OIDC_REDIRECT_URI,

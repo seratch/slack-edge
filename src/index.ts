@@ -23,7 +23,7 @@ export * from "./context/context";
 
 export * from "./oauth-app";
 export * from "./oauth/authorize-url-generator";
-export * from "./oauth/callback";
+export * from "./oauth/hook";
 export * from "./oauth/escape-html";
 export * from "./oauth/installation";
 export * from "./oauth/installation-store";
@@ -31,7 +31,7 @@ export * from "./oauth/oauth-page-renderer";
 export * from "./oauth/state-store";
 
 export * from "./oidc/authorize-url-generator";
-export * from "./oidc/callback";
+export * from "./oidc/hook";
 export * from "./oidc/login";
 
 export * from "./request/request-body";
