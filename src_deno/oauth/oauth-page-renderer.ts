@@ -1,20 +1,53 @@
 import { OAuthErrorCode } from "./error-codes.ts";
 import { escapeHtml } from "./escape-html.ts";
 
+interface OAuthStartPageRendererArgs {
+  url: string;
+  immediateRedirect: boolean;
+}
+/**
+ * Start page (/slack/install) content renderer.
+ */
+export type OAuthStartPageRenderer = (
+  args: OAuthStartPageRendererArgs,
+) => Promise<string>;
+
 /**
  * Generates an HTML data for the /slack/install page.
  * @param url the URL to start the OAuth flow
  * @returns HTML data
  */
-export function renderDefaultStartPage(url: string) {
+// deno-lint-ignore require-await
+export async function renderDefaultOAuthStartPage({
+  url,
+  immediateRedirect,
+}: OAuthStartPageRendererArgs) {
+  const meta = immediateRedirect
+    ? `<meta http-equiv="refresh" content="2;url=${escapeHtml(url)}'" />`
+    : "";
   return (
-    '<html><head><meta http-equiv="refresh" content="2;url=' +
+    "<html>" +
+    "<head>" +
+    meta +
+    "<title>Redirecting to Slack ...</title>" +
+    "</head>" +
+    '<body>Redirecting to the Slack OAuth page ... Click <a href="' +
     escapeHtml(url) +
-    '" /><title>Redirecting to Slack ...</title></head><body>Redirecting to the Slack OAuth page ... Click <a href="' +
-    escapeHtml(url) +
-    '">here</a> to continue.</body></html>'
+    '">here</a> to continue.</body>' +
+    "</html>"
   );
 }
+
+interface OAuthErrorPageRendererArgs {
+  installPath: string;
+  reason: OAuthErrorCode;
+}
+/**
+ * Error page content renderer.
+ */
+export type OAuthErrorPageRenderer = (
+  args: OAuthErrorPageRendererArgs,
+) => Promise<string>;
 
 /**
  * Generates an HTML data indicating an error for the /slack/oauth_redirect page.
@@ -22,10 +55,11 @@ export function renderDefaultStartPage(url: string) {
  * @param reason the error reason code
  * @returns HTML data
  */
-export function renderDefaultErrorPage(
-  installPath: string,
-  reason: OAuthErrorCode,
-) {
+// deno-lint-ignore require-await
+export async function renderDefaultOAuthErrorPage({
+  installPath,
+  reason,
+}: OAuthErrorPageRendererArgs) {
   return (
     '<html><head><style>body {{ padding: 10px 15px; font-family: verdana; text-align: center; }}</style></head><body><h2>Oops, Something Went Wrong!</h2><p>Please try again from <a href="' +
     escapeHtml(installPath) +
@@ -35,6 +69,19 @@ export function renderDefaultErrorPage(
   );
 }
 
+interface OAuthCompletionPageRendererArgs {
+  appId: string;
+  teamId: string;
+  isEnterpriseInstall: boolean | undefined;
+  enterpriseUrl: string | undefined;
+}
+/**
+ * Error page content renderer.
+ */
+export type OAuthCompletionPageRenderer = (
+  args: OAuthCompletionPageRendererArgs,
+) => Promise<string>;
+
 /**
  * Generates an HTML data indicating app installation successfully completed for the /slack/oauth_redirect page.
  * @param appId the app's ID
@@ -43,12 +90,13 @@ export function renderDefaultErrorPage(
  * @param enterpriseUrl the management console URL for Enterprise Grid admins
  * @returns HTML data
  */
-export function renderDefaultCompletionPage(
-  appId: string,
-  teamId: string,
-  isEnterpriseInstall: boolean | undefined,
-  enterpriseUrl: string | undefined,
-) {
+// deno-lint-ignore require-await
+export async function renderDefaultOAuthCompletionPage({
+  appId,
+  teamId,
+  isEnterpriseInstall,
+  enterpriseUrl,
+}: OAuthCompletionPageRendererArgs) {
   let url = `slack://app?team=${teamId}&id=${appId}`;
   if (isEnterpriseInstall && enterpriseUrl !== undefined) {
     url =

@@ -24,7 +24,7 @@ export type OpenIDConnectCallback = (
 /**
  * The default OpenIDConnectCallback implementation.
  * @param env env variables
- * @param token
+ * @param token openid.connect.token API response
  * @returns response
  */
 export const defaultOpenIDConnectCallback: OpenIDConnectCallback = async ({

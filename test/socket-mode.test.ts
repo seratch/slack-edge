@@ -15,7 +15,7 @@ describe("Socket Mode", () => {
       assert.exists(request);
       assert.deepEqual(request?.url, "wss://localhost/");
       assert.deepEqual(await request?.json(), {});
-      const headers = {};
+      const headers: Record<string, string | null> = {};
       for (const h of request!.headers.keys()) {
         headers[h] = request!.headers.get(h);
       }
@@ -31,7 +31,7 @@ describe("Socket Mode", () => {
       assert.exists(request);
       assert.deepEqual(request?.url, "https://example.com/");
       assert.deepEqual(await request?.json(), { command: "/foo" });
-      const headers = {};
+      const headers: Record<string, string | null> = {};
       for (const h of request!.headers.keys()) {
         headers[h] = request!.headers.get(h);
       }
@@ -47,7 +47,7 @@ describe("Socket Mode", () => {
       assert.deepEqual(await request?.json(), {
         event: { type: "app_mention" },
       });
-      const headers = {};
+      const headers: Record<string, string | null> = {};
       for (const h of request!.headers.keys()) {
         headers[h] = request!.headers.get(h);
       }
