@@ -7,6 +7,7 @@ The **slack-edge** library is a Slack app development framework designed specifi
 
 * [Cloudflare Workers](https://workers.cloudflare.com/)
 * [Vercel Edge Functions](https://vercel.com/docs/concepts/functions/edge-functions/quickstart)
+* [Supabase Edge Functions](https://supabase.com/docs/guides/functions)
 
 Not only does it work with the above, but it also functions with the latest versions of [Deno](https://deno.com/), [Bun](https://bun.sh/), and [Node.js](https://nodejs.org/en/about).
 
@@ -19,7 +20,7 @@ This framework draws significant inspiration from Slack's [Bolt framework](https
 
 ## Getting Started
 
-Currently, you can use this library for two different platforms.
+Currently, you can use this library for three different platforms.
 
 ### Cloudflare Workers
 
@@ -142,6 +143,102 @@ If you use Cloudflare Tunnel or something equivalent, you may want to run `cloud
 
 We are currently working on the **slack-vercel-edge-functions** package, which offers Vercel-specific features in addition to the core ones provided by **slack-edge**. Until its release, please use slack-edge directly and implement the missing features on your own as necessary.
 
+### Supabase Edge Functions
+
+[Supabase](https://supabase.com/) is a BaaS that provides a full PostgreSQL database, along with other products such as [Supabase Edge Functions](https://supabase.com/docs/guides/functions).
+
+Create a new Supabase project locally by following these steps:
+
+```bash
+mkdir myapp
+cd myapp
+
+brew install supabase/tap/supabase
+supabase init
+supabase functions new hello-world
+```
+
+Open the source file `supabase/functions/hello-world/index.ts` and replace it with the following:
+
+```typescript
+import {
+  SlackApp,
+  SlackEdgeAppEnv,
+} from "https://deno.land/x/slack_edge@0.11.0/mod.ts";
+
+const app = new SlackApp<SlackEdgeAppEnv>({
+  env: {
+    SLACK_SIGNING_SECRET: Deno.env.get("SLACK_SIGNING_SECRET")!,
+    SLACK_BOT_TOKEN: Deno.env.get("SLACK_BOT_TOKEN"),
+    SLACK_LOGGING_LEVEL: "DEBUG",
+  },
+});
+
+app.command("/hello-edge", async (req) => {
+  // sync handler, which is resposible to ack the request
+  return ":wave: This app runs on Vercel Edge Function platform!";
+  // If you don't have anything to do here, the function doesn't need to return anything
+  // This means in that case, simply having `async () => {}` works for you
+}, async ({ context: { respond } }) => {
+  // Lazy listener, which can be executed asynchronously
+  // You can do whatever may take longer than 3 seconds here
+  await respond({ text: "This is an async reply. How are you doing?" });
+});
+
+Deno.serve(async (req) => {
+  return await app.run(req);
+});
+```
+
+#### Run locally
+
+Create a `supabase/functions/.env` file with the following:
+
+```sh
+export SLACK_BOT_TOKEN="xxx"
+export SLACK_SIGNING_SECRET="xxx"
+```
+
+Then run:
+
+```sh
+# Terminal A
+supabase start
+supabase functions serve --env-file supabase/functions/.env
+
+# Terminal B
+brew install cloudflare/cloudflare/cloudflared
+cloudflared tunnel --url http://127.0.0.1:54321
+```
+
+#### Run in the cloud
+
+In a browser, login to your Supabase account and create a new project.
+
+Then open a terminal in your `myapp`'s project directory and run:
+
+```sh
+supabase login
+```
+
+Link the Supabase project you just made:
+
+```sh
+supabase link
+```
+
+Deploy your `hello-world` edge function.
+
+```sh
+supabase functions deploy hello-world --no-verify-jwt
+```
+
+Finally, add your environment variables:
+
+* Go to your Supabase project
+* Go to the Edge Functions tab, and click on your edge functions
+* Tap on Manage Secrets and then add your `SLACK_BOT_TOKEN` and `SLACK_SIGNING_SECRET`
+
 ### Run Your App with Deno / Bun / Node.js
 
 This library is available not only for edge function use cases but also for any JavaScript runtime use cases. Specifically, you can run an app with [Deno](https://deno.com/), [Bun](https://bun.sh/), and [Node.js](https://nodejs.org/en/about). To learn more about this, please check the example files under the `./test` directory.
@@ -182,7 +279,6 @@ cloudflared tunnel --url http://localhost:3000
 #### Run with Deno
 
 Please refer to [README for the Deno module](https://github.com/seratch/slack-edge/blob/main/src_deno/README.md).
-
 
 #### Run with Node.js (Socket Mode: Production-ready)
 

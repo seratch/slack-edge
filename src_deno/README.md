@@ -5,6 +5,7 @@ specifically for the following runtimes:
 
 - [Cloudflare Workers](https://workers.cloudflare.com/)
 - [Vercel Edge Functions](https://vercel.com/docs/concepts/functions/edge-functions/quickstart)
+- [Supabase Edge Functions](https://supabase.com/docs/guides/functions)
 
 Not only does it work with the above, but it also functions with the latest
 versions of [Deno](https://deno.com/), [Bun](https://bun.sh/), and
