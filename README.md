@@ -134,8 +134,8 @@ With this code, your **Request URL** for handling requests from Slack API server
 Lastly, you can run the app by following these steps:
 
 ```bash
-export SLACK_SIGNING_SECRET="your value here"
-export SLACK_BOT_TOKEN="your value here"
+export SLACK_SIGNING_SECRET="..."
+export SLACK_BOT_TOKEN="xoxb-..."
 npm run dev
 ```
 
@@ -195,8 +195,8 @@ Deno.serve(async (req) => {
 Create a `supabase/functions/.env` file with the following:
 
 ```sh
-export SLACK_BOT_TOKEN="xxx"
-export SLACK_SIGNING_SECRET="xxx"
+export SLACK_SIGNING_SECRET="..."
+export SLACK_BOT_TOKEN="xoxb-..."
 ```
 
 Then run:
