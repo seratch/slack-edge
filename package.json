@@ -1,6 +1,6 @@
 {
   "name": "slack-edge",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "description": "Slack app development framework for edge functions with streamlined TypeScript support",
   "main": "dist/index.js",
   "scripts": {
