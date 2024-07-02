@@ -7,6 +7,9 @@ import {
 
 export type AnySlackEvent =
   | AppRequestedEvent
+  | AppInstalledEvent
+  | AppUninstalledTeamEvent
+  | AppDeletedEvent
   | AppHomeOpenedEvent
   | AppMentionEvent
   | AppRateLimitedEvent
@@ -60,6 +63,7 @@ export type AnySlackEvent =
   | SharedChannelInviteAcceptedEvent
   | SharedChannelInviteApprovedEvent
   | SharedChannelInviteDeclinedEvent
+  | SharedChannelInviteRequestedEvent
   | StarAddedEvent
   | StarRemovedEvent
   | SubteamCreatedEvent
@@ -200,6 +204,38 @@ export interface AppHomeOpenedEvent extends SlackEvent<"app_home_opened"> {
   channel: string;
   tab: "home" | "messages";
   view?: HomeTabView;
+  event_ts: string;
+}
+
+export interface AppInstalledEvent extends SlackEvent<"app_installed"> {
+  type: "app_installed";
+  app_id: string;
+  app_name: string;
+  app_owner_id: string;
+  user_id: string;
+  team_id: string;
+  team_domain: string;
+  event_ts: string;
+}
+
+export interface AppDeletedEvent extends SlackEvent<"app_deleted"> {
+  type: "app_deleted";
+  app_id: string;
+  app_name: string;
+  app_owner_id: string;
+  team_id: string;
+  team_domain: string;
+  event_ts: string;
+}
+export interface AppUninstalledTeamEvent
+  extends SlackEvent<"app_uninstalled_team"> {
+  type: "app_uninstalled_team";
+  app_id: string;
+  app_name: string;
+  app_owner_id: string;
+  team_id: string;
+  team_domain: string;
+  user_id: string;
   event_ts: string;
 }
 
@@ -695,6 +731,40 @@ export interface SharedChannelInviteDeclinedEvent
   teams_in_channel: SharedChannelTeamItem[];
   declining_user: SharedChannelUserItem;
   event_ts: string;
+}
+
+export interface SharedChannelInviteRequestedEvent
+  extends SlackEvent<"shared_channel_invite_requested"> {
+  type: "shared_channel_invite_requested";
+  actor: {
+    id: string;
+    name: string;
+    is_bot: boolean;
+    team_id: string;
+    timezone: string;
+    real_name: string;
+    display_name: string;
+  };
+  channel_id: string;
+  event_type: "slack#/events/shared_channel_invite_requested";
+  channel_name: string;
+  channel_type: "public" | "private";
+  target_users: [{ email: string; invite_id: string }];
+  teams_in_channel: [
+    {
+      id: string;
+      icon: { image_34: string; image_default: boolean };
+      name: string;
+      domain: string;
+      is_verified: boolean;
+      date_created: number;
+      avatar_base_url: string;
+      requires_sponsorship: boolean;
+    },
+  ];
+  is_external_limited: boolean;
+  channel_date_created: number;
+  channel_message_latest_counted_timestamp: number;
 }
 
 export interface SharedChannelInviteReceivedEvent
