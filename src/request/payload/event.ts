@@ -247,6 +247,8 @@ export interface AppMentionEvent extends SlackEvent<"app_mention"> {
   bot_profile?: BotProfile;
   username?: string;
   team?: string;
+  user_team?: string;
+  source_team?: string;
   user?: string;
   text: string;
   attachments?: MessageAttachment[];
