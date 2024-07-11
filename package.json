@@ -1,6 +1,6 @@
 {
   "name": "slack-edge",
-  "version": "0.13.3",
+  "version": "0.13.4",
   "description": "Slack app development framework for edge functions with streamlined TypeScript support",
   "main": "dist/index.js",
   "scripts": {
@@ -37,9 +37,9 @@
     "slack-web-api-client": "^0.13.4"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/coverage-v8": "^2.0.2",
     "prettier": "^3.3.2",
     "typescript": "^5.5.3",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.2"
   }
 }
