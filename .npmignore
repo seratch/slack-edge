@@ -8,6 +8,8 @@ docs/
 scripts/
 test/
 vite.config.ts
+vite.config.mjs
 tmp/
 .github/
 .idea/
+.vscode/
