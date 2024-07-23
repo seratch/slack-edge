@@ -1,7 +1,4 @@
-import {
-  OpenIDConnectTokenResponse,
-  OpenIDConnectUserInfoResponse,
-} from "slack-web-api-client";
+import { OpenIDConnectTokenResponse, OpenIDConnectUserInfoResponse } from "slack-web-api-client";
 
 /**
  * Data type representing the SIWS login result.
@@ -25,10 +22,7 @@ export interface Login {
  * @param userInfo openid.connect.userInfo API response
  * @returns login data
  */
-export function toLogin(
-  token: OpenIDConnectTokenResponse,
-  userInfo: OpenIDConnectUserInfoResponse,
-): Login {
+export function toLogin(token: OpenIDConnectTokenResponse, userInfo: OpenIDConnectUserInfoResponse): Login {
   return {
     enterprise_id: userInfo["https://slack.com/enterprise_id"],
     team_id: userInfo["https://slack.com/team_id"]!,
@@ -37,8 +31,6 @@ export function toLogin(
     picture: userInfo.picture,
     access_token: token.access_token!,
     refresh_token: token.refresh_token,
-    token_expires_at: token.expires_in
-      ? new Date().getTime() / 1000 + token.expires_in
-      : undefined,
+    token_expires_at: token.expires_in ? new Date().getTime() / 1000 + token.expires_in : undefined,
   };
 }

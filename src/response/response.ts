@@ -1,8 +1,4 @@
-import {
-  MessageResponse,
-  AnyOptionsResponse,
-  AnyViewResponse,
-} from "./response-body";
+import { MessageResponse, AnyOptionsResponse, AnyViewResponse } from "./response-body";
 
 /**
  * Response from ack function.
@@ -41,13 +37,7 @@ export type SlackOptionsResponse =
  * @returns an HTTP response
  */
 export function toCompleteResponse(
-  slackResponse:
-    | SlackResponse
-    | MessageResponse
-    | SlackViewResponse
-    | SlackOptionsResponse
-    | string
-    | void,
+  slackResponse: SlackResponse | MessageResponse | SlackViewResponse | SlackOptionsResponse | string | void,
 ): Response {
   if (!slackResponse) {
     return new Response("", {
@@ -62,14 +52,9 @@ export function toCompleteResponse(
     });
   }
   let completeResponse: SlackResponse = {};
-  if (
-    Object.prototype.hasOwnProperty.call(slackResponse, "text") ||
-    Object.prototype.hasOwnProperty.call(slackResponse, "blocks")
-  ) {
+  if (Object.prototype.hasOwnProperty.call(slackResponse, "text") || Object.prototype.hasOwnProperty.call(slackResponse, "blocks")) {
     completeResponse = { status: 200, body: slackResponse as MessageResponse };
-  } else if (
-    Object.prototype.hasOwnProperty.call(slackResponse, "response_action")
-  ) {
+  } else if (Object.prototype.hasOwnProperty.call(slackResponse, "response_action")) {
     completeResponse = { status: 200, body: slackResponse };
   } else if (
     Object.prototype.hasOwnProperty.call(slackResponse, "options") ||
@@ -80,9 +65,7 @@ export function toCompleteResponse(
     completeResponse = slackResponse as SlackResponse;
   }
   const status = completeResponse.status ? completeResponse.status : 200;
-  let contentType = completeResponse.contentType
-    ? completeResponse.contentType
-    : "text/plain;charset=utf-8";
+  let contentType = completeResponse.contentType ? completeResponse.contentType : "text/plain;charset=utf-8";
   let bodyString = "";
   if (typeof completeResponse.body === "object") {
     contentType = "application/json;charset=utf-8";

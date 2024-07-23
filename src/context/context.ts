@@ -1,10 +1,5 @@
 import { AuthorizeResult } from "../authorization/authorize-result";
-import {
-  SlackAPIClient,
-  ChatPostMessageRequest,
-  ChatPostMessageResponse,
-  WebhookParams,
-} from "slack-web-api-client";
+import { SlackAPIClient, ChatPostMessageRequest, ChatPostMessageResponse, WebhookParams } from "slack-web-api-client";
 
 /**
  * SlackApp context object that provides data available before performing authorize()
@@ -52,9 +47,7 @@ export type SlackAppContext = {
  */
 export type SlackAppContextWithChannelId = {
   channelId: string;
-  say: (
-    params: Omit<ChatPostMessageRequest, "channel">,
-  ) => Promise<ChatPostMessageResponse>;
+  say: (params: Omit<ChatPostMessageRequest, "channel">) => Promise<ChatPostMessageResponse>;
 } & SlackAppContext;
 
 /**
@@ -138,11 +131,7 @@ export function extractEnterpriseId(
     return extractEnterpriseId(body.authorizations[0]);
   } else if (body.enterprise_id) {
     return body.enterprise_id;
-  } else if (
-    body.team &&
-    typeof body.team === "object" &&
-    body.team.enterprise_id
-  ) {
+  } else if (body.team && typeof body.team === "object" && body.team.enterprise_id) {
     return body.team.enterprise_id;
   } else if (body.event) {
     return extractEnterpriseId(body.event);

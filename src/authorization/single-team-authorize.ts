@@ -1,9 +1,5 @@
 import { AuthorizeError } from "../errors";
-import {
-  SlackAPIClient,
-  AuthTestResponse,
-  SlackAPIError,
-} from "slack-web-api-client";
+import { SlackAPIClient, AuthTestResponse, SlackAPIError } from "slack-web-api-client";
 import { Authorize } from "./authorize";
 
 /**
@@ -33,8 +29,6 @@ export const singleTeamAuthorize: Authorize = async (req) => {
       userScopes: undefined, // As mentioned above, user tokens are not supported in this module
     };
   } catch (e) {
-    throw new AuthorizeError(
-      `Failed to call auth.test API due to ${(e as SlackAPIError).message}`,
-    );
+    throw new AuthorizeError(`Failed to call auth.test API due to ${(e as SlackAPIError).message}`);
   }
 };

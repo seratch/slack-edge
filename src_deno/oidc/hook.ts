@@ -27,10 +27,9 @@ export type OpenIDConnectCallback = (
  * @param token openid.connect.token API response
  * @returns response
  */
-export const defaultOpenIDConnectCallback: OpenIDConnectCallback = async ({
-  env,
-  token,
-}) => {
+export const defaultOpenIDConnectCallback: OpenIDConnectCallback = async (
+  { env, token },
+) => {
   const client = new SlackAPIClient(token.access_token, {
     logLevel: env.SLACK_LOGGING_LEVEL,
   });

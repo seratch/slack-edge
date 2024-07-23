@@ -65,9 +65,7 @@ export class SocketModeClient {
         if (isDebugLogEnabled(app.env.SLACK_LOGGING_LEVEL)) {
           console.log(
             `Now the Socket Mode client is connected to Slack: ${
-              JSON.stringify(
-                ev,
-              )
+              JSON.stringify(ev)
             }`,
           );
         }
@@ -78,9 +76,7 @@ export class SocketModeClient {
         if (isDebugLogEnabled(app.env.SLACK_LOGGING_LEVEL)) {
           console.log(
             `The Socket Mode client is disconnected from Slack: ${
-              JSON.stringify(
-                ev,
-              )
+              JSON.stringify(ev)
             }`,
           );
         }
@@ -97,9 +93,7 @@ export class SocketModeClient {
       ws.onmessage = async (ev) => {
         try {
           if (
-            ev.data &&
-            typeof ev.data === "string" &&
-            ev.data.startsWith("{")
+            ev.data && typeof ev.data === "string" && ev.data.startsWith("{")
           ) {
             const data = JSON.parse(ev.data);
             if (data.type === "hello") {

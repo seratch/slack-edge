@@ -8,9 +8,7 @@ interface OAuthStartPageRendererArgs {
 /**
  * Start page (/slack/install) content renderer.
  */
-export type OAuthStartPageRenderer = (
-  args: OAuthStartPageRendererArgs,
-) => Promise<string>;
+export type OAuthStartPageRenderer = (args: OAuthStartPageRendererArgs) => Promise<string>;
 
 /**
  * Generates an HTML data for the /slack/install page.
@@ -18,13 +16,8 @@ export type OAuthStartPageRenderer = (
  * @returns HTML data
  */
 // deno-lint-ignore require-await
-export async function renderDefaultOAuthStartPage({
-  url,
-  immediateRedirect,
-}: OAuthStartPageRendererArgs) {
-  const meta = immediateRedirect
-    ? `<meta http-equiv="refresh" content="2;url=${escapeHtml(url)}'" />`
-    : "";
+export async function renderDefaultOAuthStartPage({ url, immediateRedirect }: OAuthStartPageRendererArgs) {
+  const meta = immediateRedirect ? `<meta http-equiv="refresh" content="2;url=${escapeHtml(url)}'" />` : "";
   return (
     "<html>" +
     "<head>" +
@@ -45,9 +38,7 @@ interface OAuthErrorPageRendererArgs {
 /**
  * Error page content renderer.
  */
-export type OAuthErrorPageRenderer = (
-  args: OAuthErrorPageRendererArgs,
-) => Promise<string>;
+export type OAuthErrorPageRenderer = (args: OAuthErrorPageRendererArgs) => Promise<string>;
 
 /**
  * Generates an HTML data indicating an error for the /slack/oauth_redirect page.
@@ -56,10 +47,7 @@ export type OAuthErrorPageRenderer = (
  * @returns HTML data
  */
 // deno-lint-ignore require-await
-export async function renderDefaultOAuthErrorPage({
-  installPath,
-  reason,
-}: OAuthErrorPageRendererArgs) {
+export async function renderDefaultOAuthErrorPage({ installPath, reason }: OAuthErrorPageRendererArgs) {
   return (
     '<html><head><style>body {{ padding: 10px 15px; font-family: verdana; text-align: center; }}</style></head><body><h2>Oops, Something Went Wrong!</h2><p>Please try again from <a href="' +
     escapeHtml(installPath) +
@@ -78,9 +66,7 @@ interface OAuthCompletionPageRendererArgs {
 /**
  * Error page content renderer.
  */
-export type OAuthCompletionPageRenderer = (
-  args: OAuthCompletionPageRendererArgs,
-) => Promise<string>;
+export type OAuthCompletionPageRenderer = (args: OAuthCompletionPageRendererArgs) => Promise<string>;
 
 /**
  * Generates an HTML data indicating app installation successfully completed for the /slack/oauth_redirect page.

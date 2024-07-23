@@ -1,11 +1,4 @@
-import {
-  Confirm,
-  AnyOption,
-  PlainTextField,
-  MessageMetadata,
-  AnyMessageBlock,
-  MessageAttachment,
-} from "slack-web-api-client";
+import { Confirm, AnyOption, PlainTextField, MessageMetadata, AnyMessageBlock, MessageAttachment } from "slack-web-api-client";
 import { DataSubmissionView, ViewStateValue } from "./view-objects";
 import { BotProfile } from "./event";
 
@@ -116,8 +109,7 @@ export interface ButtonAction extends BlockElementAction<"button"> {
   accessibility_label?: string;
 }
 
-export interface StaticSelectAction
-  extends BlockElementAction<"static_select"> {
+export interface StaticSelectAction extends BlockElementAction<"static_select"> {
   selected_option: {
     text: PlainTextField;
     value: string;
@@ -127,8 +119,7 @@ export interface StaticSelectAction
   confirm?: Confirm;
 }
 
-export interface MultiStaticSelectAction
-  extends BlockElementAction<"multi_static_select"> {
+export interface MultiStaticSelectAction extends BlockElementAction<"multi_static_select"> {
   selected_options: {
     text: PlainTextField;
     value: string;
@@ -145,48 +136,42 @@ export interface UsersSelectAction extends BlockElementAction<"users_select"> {
   confirm?: Confirm;
 }
 
-export interface MultiUsersSelectAction
-  extends BlockElementAction<"multi_users_select"> {
+export interface MultiUsersSelectAction extends BlockElementAction<"multi_users_select"> {
   selected_users: string[];
   initial_users?: string[];
   placeholder?: PlainTextField;
   confirm?: Confirm;
 }
 
-export interface ConversationsSelectAction
-  extends BlockElementAction<"conversations_select"> {
+export interface ConversationsSelectAction extends BlockElementAction<"conversations_select"> {
   selected_conversation: string;
   initial_conversation?: string;
   placeholder?: PlainTextField;
   confirm?: Confirm;
 }
 
-export interface MultiConversationsSelectAction
-  extends BlockElementAction<"multi_conversations_select"> {
+export interface MultiConversationsSelectAction extends BlockElementAction<"multi_conversations_select"> {
   selected_conversations: string[];
   initial_conversations?: string[];
   placeholder?: PlainTextField;
   confirm?: Confirm;
 }
 
-export interface ChannelsSelectAction
-  extends BlockElementAction<"channels_select"> {
+export interface ChannelsSelectAction extends BlockElementAction<"channels_select"> {
   selected_channel: string;
   initial_channel?: string;
   placeholder?: PlainTextField;
   confirm?: Confirm;
 }
 
-export interface MultiChannelsSelectAction
-  extends BlockElementAction<"multi_channels_select"> {
+export interface MultiChannelsSelectAction extends BlockElementAction<"multi_channels_select"> {
   selected_channels: string[];
   initial_channels?: string[];
   placeholder?: PlainTextField;
   confirm?: Confirm;
 }
 
-export interface ExternalSelectAction
-  extends BlockElementAction<"external_select"> {
+export interface ExternalSelectAction extends BlockElementAction<"external_select"> {
   selected_option?: AnyOption;
   initial_option?: AnyOption;
   placeholder?: PlainTextField;
@@ -194,8 +179,7 @@ export interface ExternalSelectAction
   confirm?: Confirm;
 }
 
-export interface MultiExternalSelectAction
-  extends BlockElementAction<"multi_external_select"> {
+export interface MultiExternalSelectAction extends BlockElementAction<"multi_external_select"> {
   selected_options?: AnyOption[];
   initial_options?: AnyOption[];
   placeholder?: PlainTextField;
@@ -218,8 +202,7 @@ export interface DatepickerAction extends BlockElementAction<"datepicker"> {
   confirm?: Confirm;
 }
 
-export interface RadioButtonsAction
-  extends BlockElementAction<"radio_buttons"> {
+export interface RadioButtonsAction extends BlockElementAction<"radio_buttons"> {
   selected_option: AnyOption | null;
   initial_option?: AnyOption;
   confirm?: Confirm;
@@ -231,8 +214,7 @@ export interface CheckboxesAction extends BlockElementAction<"checkboxes"> {
   confirm?: Confirm;
 }
 
-export interface PlainTextInputAction
-  extends BlockElementAction<"plain_text_input"> {
+export interface PlainTextInputAction extends BlockElementAction<"plain_text_input"> {
   value: string;
 }
 

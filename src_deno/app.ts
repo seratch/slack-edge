@@ -42,6 +42,7 @@ import {
   SlackEvent,
 } from "./request/payload/event.ts";
 import {
+  AnyMafifestEvent,
   ResponseUrlSender,
   SlackAPIClient,
 } from "https://deno.land/x/slack_web_api_client@0.13.4/mod.ts";
@@ -198,15 +199,14 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
   #slashCommands: ((
     body: SlackRequestBody,
   ) => SlackMessageHandler<E, SlashCommand> | null)[] = [];
-  #events: ((
-    body: SlackRequestBody,
-  ) => SlackHandler<E, SlackEvent<string>> | null)[] = [];
-  #globalShorcuts: ((
-    body: SlackRequestBody,
-  ) => SlackHandler<E, GlobalShortcut> | null)[] = [];
-  #messageShorcuts: ((
-    body: SlackRequestBody,
-  ) => SlackHandler<E, MessageShortcut> | null)[] = [];
+  #events:
+    ((body: SlackRequestBody) => SlackHandler<E, SlackEvent<string>> | null)[] =
+      [];
+  #globalShorcuts:
+    ((body: SlackRequestBody) => SlackHandler<E, GlobalShortcut> | null)[] = [];
+  #messageShorcuts:
+    ((body: SlackRequestBody) => SlackHandler<E, MessageShortcut> | null)[] =
+      [];
   #blockActions: ((body: SlackRequestBody) =>
     | SlackHandler<
       E,
@@ -217,12 +217,11 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
   #blockSuggestions: ((
     body: SlackRequestBody,
   ) => SlackOptionsHandler<E, BlockSuggestion> | null)[] = [];
-  #viewSubmissions: ((
-    body: SlackRequestBody,
-  ) => SlackViewHandler<E, ViewSubmission> | null)[] = [];
-  #viewClosed: ((
-    body: SlackRequestBody,
-  ) => SlackViewHandler<E, ViewClosed> | null)[] = [];
+  #viewSubmissions:
+    ((body: SlackRequestBody) => SlackViewHandler<E, ViewSubmission> | null)[] =
+      [];
+  #viewClosed:
+    ((body: SlackRequestBody) => SlackViewHandler<E, ViewClosed> | null)[] = [];
 
   // --------------------------
 
@@ -320,8 +319,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       if (typeof pattern === "string" && body.command === pattern) {
         return handler;
       } else if (
-        typeof pattern === "object" &&
-        pattern instanceof RegExp &&
+        typeof pattern === "object" && pattern instanceof RegExp &&
         body.command.match(pattern)
       ) {
         return handler;
@@ -344,8 +342,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
   ) {
     this.#events.push((body) => {
       if (
-        body.type !== PayloadType.EventsAPI ||
-        !body.event ||
+        body.type !== PayloadType.EventsAPI || !body.event ||
         body.event.type !== "function_executed"
       ) {
         return null;
@@ -377,7 +374,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
    * @param lazy lazy function that can do anything asynchronously
    * @returns this instance
    */
-  event<Type extends string>(
+  event<Type extends AnyMafifestEvent>(
     event: Type,
     lazy: EventLazyHandler<Type, E>,
   ): SlackApp<E> {
@@ -415,8 +412,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
   ): SlackApp<E> {
     this.#events.push((body) => {
       if (
-        body.type !== PayloadType.EventsAPI ||
-        !body.event ||
+        body.type !== PayloadType.EventsAPI || !body.event ||
         body.event.type !== "message"
       ) {
         return null;
@@ -480,8 +476,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       if (typeof callbackId === "string" && body.callback_id === callbackId) {
         return handler;
       } else if (
-        typeof callbackId === "object" &&
-        callbackId instanceof RegExp &&
+        typeof callbackId === "object" && callbackId instanceof RegExp &&
         body.callback_id.match(callbackId)
       ) {
         return handler;
@@ -511,8 +506,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       if (typeof callbackId === "string" && body.callback_id === callbackId) {
         return handler;
       } else if (
-        typeof callbackId === "object" &&
-        callbackId instanceof RegExp &&
+        typeof callbackId === "object" && callbackId instanceof RegExp &&
         body.callback_id.match(callbackId)
       ) {
         return handler;
@@ -531,21 +525,21 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
    */
   action<
     T extends BlockElementTypes,
-    A extends BlockAction<
-      Extract<BlockElementActions, { type: T }>
-    > = BlockAction<Extract<BlockElementActions, { type: T }>>,
+    A extends BlockAction<Extract<BlockElementActions, { type: T }>> =
+      BlockAction<Extract<BlockElementActions, { type: T }>>,
   >(
-    constraints:
-      | StringOrRegExp
-      | { type: T; block_id?: string; action_id: string },
+    constraints: StringOrRegExp | {
+      type: T;
+      block_id?: string;
+      action_id: string;
+    },
     ack: BlockActionAckHandler<T, E, A>,
     lazy: BlockActionLazyHandler<T, E, A> = noopLazyHandler,
   ): SlackApp<E> {
     const handler: SlackHandler<E, A> = { ack, lazy };
     this.#blockActions.push((body) => {
       if (
-        body.type !== PayloadType.BlockAction ||
-        !body.actions ||
+        body.type !== PayloadType.BlockAction || !body.actions ||
         !body.actions[0]
       ) {
         return null;
@@ -562,8 +556,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
           if (action.type === constraints.type) {
             if (action.action_id === constraints.action_id) {
               if (
-                constraints.block_id &&
-                action.block_id !== constraints.block_id
+                constraints.block_id && action.block_id !== constraints.block_id
               ) {
                 return null;
               }
@@ -654,13 +647,11 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         return null;
       }
       if (
-        typeof callbackId === "string" &&
-        body.view.callback_id === callbackId
+        typeof callbackId === "string" && body.view.callback_id === callbackId
       ) {
         return handler;
       } else if (
-        typeof callbackId === "object" &&
-        callbackId instanceof RegExp &&
+        typeof callbackId === "object" && callbackId instanceof RegExp &&
         body.view.callback_id.match(callbackId)
       ) {
         return handler;
@@ -688,13 +679,11 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         return null;
       }
       if (
-        typeof callbackId === "string" &&
-        body.view.callback_id === callbackId
+        typeof callbackId === "string" && body.view.callback_id === callbackId
       ) {
         return handler;
       } else if (
-        typeof callbackId === "object" &&
-        callbackId instanceof RegExp &&
+        typeof callbackId === "object" && callbackId instanceof RegExp &&
         body.view.callback_id.match(callbackId)
       ) {
         return handler;

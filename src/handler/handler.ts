@@ -1,21 +1,13 @@
 import { EventRequest, MessageEventHandler } from "../app";
 import { SlackAppEnv } from "../app-env";
-import {
-  BlockAction,
-  BlockElementActions,
-  BlockElementTypes,
-} from "../request/payload/block-action";
+import { BlockAction, BlockElementActions, BlockElementTypes } from "../request/payload/block-action";
 import { BlockSuggestion } from "../request/payload/block-suggestion";
 import { GlobalShortcut } from "../request/payload/global-shortcut";
 import { MessageShortcut } from "../request/payload/message-shortcut";
 import { SlashCommand } from "../request/payload/slash-command";
 import { ViewClosed } from "../request/payload/view-closed";
 import { ViewSubmission } from "../request/payload/view-submission";
-import {
-  SlackRequest,
-  SlackRequestWithOptionalRespond,
-  SlackRequestWithRespond,
-} from "../request/request";
+import { SlackRequest, SlackRequestWithOptionalRespond, SlackRequestWithRespond } from "../request/request";
 import { SlackResponse } from "../response/response";
 import { MessageAckResponse } from "./message-handler";
 import { OptionsAckResponse } from "./options-handler";
@@ -48,9 +40,7 @@ export type SlashCommandAckHandler<E extends SlackAppEnv = SlackAppEnv> = (
 /**
  * lazy function for slash command handling.
  */
-export type SlashCommandLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
-  req: SlackRequestWithRespond<E, SlashCommand>,
-) => Promise<void>;
+export type SlashCommandLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (req: SlackRequestWithRespond<E, SlashCommand>) => Promise<void>;
 
 // ----------------------------------------
 // Events API
@@ -59,16 +49,12 @@ export type SlashCommandLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
 /**
  * lazy function for Events API handling.
  */
-export type EventLazyHandler<
-  Type extends string,
-  E extends SlackAppEnv = SlackAppEnv,
-> = (req: EventRequest<E, Type>) => Promise<void>;
+export type EventLazyHandler<Type extends string, E extends SlackAppEnv = SlackAppEnv> = (req: EventRequest<E, Type>) => Promise<void>;
 
 /**
  * lazy function for message event handling.
  */
-export type MessageEventLazyHandler<E extends SlackAppEnv = SlackAppEnv> =
-  MessageEventHandler<E>;
+export type MessageEventLazyHandler<E extends SlackAppEnv = SlackAppEnv> = MessageEventHandler<E>;
 
 // ----------------------------------------
 // Shortcuts
@@ -78,17 +64,13 @@ export type MessageEventLazyHandler<E extends SlackAppEnv = SlackAppEnv> =
  * ack function for global/message shortcut handling.
  */
 export type ShortcutAckHandler<E extends SlackAppEnv = SlackAppEnv> = (
-  req:
-    | SlackRequest<E, GlobalShortcut>
-    | SlackRequestWithRespond<E, MessageShortcut>,
+  req: SlackRequest<E, GlobalShortcut> | SlackRequestWithRespond<E, MessageShortcut>,
 ) => Promise<AckResponse>;
 
 /**
  * ack function for global shortcut handling.
  */
-export type GlobalShortcutAckHandler<E extends SlackAppEnv = SlackAppEnv> = (
-  req: SlackRequest<E, GlobalShortcut>,
-) => Promise<AckResponse>;
+export type GlobalShortcutAckHandler<E extends SlackAppEnv = SlackAppEnv> = (req: SlackRequest<E, GlobalShortcut>) => Promise<AckResponse>;
 
 /**
  * ack function for message shortcut handling.
@@ -101,17 +83,13 @@ export type MessageShortcutAckHandler<E extends SlackAppEnv = SlackAppEnv> = (
  * lazy function for global/message shortcut handling.
  */
 export type ShortcutLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
-  req:
-    | SlackRequest<E, GlobalShortcut>
-    | SlackRequestWithRespond<E, MessageShortcut>,
+  req: SlackRequest<E, GlobalShortcut> | SlackRequestWithRespond<E, MessageShortcut>,
 ) => Promise<void>;
 
 /**
  * lazy function for global shortcut handling.
  */
-export type GlobalShortcutLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
-  req: SlackRequest<E, GlobalShortcut>,
-) => Promise<void>;
+export type GlobalShortcutLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (req: SlackRequest<E, GlobalShortcut>) => Promise<void>;
 
 /**
  * lazy function for message shortcut handling.
@@ -130,9 +108,7 @@ export type MessageShortcutLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
 export type BlockActionAckHandler<
   T extends BlockElementTypes,
   E extends SlackAppEnv = SlackAppEnv,
-  A extends BlockAction<
-    Extract<BlockElementActions, { type: T }>
-  > = BlockAction<Extract<BlockElementActions, { type: T }>>,
+  A extends BlockAction<Extract<BlockElementActions, { type: T }>> = BlockAction<Extract<BlockElementActions, { type: T }>>,
 > = (req: SlackRequestWithOptionalRespond<E, A>) => Promise<AckResponse>;
 
 /**
@@ -141,9 +117,7 @@ export type BlockActionAckHandler<
 export type BlockActionLazyHandler<
   T extends BlockElementTypes,
   E extends SlackAppEnv = SlackAppEnv,
-  A extends BlockAction<
-    Extract<BlockElementActions, { type: T }>
-  > = BlockAction<Extract<BlockElementActions, { type: T }>>,
+  A extends BlockAction<Extract<BlockElementActions, { type: T }>> = BlockAction<Extract<BlockElementActions, { type: T }>>,
 > = (req: SlackRequestWithOptionalRespond<E, A>) => Promise<void>;
 
 /**
@@ -161,9 +135,7 @@ export type BlockSuggestionAckHandler<E extends SlackAppEnv = SlackAppEnv> = (
  * ack function for view_submission/view_closed request handling.
  */
 export type ViewAckHandler<E extends SlackAppEnv = SlackAppEnv> = (
-  req:
-    | SlackRequestWithOptionalRespond<E, ViewSubmission>
-    | SlackRequest<E, ViewClosed>,
+  req: SlackRequestWithOptionalRespond<E, ViewSubmission> | SlackRequest<E, ViewClosed>,
 ) => Promise<ViewAckResponse>;
 
 /**
@@ -176,17 +148,13 @@ export type ViewSubmissionAckHandler<E extends SlackAppEnv = SlackAppEnv> = (
 /**
  * ack function for view_closed request handling.
  */
-export type ViewClosedAckHandler<E extends SlackAppEnv = SlackAppEnv> = (
-  req: SlackRequest<E, ViewClosed>,
-) => Promise<ViewAckResponse>;
+export type ViewClosedAckHandler<E extends SlackAppEnv = SlackAppEnv> = (req: SlackRequest<E, ViewClosed>) => Promise<ViewAckResponse>;
 
 /**
  * lazy function for view_submission/view_closed request handling.
  */
 export type ViewLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
-  req:
-    | SlackRequestWithOptionalRespond<E, ViewSubmission>
-    | SlackRequest<E, ViewClosed>,
+  req: SlackRequestWithOptionalRespond<E, ViewSubmission> | SlackRequest<E, ViewClosed>,
 ) => Promise<void>;
 
 /**
@@ -199,6 +167,4 @@ export type ViewSubmissionLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
 /**
  * lazy function for view_closed request handling.
  */
-export type ViewClosedLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
-  req: SlackRequest<E, ViewClosed>,
-) => Promise<void>;
+export type ViewClosedLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (req: SlackRequest<E, ViewClosed>) => Promise<void>;

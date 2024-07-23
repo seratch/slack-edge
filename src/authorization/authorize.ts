@@ -5,6 +5,4 @@ import { AuthorizeResult } from "./authorize-result";
 /**
  * The function that resolves the OAuth token associated with an incoming request.
  */
-export type Authorize<E extends SlackAppEnv = SlackAppEnv> = (
-  req: PreAuthorizeSlackMiddlewareRequest<E>,
-) => Promise<AuthorizeResult>;
+export type Authorize<E extends SlackAppEnv = SlackAppEnv> = (req: PreAuthorizeSlackMiddlewareRequest<E>) => Promise<AuthorizeResult>;

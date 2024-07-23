@@ -24,36 +24,28 @@ export interface SlackMiddlewareRequestBase<E extends SlackAppEnv> {
 /**
  * Request data representation available for middleware before authorize() call.
  */
-export type PreAuthorizeSlackMiddlewareRequest<E extends SlackAppEnv> =
-  SlackMiddlewareRequestBase<E> & {
-    context: PreAuthorizeSlackAppContext;
-  };
+export type PreAuthorizeSlackMiddlewareRequest<E extends SlackAppEnv> = SlackMiddlewareRequestBase<E> & {
+  context: PreAuthorizeSlackAppContext;
+};
 
 /**
  * Request data representation available for middleware after authorize() call.
  */
-export type SlackMiddlewareRequest<E extends SlackAppEnv> =
-  SlackMiddlewareRequestBase<E> & {
-    context: SlackAppContext;
-  };
+export type SlackMiddlewareRequest<E extends SlackAppEnv> = SlackMiddlewareRequestBase<E> & {
+  context: SlackAppContext;
+};
 
 /**
  * Request data representation available for listeners.
  */
-export type SlackRequest<
-  E extends SlackAppEnv,
-  Payload,
-> = SlackMiddlewareRequest<E> & {
+export type SlackRequest<E extends SlackAppEnv, Payload> = SlackMiddlewareRequest<E> & {
   payload: Payload;
 };
 
 /**
  * Request data representation including channel_id available for listeners.
  */
-export type SlackRequestWithChannelId<
-  E extends SlackAppEnv,
-  Payload,
-> = SlackMiddlewareRequest<E> & {
+export type SlackRequestWithChannelId<E extends SlackAppEnv, Payload> = SlackMiddlewareRequest<E> & {
   context: SlackAppContextWithChannelId;
   payload: Payload;
 };
@@ -61,10 +53,7 @@ export type SlackRequestWithChannelId<
 /**
  * Request data representation w/ response_url available for listeners.
  */
-export type SlackRequestWithRespond<
-  E extends SlackAppEnv,
-  Payload,
-> = SlackMiddlewareRequest<E> & {
+export type SlackRequestWithRespond<E extends SlackAppEnv, Payload> = SlackMiddlewareRequest<E> & {
   context: SlackAppContextWithRespond;
   payload: Payload;
 };
@@ -72,10 +61,7 @@ export type SlackRequestWithRespond<
 /**
  * Request data representation w/ response_url available for listeners.
  */
-export type SlackRequestWithOptionalRespond<
-  E extends SlackAppEnv,
-  Payload,
-> = SlackMiddlewareRequest<E> & {
+export type SlackRequestWithOptionalRespond<E extends SlackAppEnv, Payload> = SlackMiddlewareRequest<E> & {
   context: SlackAppContextWithOptionalRespond;
   payload: Payload;
 };

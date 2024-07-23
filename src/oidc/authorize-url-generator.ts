@@ -7,19 +7,12 @@ import { ConfigError } from "../errors";
  * @param env env variables
  * @returns slack.com/openid/connect/authorize URL
  */
-export function generateOIDCAuthorizeUrl<E extends SlackOAuthEnv>(
-  state: string,
-  env: E,
-): string {
+export function generateOIDCAuthorizeUrl<E extends SlackOAuthEnv>(state: string, env: E): string {
   if (!env.SLACK_OIDC_SCOPES) {
-    throw new ConfigError(
-      "env.SLACK_OIDC_SCOPES must be present when enabling Sign in with Slack (OpenID Connect)",
-    );
+    throw new ConfigError("env.SLACK_OIDC_SCOPES must be present when enabling Sign in with Slack (OpenID Connect)");
   }
   if (!env.SLACK_OIDC_REDIRECT_URI) {
-    throw new ConfigError(
-      "env.SLACK_OIDC_REDIRECT_URI must be present when enabling Sign in with Slack (OpenID Connect)",
-    );
+    throw new ConfigError("env.SLACK_OIDC_REDIRECT_URI must be present when enabling Sign in with Slack (OpenID Connect)");
   }
   let url = `https://slack.com/openid/connect/authorize?response_type=code&state=${state}`;
   url += `&client_id=${env.SLACK_CLIENT_ID}`;

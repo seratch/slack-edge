@@ -1,9 +1,4 @@
-import {
-  AnyMessageBlock,
-  HomeTabView,
-  MessageAttachment,
-  MessageMetadata,
-} from "slack-web-api-client";
+import { AnyMessageBlock, HomeTabView, MessageAttachment, MessageMetadata } from "slack-web-api-client";
 
 export type AnySlackEvent =
   | AppRequestedEvent
@@ -227,8 +222,7 @@ export interface AppDeletedEvent extends SlackEvent<"app_deleted"> {
   team_domain: string;
   event_ts: string;
 }
-export interface AppUninstalledTeamEvent
-  extends SlackEvent<"app_uninstalled_team"> {
+export interface AppUninstalledTeamEvent extends SlackEvent<"app_uninstalled_team"> {
   type: "app_uninstalled_team";
   app_id: string;
   app_name: string;
@@ -318,16 +312,14 @@ export interface ChannelDeletedEvent extends SlackEvent<"channel_deleted"> {
   channel: string;
 }
 
-export interface ChannelHistoryChangedEvent
-  extends SlackEvent<"channel_history_changed"> {
+export interface ChannelHistoryChangedEvent extends SlackEvent<"channel_history_changed"> {
   type: "channel_history_changed";
   latest: string;
   ts: string;
   event_ts: string;
 }
 
-export interface ChannelIDChangedEvent
-  extends SlackEvent<"channel_id_changed"> {
+export interface ChannelIDChangedEvent extends SlackEvent<"channel_id_changed"> {
   type: "channel_id_changed";
   old_channel_id: string;
   new_channel_id: string;
@@ -401,8 +393,7 @@ export interface DNDUpdatedUserEvent extends SlackEvent<"dnd_updated_user"> {
   event_ts: string;
 }
 
-export interface EmailDomainChangedEvent
-  extends SlackEvent<"email_domain_changed"> {
+export interface EmailDomainChangedEvent extends SlackEvent<"email_domain_changed"> {
   type: "email_domain_changed";
   email_domain: string;
   event_ts: string;
@@ -507,14 +498,12 @@ export interface FunctionExecutedEvent extends SlackEvent<"function_executed"> {
   event_ts: string;
 }
 
-export interface GridMigrationFinishedEvent
-  extends SlackEvent<"grid_migration_finished"> {
+export interface GridMigrationFinishedEvent extends SlackEvent<"grid_migration_finished"> {
   type: "grid_migration_finished";
   enterprise_id: string;
 }
 
-export interface GridMigrationStartedEvent
-  extends SlackEvent<"grid_migration_started"> {
+export interface GridMigrationStartedEvent extends SlackEvent<"grid_migration_started"> {
   type: "grid_migration_started";
   enterprise_id: string;
 }
@@ -541,8 +530,7 @@ export interface GroupDeletedEvent extends SlackEvent<"group_deleted"> {
   event_ts: string;
 }
 
-export interface GroupHistoryChangedEvent
-  extends SlackEvent<"group_history_changed"> {
+export interface GroupHistoryChangedEvent extends SlackEvent<"group_history_changed"> {
   type: "group_history_changed";
   latest: string;
   ts: string;
@@ -595,8 +583,7 @@ export interface IMCreatedEvent extends SlackEvent<"im_created"> {
   channel: { id: string };
 }
 
-export interface IMHistoryChangedEvent
-  extends SlackEvent<"im_history_changed"> {
+export interface IMHistoryChangedEvent extends SlackEvent<"im_history_changed"> {
   type: "im_history_changed";
   latest: string;
   ts: string;
@@ -646,8 +633,7 @@ export interface LinkSharedEvent extends SlackEvent<"link_shared"> {
   event_ts: string;
 }
 
-export interface MemberJoinedChannelEvent
-  extends SlackEvent<"member_joined_channel"> {
+export interface MemberJoinedChannelEvent extends SlackEvent<"member_joined_channel"> {
   type: "member_joined_channel";
   user: string;
   channel: string;
@@ -657,8 +643,7 @@ export interface MemberJoinedChannelEvent
   event_ts: string;
 }
 
-export interface MemberLeftChannelEvent
-  extends SlackEvent<"member_left_channel"> {
+export interface MemberLeftChannelEvent extends SlackEvent<"member_left_channel"> {
   type: "member_left_channel";
   user: string;
   channel: string;
@@ -715,8 +700,7 @@ export interface ReactionRemovedEvent extends SlackEvent<"reaction_removed"> {
   event_ts: string;
 }
 
-export interface SharedChannelInviteAcceptedEvent
-  extends SlackEvent<"shared_channel_invite_accepted"> {
+export interface SharedChannelInviteAcceptedEvent extends SlackEvent<"shared_channel_invite_accepted"> {
   type: "shared_channel_invite_accepted";
   approval_required: boolean;
   invite: SharedChannelInviteItem;
@@ -726,8 +710,7 @@ export interface SharedChannelInviteAcceptedEvent
   event_ts: string;
 }
 
-export interface SharedChannelInviteApprovedEvent
-  extends SlackEvent<"shared_channel_invite_approved"> {
+export interface SharedChannelInviteApprovedEvent extends SlackEvent<"shared_channel_invite_approved"> {
   type: "shared_channel_invite_approved";
   invite: SharedChannelInviteItem;
   channel: SharedChannelItem;
@@ -737,8 +720,7 @@ export interface SharedChannelInviteApprovedEvent
   event_ts: string;
 }
 
-export interface SharedChannelInviteDeclinedEvent
-  extends SlackEvent<"shared_channel_invite_declined"> {
+export interface SharedChannelInviteDeclinedEvent extends SlackEvent<"shared_channel_invite_declined"> {
   type: "shared_channel_invite_declined";
   invite: SharedChannelInviteItem;
   channel: SharedChannelItem;
@@ -748,8 +730,7 @@ export interface SharedChannelInviteDeclinedEvent
   event_ts: string;
 }
 
-export interface SharedChannelInviteRequestedEvent
-  extends SlackEvent<"shared_channel_invite_requested"> {
+export interface SharedChannelInviteRequestedEvent extends SlackEvent<"shared_channel_invite_requested"> {
   type: "shared_channel_invite_requested";
   actor: {
     id: string;
@@ -782,8 +763,7 @@ export interface SharedChannelInviteRequestedEvent
   channel_message_latest_counted_timestamp: number;
 }
 
-export interface SharedChannelInviteReceivedEvent
-  extends SlackEvent<"shared_channel_invite_received"> {
+export interface SharedChannelInviteReceivedEvent extends SlackEvent<"shared_channel_invite_received"> {
   type: "shared_channel_invite_received";
   invite: SharedChannelInviteItem;
   channel: SharedChannelItem;
@@ -810,8 +790,7 @@ export interface SubteamCreatedEvent extends SlackEvent<"subteam_created"> {
   event_ts: string;
 }
 
-export interface SubteamMembersChangedEvent
-  extends SlackEvent<"subteam_members_changed"> {
+export interface SubteamMembersChangedEvent extends SlackEvent<"subteam_members_changed"> {
   type: "subteam_members_changed";
   subteam_id: string;
   team_id: string;
@@ -824,15 +803,13 @@ export interface SubteamMembersChangedEvent
   event_ts: string;
 }
 
-export interface SubteamSelfAddedEvent
-  extends SlackEvent<"subteam_self_added"> {
+export interface SubteamSelfAddedEvent extends SlackEvent<"subteam_self_added"> {
   type: "subteam_self_added";
   subteam_id: string;
   event_ts: string;
 }
 
-export interface SubteamSelfRemovedEvent
-  extends SlackEvent<"subteam_self_removed"> {
+export interface SubteamSelfRemovedEvent extends SlackEvent<"subteam_self_removed"> {
   type: "subteam_self_removed";
   subteam_id: string;
   event_ts: string;
@@ -844,22 +821,19 @@ export interface SubteamUpdatedEvent extends SlackEvent<"subteam_updated"> {
   event_ts: string;
 }
 
-export interface TeamAccessGrantedEvent
-  extends SlackEvent<"team_access_granted"> {
+export interface TeamAccessGrantedEvent extends SlackEvent<"team_access_granted"> {
   type: "team_access_granted";
   team_ids: string[];
   event_ts: string;
 }
 
-export interface TeamAccessRevokedEvent
-  extends SlackEvent<"team_access_revoked"> {
+export interface TeamAccessRevokedEvent extends SlackEvent<"team_access_revoked"> {
   type: "team_access_revoked";
   team_ids: string[];
   event_ts: string;
 }
 
-export interface TeamDomainChangedEvent
-  extends SlackEvent<"team_domain_changed"> {
+export interface TeamDomainChangedEvent extends SlackEvent<"team_domain_changed"> {
   type: "team_domain_changed";
   url: string;
   domain: string;
@@ -1025,8 +999,7 @@ export interface UserChangeEvent extends SlackEvent<"user_change"> {
   event_ts: string;
 }
 
-export interface UserHuddleChangedEvent
-  extends SlackEvent<"user_huddle_changed"> {
+export interface UserHuddleChangedEvent extends SlackEvent<"user_huddle_changed"> {
   type: "user_huddle_changed";
   user: {
     id: string;
@@ -1100,8 +1073,7 @@ export interface UserHuddleChangedEvent
   event_ts: string;
 }
 
-export interface UserProfileChangedEvent
-  extends SlackEvent<"user_profile_changed"> {
+export interface UserProfileChangedEvent extends SlackEvent<"user_profile_changed"> {
   type: "user_profile_changed";
   user: {
     id: string;
@@ -1176,8 +1148,7 @@ export interface UserProfileChangedEvent
   event_ts: string;
 }
 
-export interface UserStatusChangedEvent
-  extends SlackEvent<"user_status_changed"> {
+export interface UserStatusChangedEvent extends SlackEvent<"user_status_changed"> {
   type: "user_status_changed";
   user: {
     id: string;
@@ -1263,8 +1234,7 @@ export interface WorkflowDeletedEvent extends SlackEvent<"workflow_deleted"> {
   event_ts: string;
 }
 
-export interface WorkflowPublishedEvent
-  extends SlackEvent<"workflow_published"> {
+export interface WorkflowPublishedEvent extends SlackEvent<"workflow_published"> {
   type: "workflow_published";
   workflow_id: string;
   workflow_published_configuration: {
@@ -1278,8 +1248,7 @@ export interface WorkflowPublishedEvent
   event_ts: string;
 }
 
-export interface WorkflowUnpublishedEvent
-  extends SlackEvent<"workflow_unpublished"> {
+export interface WorkflowUnpublishedEvent extends SlackEvent<"workflow_unpublished"> {
   type: "workflow_unpublished";
   workflow_id: string;
   workflow_draft_configuration: {
@@ -1293,8 +1262,7 @@ export interface WorkflowUnpublishedEvent
   event_ts: string;
 }
 
-export interface WorkflowStepDeletedEvent
-  extends SlackEvent<"workflow_step_deleted"> {
+export interface WorkflowStepDeletedEvent extends SlackEvent<"workflow_step_deleted"> {
   type: "workflow_step_deleted";
   workflow_id: string;
   workflow_draft_configuration: {
@@ -1316,8 +1284,7 @@ export interface WorkflowStepDeletedEvent
   event_ts: string;
 }
 
-export interface WorkflowStepExecuteEvent
-  extends SlackEvent<"workflow_step_execute"> {
+export interface WorkflowStepExecuteEvent extends SlackEvent<"workflow_step_execute"> {
   type: "workflow_step_execute";
   callback_id: string;
   workflow_step: {
@@ -1369,10 +1336,7 @@ export type AnyMessageItem =
   | ThreadBroadcastMessageEvent
   | TombstoneMessageEvent;
 
-export type AnyMessageMetadataEvent =
-  | MessageMetadataPostedEvent
-  | MessageMetadataUpdatedEvent
-  | MessageMetadataDeletedEvent;
+export type AnyMessageMetadataEvent = MessageMetadataPostedEvent | MessageMetadataUpdatedEvent | MessageMetadataDeletedEvent;
 
 export interface GenericMessageEvent extends SlackEvent<"message"> {
   type: "message";
@@ -1484,8 +1448,7 @@ export interface ChannelNameMessageEvent extends SlackEvent<"message"> {
   event_ts: string;
 }
 
-export interface ChannelPostingPermissionsMessageEvent
-  extends SlackEvent<"message"> {
+export interface ChannelPostingPermissionsMessageEvent extends SlackEvent<"message"> {
   type: "message";
   subtype: "channel_posting_permissions";
   user: string;
@@ -1656,8 +1619,7 @@ export interface TombstoneMessageEvent extends SlackEvent<"message"> {
   subscribed: boolean;
 }
 
-export interface MessageMetadataPostedEvent
-  extends SlackEvent<"message_metadata_posted"> {
+export interface MessageMetadataPostedEvent extends SlackEvent<"message_metadata_posted"> {
   type: "message_metadata_posted";
   app_id: string;
   bot_id?: string;
@@ -1669,8 +1631,7 @@ export interface MessageMetadataPostedEvent
   event_ts: string;
 }
 
-export interface MessageMetadataUpdatedEvent
-  extends SlackEvent<"message_metadata_updated"> {
+export interface MessageMetadataUpdatedEvent extends SlackEvent<"message_metadata_updated"> {
   type: "message_metadata_updated";
   channel_id: string;
   event_ts: string;
@@ -1683,8 +1644,7 @@ export interface MessageMetadataUpdatedEvent
   metadata: MessageMetadata;
 }
 
-export interface MessageMetadataDeletedEvent
-  extends SlackEvent<"message_metadata_deleted"> {
+export interface MessageMetadataDeletedEvent extends SlackEvent<"message_metadata_deleted"> {
   type: "message_metadata_deleted";
   channel_id: string;
   event_ts: string;

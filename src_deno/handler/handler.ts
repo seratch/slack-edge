@@ -130,9 +130,8 @@ export type MessageShortcutLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
 export type BlockActionAckHandler<
   T extends BlockElementTypes,
   E extends SlackAppEnv = SlackAppEnv,
-  A extends BlockAction<
-    Extract<BlockElementActions, { type: T }>
-  > = BlockAction<Extract<BlockElementActions, { type: T }>>,
+  A extends BlockAction<Extract<BlockElementActions, { type: T }>> =
+    BlockAction<Extract<BlockElementActions, { type: T }>>,
 > = (req: SlackRequestWithOptionalRespond<E, A>) => Promise<AckResponse>;
 
 /**
@@ -141,9 +140,8 @@ export type BlockActionAckHandler<
 export type BlockActionLazyHandler<
   T extends BlockElementTypes,
   E extends SlackAppEnv = SlackAppEnv,
-  A extends BlockAction<
-    Extract<BlockElementActions, { type: T }>
-  > = BlockAction<Extract<BlockElementActions, { type: T }>>,
+  A extends BlockAction<Extract<BlockElementActions, { type: T }>> =
+    BlockAction<Extract<BlockElementActions, { type: T }>>,
 > = (req: SlackRequestWithOptionalRespond<E, A>) => Promise<void>;
 
 /**

@@ -5,11 +5,7 @@
  * @param requestBody request body
  * @returns true if the given signature is valid
  */
-export async function verifySlackRequest(
-  signingSecret: string,
-  requestHeaders: Headers,
-  requestBody: string,
-): Promise<boolean> {
+export async function verifySlackRequest(signingSecret: string, requestHeaders: Headers, requestBody: string): Promise<boolean> {
   const timestampHeader = requestHeaders.get("x-slack-request-timestamp");
   if (!timestampHeader) {
     console.log("x-slack-request-timestamp header is missing!");
@@ -29,13 +25,7 @@ export async function verifySlackRequest(
   const textEncoder = new TextEncoder();
   return await crypto.subtle.verify(
     "HMAC",
-    await crypto.subtle.importKey(
-      "raw",
-      textEncoder.encode(signingSecret),
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["verify"],
-    ),
+    await crypto.subtle.importKey("raw", textEncoder.encode(signingSecret), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]),
     fromHexStringToBytes(signatureHeader.substring(3)),
     textEncoder.encode(`v0:${timestampHeader}:${requestBody}`),
   );

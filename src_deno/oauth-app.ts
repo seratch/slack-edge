@@ -231,6 +231,60 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
         callback: "/slack/login/callback",
       },
     };
+    this.#enableTokenRevocationHandlers(options.installationStore);
+  }
+
+  #enableTokenRevocationHandlers(installationStore: InstallationStore<E>) {
+    this.event("tokens_revoked", async ({ payload, body }) => {
+      if (payload.tokens.bot) {
+        // actually only one bot per app in a workspace
+        try {
+          await installationStore.deleteBotInstallation({
+            enterpriseId: body.enterprise_id,
+            teamId: body.team_id,
+          });
+        } catch (e) {
+          console.log(`Failed to delete a bot installation (error: ${e})`);
+        }
+      }
+      if (payload.tokens.oauth) {
+        for (const userId of payload.tokens.oauth) {
+          try {
+            await installationStore.deleteUserInstallation({
+              enterpriseId: body.enterprise_id,
+              teamId: body.team_id,
+              userId,
+            });
+          } catch (e) {
+            console.log(`Failed to delete a user installation (error: ${e})`);
+          }
+        }
+      }
+    });
+    this.event("app_uninstalled", async ({ body }) => {
+      try {
+        await installationStore.deleteAll({
+          enterpriseId: body.enterprise_id,
+          teamId: body.team_id,
+        });
+      } catch (e) {
+        console.log(
+          `Failed to delete all installation for an app_uninstalled event (error: ${e})`,
+        );
+      }
+    });
+    this.event("app_uninstalled_team", async ({ body }) => {
+      try {
+        await installationStore.deleteAll({
+          enterpriseId: body.enterprise_id,
+          teamId: body.team_id,
+        });
+      } catch (e) {
+        console.log(
+          `Failed to delete all installation for an app_uninstalled_team event (error: ${e})`,
+        );
+      }
+    });
   }
 
   async run(
@@ -482,8 +536,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     const cookie = parseCookie(request.headers.get("Cookie") || "");
     const cookieState = cookie[cookieName];
     if (
-      queryState !== cookieState ||
-      !(await this.stateStore.consume(queryState))
+      queryState !== cookieState || !(await this.stateStore.consume(queryState))
     ) {
       if (startPath === this.routes.oauth.start) {
         return await this.oauth.onStateValidationError({
@@ -492,9 +545,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
           request,
         });
       } else if (
-        this.oidc &&
-        this.routes.oidc &&
-        startPath === this.routes.oidc.start
+        this.oidc && this.routes.oidc && startPath === this.routes.oidc.start
       ) {
         return await this.oidc.onStateValidationError({
           env: this.env,

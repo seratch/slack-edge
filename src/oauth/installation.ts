@@ -34,9 +34,7 @@ export interface Installation {
  * @param oauthAccess oauth.v2.access API response data
  * @returns installation data
  */
-export function toInstallation(
-  oauthAccess: OAuthV2AccessResponse,
-): Installation {
+export function toInstallation(oauthAccess: OAuthV2AccessResponse): Installation {
   const installation: Installation = {
     app_id: oauthAccess.app_id!,
     is_enterprise_install: oauthAccess.is_enterprise_install,
@@ -48,9 +46,7 @@ export function toInstallation(
     bot_user_id: oauthAccess.bot_user_id,
     bot_scopes: oauthAccess.scope?.split(","),
     bot_refresh_token: oauthAccess.refresh_token,
-    bot_token_expires_at: oauthAccess.expires_in
-      ? new Date().getTime() / 1000 + oauthAccess.expires_in
-      : undefined,
+    bot_token_expires_at: oauthAccess.expires_in ? new Date().getTime() / 1000 + oauthAccess.expires_in : undefined,
 
     // user token
     user_token: oauthAccess.authed_user?.access_token,

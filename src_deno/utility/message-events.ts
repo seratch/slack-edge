@@ -14,9 +14,7 @@ export const isPostedMessageEvent = (event: {
   | FileShareMessageEvent
   | ThreadBroadcastMessageEvent => {
   return (
-    event.subtype === undefined ||
-    event.subtype === "bot_message" ||
-    event.subtype === "file_share" ||
-    event.subtype === "thread_broadcast"
+    event.subtype === undefined || event.subtype === "bot_message" ||
+    event.subtype === "file_share" || event.subtype === "thread_broadcast"
   );
 };

@@ -22,9 +22,7 @@ export interface BeforeInstallationArgs {
 /**
  * beforeInstallation hook
  */
-export type BeforeInstallation = (
-  args: BeforeInstallationArgs,
-) => Promise<Response | undefined | void>;
+export type BeforeInstallation = (args: BeforeInstallationArgs) => Promise<Response | undefined | void>;
 
 /**
  * afterInstallation args
@@ -38,9 +36,7 @@ export interface AfterInstallationArgs {
 /**
  * afterInstallation hook
  */
-export type AfterInstallation = (
-  args: AfterInstallationArgs,
-) => Promise<Response | undefined | void>;
+export type AfterInstallation = (args: AfterInstallationArgs) => Promise<Response | undefined | void>;
 
 /**
  * onStateValidationError args
@@ -54,16 +50,12 @@ export interface OnStateValidationErrorArgs {
 /**
  * onStateValidationError hook
  */
-export type OnStateValidationError = (
-  args: OnStateValidationErrorArgs,
-) => Promise<Response>;
+export type OnStateValidationError = (args: OnStateValidationErrorArgs) => Promise<Response>;
 
 /**
  * The default onStateValidationError implementation.
  */
-export function defaultOnStateValidationError(
-  renderer?: OAuthErrorPageRenderer,
-): OnStateValidationError {
+export function defaultOnStateValidationError(renderer?: OAuthErrorPageRenderer): OnStateValidationError {
   return async ({ startPath }) => {
     const renderPage = renderer ?? renderDefaultOAuthErrorPage;
     return new Response(
@@ -129,25 +121,19 @@ export type OAuthStart = (args: OAuthStartArgs) => Promise<Response>;
 /**
  * The default OAuthStart implementation.
  */
-export function defaultOAuthStart(
-  startImmediateRedirect?: boolean,
-  renderer?: OAuthStartPageRenderer,
-): OAuthStart {
+export function defaultOAuthStart(startImmediateRedirect?: boolean, renderer?: OAuthStartPageRenderer): OAuthStart {
   return async ({ authorizeUrl, stateCookieName, stateValue }) => {
     const immediateRedirect = startImmediateRedirect !== false;
     const status = immediateRedirect ? 302 : 200;
     const renderPage = renderer ?? renderDefaultOAuthStartPage;
-    return new Response(
-      await renderPage({ immediateRedirect, url: authorizeUrl }),
-      {
-        status,
-        headers: {
-          Location: authorizeUrl,
-          "Set-Cookie": `${stateCookieName}=${stateValue}; Secure; HttpOnly; Path=/; Max-Age=300`,
-          "Content-Type": "text/html; charset=utf-8",
-        },
+    return new Response(await renderPage({ immediateRedirect, url: authorizeUrl }), {
+      status,
+      headers: {
+        Location: authorizeUrl,
+        "Set-Cookie": `${stateCookieName}=${stateValue}; Secure; HttpOnly; Path=/; Max-Age=300`,
+        "Content-Type": "text/html; charset=utf-8",
       },
-    );
+    });
   };
 }
 
@@ -170,9 +156,7 @@ export type OAuthCallback = (args: OAuthCallbackArgs) => Promise<Response>;
 /**
  * The default OAuthCallback implementation.
  */
-export function defaultOAuthCallback(
-  renderer?: OAuthCompletionPageRenderer,
-): OAuthCallback {
+export function defaultOAuthCallback(renderer?: OAuthCompletionPageRenderer): OAuthCallback {
   return async ({ oauthAccess, enterpriseUrl, stateCookieName }) => {
     const renderPage = renderer ?? renderDefaultOAuthCompletionPage;
     return new Response(

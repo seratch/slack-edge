@@ -18,10 +18,9 @@ export type OAuthStartPageRenderer = (
  * @returns HTML data
  */
 // deno-lint-ignore require-await
-export async function renderDefaultOAuthStartPage({
-  url,
-  immediateRedirect,
-}: OAuthStartPageRendererArgs) {
+export async function renderDefaultOAuthStartPage(
+  { url, immediateRedirect }: OAuthStartPageRendererArgs,
+) {
   const meta = immediateRedirect
     ? `<meta http-equiv="refresh" content="2;url=${escapeHtml(url)}'" />`
     : "";
@@ -56,10 +55,9 @@ export type OAuthErrorPageRenderer = (
  * @returns HTML data
  */
 // deno-lint-ignore require-await
-export async function renderDefaultOAuthErrorPage({
-  installPath,
-  reason,
-}: OAuthErrorPageRendererArgs) {
+export async function renderDefaultOAuthErrorPage(
+  { installPath, reason }: OAuthErrorPageRendererArgs,
+) {
   return (
     '<html><head><style>body {{ padding: 10px 15px; font-family: verdana; text-align: center; }}</style></head><body><h2>Oops, Something Went Wrong!</h2><p>Please try again from <a href="' +
     escapeHtml(installPath) +

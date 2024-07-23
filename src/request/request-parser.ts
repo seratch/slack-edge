@@ -11,10 +11,7 @@ export async function parseRequestBody(
 ): // deno-lint-ignore no-explicit-any
 Promise<Record<string, any>> {
   const contentType = requestHeaders.get("content-type");
-  if (
-    contentType?.startsWith("application/json") ||
-    requestBody.startsWith("{")
-  ) {
+  if (contentType?.startsWith("application/json") || requestBody.startsWith("{")) {
     return JSON.parse(requestBody);
   }
   const params = new URLSearchParams(requestBody);

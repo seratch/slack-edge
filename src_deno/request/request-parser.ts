@@ -12,8 +12,7 @@ export async function parseRequestBody(
 Promise<Record<string, any>> {
   const contentType = requestHeaders.get("content-type");
   if (
-    contentType?.startsWith("application/json") ||
-    requestBody.startsWith("{")
+    contentType?.startsWith("application/json") || requestBody.startsWith("{")
   ) {
     return JSON.parse(requestBody);
   }

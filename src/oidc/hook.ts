@@ -1,8 +1,5 @@
 import { LoggingEnv } from "../app-env";
-import {
-  SlackAPIClient,
-  OpenIDConnectTokenResponse,
-} from "slack-web-api-client";
+import { SlackAPIClient, OpenIDConnectTokenResponse } from "slack-web-api-client";
 import { prettyPrint } from "slack-web-api-client";
 
 /**
@@ -17,9 +14,7 @@ export interface OpenIDConnectCallbackArgs {
 /**
  * OpenIDConnectCallback hook
  */
-export type OpenIDConnectCallback = (
-  args: OpenIDConnectCallbackArgs,
-) => Promise<Response>;
+export type OpenIDConnectCallback = (args: OpenIDConnectCallbackArgs) => Promise<Response>;
 
 /**
  * The default OpenIDConnectCallback implementation.
@@ -27,10 +22,7 @@ export type OpenIDConnectCallback = (
  * @param token openid.connect.token API response
  * @returns response
  */
-export const defaultOpenIDConnectCallback: OpenIDConnectCallback = async ({
-  env,
-  token,
-}) => {
+export const defaultOpenIDConnectCallback: OpenIDConnectCallback = async ({ env, token }) => {
   const client = new SlackAPIClient(token.access_token, {
     logLevel: env.SLACK_LOGGING_LEVEL,
   });

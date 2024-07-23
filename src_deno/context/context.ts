@@ -139,9 +139,7 @@ export function extractEnterpriseId(
   } else if (body.enterprise_id) {
     return body.enterprise_id;
   } else if (
-    body.team &&
-    typeof body.team === "object" &&
-    body.team.enterprise_id
+    body.team && typeof body.team === "object" && body.team.enterprise_id
   ) {
     return body.team.enterprise_id;
   } else if (body.event) {

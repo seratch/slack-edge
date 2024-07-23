@@ -9,12 +9,9 @@ interface fromSocketModeToRequestArgs {
  * @param message Socket Mode message data
  * @returns slack-edge's request representation
  */
-export function fromSocketModeToRequest({
-  url,
-  body,
-  retryNum,
-  retryReason,
-}: fromSocketModeToRequestArgs): Request | undefined {
+export function fromSocketModeToRequest(
+  { url, body, retryNum, retryReason }: fromSocketModeToRequestArgs,
+): Request | undefined {
   if (!body) {
     return undefined;
   }
@@ -45,9 +42,9 @@ interface fromResponseToSocketModePayloadArgs {
  * @param response slack-edge's response representation
  * @returns WebSocket message data
  */
-export async function fromResponseToSocketModePayload({
-  response,
-}: fromResponseToSocketModePayloadArgs): Promise<Record<string, unknown>> {
+export async function fromResponseToSocketModePayload(
+  { response }: fromResponseToSocketModePayloadArgs,
+): Promise<Record<string, unknown>> {
   let message: Record<string, unknown> = {};
   if (response.body) {
     const contentType = response.headers.get("Content-Type");

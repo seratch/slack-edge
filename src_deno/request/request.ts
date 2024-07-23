@@ -42,42 +42,38 @@ export type SlackMiddlewareRequest<E extends SlackAppEnv> =
 /**
  * Request data representation available for listeners.
  */
-export type SlackRequest<
-  E extends SlackAppEnv,
-  Payload,
-> = SlackMiddlewareRequest<E> & {
-  payload: Payload;
-};
+export type SlackRequest<E extends SlackAppEnv, Payload> =
+  & SlackMiddlewareRequest<E>
+  & {
+    payload: Payload;
+  };
 
 /**
  * Request data representation including channel_id available for listeners.
  */
-export type SlackRequestWithChannelId<
-  E extends SlackAppEnv,
-  Payload,
-> = SlackMiddlewareRequest<E> & {
-  context: SlackAppContextWithChannelId;
-  payload: Payload;
-};
+export type SlackRequestWithChannelId<E extends SlackAppEnv, Payload> =
+  & SlackMiddlewareRequest<E>
+  & {
+    context: SlackAppContextWithChannelId;
+    payload: Payload;
+  };
 
 /**
  * Request data representation w/ response_url available for listeners.
  */
-export type SlackRequestWithRespond<
-  E extends SlackAppEnv,
-  Payload,
-> = SlackMiddlewareRequest<E> & {
-  context: SlackAppContextWithRespond;
-  payload: Payload;
-};
+export type SlackRequestWithRespond<E extends SlackAppEnv, Payload> =
+  & SlackMiddlewareRequest<E>
+  & {
+    context: SlackAppContextWithRespond;
+    payload: Payload;
+  };
 
 /**
  * Request data representation w/ response_url available for listeners.
  */
-export type SlackRequestWithOptionalRespond<
-  E extends SlackAppEnv,
-  Payload,
-> = SlackMiddlewareRequest<E> & {
-  context: SlackAppContextWithOptionalRespond;
-  payload: Payload;
-};
+export type SlackRequestWithOptionalRespond<E extends SlackAppEnv, Payload> =
+  & SlackMiddlewareRequest<E>
+  & {
+    context: SlackAppContextWithOptionalRespond;
+    payload: Payload;
+  };

@@ -1,10 +1,4 @@
-import {
-  AnyMessageBlock,
-  MessageAttachment,
-  MessageMetadata,
-  AnyTextField,
-  ModalView,
-} from "slack-web-api-client";
+import { AnyMessageBlock, MessageAttachment, MessageMetadata, AnyTextField, ModalView } from "slack-web-api-client";
 
 /**
  * Response for sending a message.
@@ -49,11 +43,7 @@ export interface ViewErrorsResponse {
   errors: { [blockId: string]: string };
 }
 
-export type AnyViewResponse =
-  | ViewUpdateResponse
-  | ViewPushResponse
-  | ViewClearResponse
-  | ViewErrorsResponse;
+export type AnyViewResponse = ViewUpdateResponse | ViewPushResponse | ViewClearResponse | ViewErrorsResponse;
 
 export interface Option {
   value: string;

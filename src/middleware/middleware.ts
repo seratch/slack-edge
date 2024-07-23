@@ -1,8 +1,5 @@
 import { SlackAppEnv } from "../app-env";
-import {
-  PreAuthorizeSlackMiddlewareRequest,
-  SlackMiddlewareRequest,
-} from "../request/request";
+import { PreAuthorizeSlackMiddlewareRequest, SlackMiddlewareRequest } from "../request/request";
 import { SlackResponse } from "../response/response";
 
 /**
@@ -15,6 +12,4 @@ export type PreAuthorizeMiddleware<E extends SlackAppEnv = SlackAppEnv> = (
 /**
  * Middleware to run after authorize() function call.
  */
-export type Middleware<E extends SlackAppEnv = SlackAppEnv> = (
-  req: SlackMiddlewareRequest<E>,
-) => Promise<SlackResponse | void>;
+export type Middleware<E extends SlackAppEnv = SlackAppEnv> = (req: SlackMiddlewareRequest<E>) => Promise<SlackResponse | void>;
