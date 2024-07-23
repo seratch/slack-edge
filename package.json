@@ -1,12 +1,12 @@
 {
   "name": "slack-edge",
-  "version": "0.13.4",
+  "version": "0.14.0",
   "description": "Slack app development framework for edge functions with streamlined TypeScript support",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "build:clean": "rm -rf ./dist && tsc",
-    "format": "npx prettier --write src/ test/",
+    "format": "npx @biomejs/biome format --write src/",
     "test": "npm run format && npx vitest",
     "ci-test": "npx vitest run --coverage"
   },
@@ -37,9 +37,9 @@
     "slack-web-api-client": "^0.13.4"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^2.0.2",
-    "prettier": "^3.3.2",
-    "typescript": "^5.5.3",
-    "vitest": "^2.0.2"
+    "@biomejs/biome": "^1.8.3",
+    "@vitest/coverage-v8": "^2.0.4",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.4"
   }
 }
