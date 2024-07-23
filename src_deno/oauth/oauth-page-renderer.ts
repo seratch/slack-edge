@@ -1,7 +1,7 @@
 import { OAuthErrorCode } from "./error-codes.ts";
 import { escapeHtml } from "./escape-html.ts";
 
-interface OAuthStartPageRendererArgs {
+export interface OAuthStartPageRendererArgs {
   url: string;
   immediateRedirect: boolean;
 }
@@ -37,7 +37,7 @@ export async function renderDefaultOAuthStartPage(
   );
 }
 
-interface OAuthErrorPageRendererArgs {
+export interface OAuthErrorPageRendererArgs {
   installPath: string;
   reason: OAuthErrorCode;
 }
@@ -67,7 +67,7 @@ export async function renderDefaultOAuthErrorPage(
   );
 }
 
-interface OAuthCompletionPageRendererArgs {
+export interface OAuthCompletionPageRendererArgs {
   appId: string;
   teamId: string;
   isEnterpriseInstall: boolean | undefined;
