@@ -70,6 +70,11 @@ describe("SlackApp", () => {
     };
     app.event("app_mention", appMentionEvent);
 
+    const tokensRevokedEvent: EventLazyHandler<"tokens_revoked"> = async ({payload  }) => {
+      const type: "tokens_revoked" = payload.type;
+    };
+    app.event("tokens_revoked", tokensRevokedEvent);
+
     const messageEvent: MessageEventLazyHandler = async ({ payload }) => {
       const type: "message" = payload.type;
     };

@@ -28,7 +28,7 @@ import { PreAuthorizeSlackMiddlewareRequest, SlackMiddlewareRequest, SlackReques
 import { SlashCommand } from "./request/payload/slash-command";
 import { toCompleteResponse } from "./response/response";
 import { SlackEvent, AnySlackEvent, AnySlackEventWithChannelId } from "./request/payload/event";
-import { AnyMafifestEvent, ResponseUrlSender, SlackAPIClient } from "slack-web-api-client";
+import { AnyEventType, ResponseUrlSender, SlackAPIClient } from "slack-web-api-client";
 import { builtBaseContext, SlackAppContext, SlackAppContextWithChannelId, SlackAppContextWithRespond } from "./context/context";
 import { PreAuthorizeMiddleware, Middleware } from "./middleware/middleware";
 import { isDebugLogEnabled, prettyPrint } from "slack-web-api-client";
@@ -155,6 +155,8 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
    */
   // deno-lint-ignore no-explicit-any
   public postAuthorizeMiddleware: Middleware<any>[] = [ignoringSelfEvents];
+
+  public eventsToSkipAuthorize: string[] = ["app_uninstalled", "tokens_revoked"];
 
   // --------------------------
   // Enabled listener functions
@@ -304,7 +306,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
    * @param lazy lazy function that can do anything asynchronously
    * @returns this instance
    */
-  event<Type extends AnyMafifestEvent>(event: Type, lazy: EventLazyHandler<Type, E>): SlackApp<E> {
+  event<Type extends AnyEventType>(event: Type, lazy: EventLazyHandler<Type, E>): SlackApp<E> {
     this.#events.push((body) => {
       if (body.type !== PayloadType.EventsAPI || !body.event) {
         return null;
@@ -595,6 +597,27 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     }
   }
 
+  async #callAuthorize(request: PreAuthorizeSlackMiddlewareRequest<E>): Promise<AuthorizeResult> {
+    const body = request.body as SlackRequestBody;
+    if (body.type === PayloadType.EventsAPI && body.event && this.eventsToSkipAuthorize.includes(body.event.type)) {
+      // this pattern does not need AuthorizeResult at all
+      return {
+        enterpriseId: request.context.actorEnterpriseId,
+        teamId: request.context.actorTeamId,
+        team: request.context.actorTeamId,
+        botId: request.context.botId || "N/A",
+        botUserId: request.context.botUserId || "N/A",
+        botToken: "N/A",
+        botScopes: [],
+        userId: request.context.actorUserId,
+        user: request.context.actorUserId,
+        userToken: "N/A",
+        userScopes: [],
+      };
+    }
+    return await this.authorize(request);
+  }
+
   /**
    * Handles an HTTP request from Slack's API server and returns a response to it.
    * @param request request
@@ -662,7 +685,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
           return toCompleteResponse(response);
         }
       }
-      const authorizeResult: AuthorizeResult = await this.authorize(preAuthorizeRequest);
+      const authorizeResult: AuthorizeResult = await this.#callAuthorize(preAuthorizeRequest);
       const primaryToken = preAuthorizeRequest.context.functionBotAccessToken || authorizeResult.botToken;
       const authorizedContext: SlackAppContext = {
         ...preAuthorizeRequest.context,

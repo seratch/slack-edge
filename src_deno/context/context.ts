@@ -4,7 +4,7 @@ import {
   ChatPostMessageResponse,
   SlackAPIClient,
   WebhookParams,
-} from "https://deno.land/x/slack_web_api_client@0.13.4/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@0.13.5/mod.ts";
 
 /**
  * SlackApp context object that provides data available before performing authorize()

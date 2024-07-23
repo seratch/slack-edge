@@ -1,3 +1,4 @@
+import { AnyEventType } from "https://deno.land/x/slack_web_api_client@0.13.5/mod.ts";
 import { EventRequest, MessageEventHandler } from "../app.ts";
 import { SlackAppEnv } from "../app-env.ts";
 import {
@@ -60,9 +61,11 @@ export type SlashCommandLazyHandler<E extends SlackAppEnv = SlackAppEnv> = (
  * lazy function for Events API handling.
  */
 export type EventLazyHandler<
-  Type extends string,
+  Type extends AnyEventType,
   E extends SlackAppEnv = SlackAppEnv,
-> = (req: EventRequest<E, Type>) => Promise<void>;
+> = (
+  req: EventRequest<E, Type>,
+) => Promise<void>;
 
 /**
  * lazy function for message event handling.
