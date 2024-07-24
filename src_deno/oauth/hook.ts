@@ -1,4 +1,7 @@
-import { OAuthV2AccessResponse } from "https://deno.land/x/slack_web_api_client@0.13.5/mod.ts";
+import {
+  AuthTestResponse,
+  OAuthV2AccessResponse,
+} from "https://deno.land/x/slack_web_api_client@0.13.5/mod.ts";
 import { InvalidStateParameter, OAuthErrorCode } from "./error-codes.ts";
 import { Installation } from "./installation.ts";
 import {
@@ -161,6 +164,8 @@ export interface OAuthCallbackArgs {
   enterpriseUrl: string | undefined;
   stateCookieName: string;
   request: Request;
+  installation: Installation;
+  authTestResponse: AuthTestResponse;
 }
 
 /**
@@ -174,7 +179,15 @@ export type OAuthCallback = (args: OAuthCallbackArgs) => Promise<Response>;
 export function defaultOAuthCallback(
   renderer?: OAuthCompletionPageRenderer,
 ): OAuthCallback {
-  return async ({ oauthAccess, enterpriseUrl, stateCookieName }) => {
+  return async (
+    {
+      oauthAccess,
+      enterpriseUrl,
+      stateCookieName,
+      installation,
+      authTestResponse,
+    },
+  ) => {
     const renderPage = renderer ?? renderDefaultOAuthCompletionPage;
     return new Response(
       await renderPage({
@@ -182,6 +195,8 @@ export function defaultOAuthCallback(
         teamId: oauthAccess.team?.id!,
         isEnterpriseInstall: oauthAccess.is_enterprise_install,
         enterpriseUrl,
+        installation,
+        authTestResponse,
       }),
       {
         status: 200,

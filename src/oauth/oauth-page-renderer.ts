@@ -1,5 +1,7 @@
+import { AuthTestResponse } from "slack-web-api-client";
 import { OAuthErrorCode } from "./error-codes";
 import { escapeHtml } from "./escape-html";
+import { Installation } from "./installation";
 
 export interface OAuthStartPageRendererArgs {
   url: string;
@@ -31,6 +33,24 @@ export async function renderDefaultOAuthStartPage({ url, immediateRedirect }: OA
   );
 }
 
+// deno-lint-ignore require-await
+export async function renderSimpleCSSOAuthStartPage({ url, immediateRedirect }: OAuthStartPageRendererArgs) {
+  const meta = immediateRedirect ? `<meta http-equiv="refresh" content="2;url=${escapeHtml(url)}'" />` : "";
+  return `<html>
+      <head>
+      ${meta}
+      <title>Redirecting to Slack ...</title>
+      <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+      </head>
+      <body>
+      <main>
+      <h2>Installing Slack App</h2>
+      <p>Redirecting to the Slack OAuth page ... Click <a href="${escapeHtml(url)}">here</a> to continue.</p>
+      </main>
+      </body>
+      </html>`;
+}
+
 export interface OAuthErrorPageRendererArgs {
   installPath: string;
   reason: OAuthErrorCode;
@@ -57,11 +77,28 @@ export async function renderDefaultOAuthErrorPage({ installPath, reason }: OAuth
   );
 }
 
+// deno-lint-ignore require-await
+export async function renderSimpleCSSOAuthErrorPage({ installPath, reason }: OAuthErrorPageRendererArgs) {
+  return `<html>
+      <head>
+      <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+      </head>
+      <body>
+      <main>
+      <h2>Oops, Something Went Wrong!</h2>
+      <p>Please try again from <a href="${escapeHtml(installPath)}">here</a> or contact the app owner (reason: ${escapeHtml(reason.message)})</p>
+      </main>
+      </body>
+      </html>`;
+}
+
 export interface OAuthCompletionPageRendererArgs {
   appId: string;
   teamId: string;
   isEnterpriseInstall: boolean | undefined;
   enterpriseUrl: string | undefined;
+  installation: Installation;
+  authTestResponse: AuthTestResponse;
 }
 /**
  * Error page content renderer.
@@ -74,6 +111,8 @@ export type OAuthCompletionPageRenderer = (args: OAuthCompletionPageRendererArgs
  * @param teamId workspace ID to head to
  * @param isEnterpriseInstall org-wide installation or not
  * @param enterpriseUrl the management console URL for Enterprise Grid admins
+ * @param installation installation data
+ * @param authTestResponse auth.test API response
  * @returns HTML data
  */
 // deno-lint-ignore require-await
@@ -97,4 +136,31 @@ export async function renderDefaultOAuthCompletionPage({
     escapeHtml(browserUrl) +
     '" target="_blank">this link</a> instead.</p></body></html>'
   );
+}
+
+// deno-lint-ignore require-await
+export async function renderSimpleCSSOAuthCompletionPage({
+  appId,
+  teamId,
+  isEnterpriseInstall,
+  enterpriseUrl,
+}: OAuthCompletionPageRendererArgs) {
+  let url = `slack://app?team=${teamId}&id=${appId}`;
+  if (isEnterpriseInstall && enterpriseUrl !== undefined) {
+    url = `${enterpriseUrl}manage/organization/apps/profile/${appId}/workspaces/add"`;
+  }
+  const browserUrl = `https://app.slack.com/client/${teamId}`;
+  return `<html>
+      <head>
+      <meta http-equiv="refresh" content="0; URL=${escapeHtml(url)}">
+      <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+      </head>
+      <body>
+      <main>
+      <h2>Thank you!</h2>
+      <p>Redirecting to the Slack App... click <a href="${escapeHtml(url)}">here</a>.
+      If you use the browser version of Slack, click <a href="${escapeHtml(browserUrl)}" target="_blank">this link</a> instead.</p>
+      </main>
+      </body>
+      </html>`;
 }

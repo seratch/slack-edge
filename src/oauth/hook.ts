@@ -1,4 +1,4 @@
-import { OAuthV2AccessResponse } from "slack-web-api-client";
+import { AuthTestResponse, OAuthV2AccessResponse } from "slack-web-api-client";
 import { InvalidStateParameter, OAuthErrorCode } from "./error-codes";
 import { Installation } from "./installation";
 import {
@@ -146,6 +146,8 @@ export interface OAuthCallbackArgs {
   enterpriseUrl: string | undefined;
   stateCookieName: string;
   request: Request;
+  installation: Installation;
+  authTestResponse: AuthTestResponse;
 }
 
 /**
@@ -157,7 +159,7 @@ export type OAuthCallback = (args: OAuthCallbackArgs) => Promise<Response>;
  * The default OAuthCallback implementation.
  */
 export function defaultOAuthCallback(renderer?: OAuthCompletionPageRenderer): OAuthCallback {
-  return async ({ oauthAccess, enterpriseUrl, stateCookieName }) => {
+  return async ({ oauthAccess, enterpriseUrl, stateCookieName, installation, authTestResponse }) => {
     const renderPage = renderer ?? renderDefaultOAuthCompletionPage;
     return new Response(
       await renderPage({
@@ -165,6 +167,8 @@ export function defaultOAuthCallback(renderer?: OAuthCompletionPageRenderer): OA
         teamId: oauthAccess.team?.id!,
         isEnterpriseInstall: oauthAccess.is_enterprise_install,
         enterpriseUrl,
+        installation,
+        authTestResponse,
       }),
       {
         status: 200,

@@ -316,6 +316,15 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     }
 
     const { searchParams } = new URL(request.url);
+    const error = searchParams.get("error");
+    if (!error && error !== null) {
+      return await this.oauth.onFailure({
+        env: this.env,
+        startPath: this.routes.oauth.start,
+        reason: { code: error, message: `The installation process failed due to "${error}"` },
+        request,
+      });
+    }
     const code = searchParams.get("code");
     if (!code) {
       return await this.oauth.onFailure({
@@ -383,15 +392,17 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
 
     try {
       // Build the completion page
-      const authTest = await client.auth.test({
+      const authTestResponse = await client.auth.test({
         token: oauthAccess.access_token,
       });
-      const enterpriseUrl = authTest.url;
+      const enterpriseUrl = authTestResponse.url;
       return await this.oauth.callback({
         env: this.env,
         oauthAccess,
         enterpriseUrl,
         stateCookieName: this.oauth.stateCookieName!,
+        installation,
+        authTestResponse,
         request,
       });
     } catch (e) {
