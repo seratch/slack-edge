@@ -149,7 +149,7 @@ export async function renderDefaultOAuthCompletionPage({
   let url = `slack://app?team=${teamId}&id=${appId}`;
   if (isEnterpriseInstall && enterpriseUrl !== undefined) {
     url =
-      `${enterpriseUrl}manage/organization/apps/profile/${appId}/workspaces/add"`;
+      `${enterpriseUrl}manage/organization/apps/profile/${appId}/workspaces/add`;
   }
   const browserUrl = `https://app.slack.com/client/${teamId}`;
   return (
@@ -173,7 +173,7 @@ export async function renderSimpleCSSOAuthCompletionPage({
   let url = `slack://app?team=${teamId}&id=${appId}`;
   if (isEnterpriseInstall && enterpriseUrl !== undefined) {
     url =
-      `${enterpriseUrl}manage/organization/apps/profile/${appId}/workspaces/add"`;
+      `${enterpriseUrl}manage/organization/apps/profile/${appId}/workspaces/add`;
   }
   const browserUrl = `https://app.slack.com/client/${teamId}`;
   return `<html>
