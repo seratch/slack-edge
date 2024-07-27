@@ -3,7 +3,7 @@ import {
   AuthTestResponse,
   SlackAPIClient,
   SlackAPIError,
-} from "https://deno.land/x/slack_web_api_client@0.13.5/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@1.0.0/mod.ts";
 import { Authorize } from "./authorize.ts";
 
 /**
