@@ -48,6 +48,7 @@ export type AnyViewResponse = ViewUpdateResponse | ViewPushResponse | ViewClearR
 export interface Option {
   value: string;
   text: AnyTextField;
+  description?: AnyTextField;
 }
 
 export interface OptionGroup {

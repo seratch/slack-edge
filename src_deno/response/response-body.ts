@@ -58,6 +58,7 @@ export type AnyViewResponse =
 export interface Option {
   value: string;
   text: AnyTextField;
+  description?: AnyTextField;
 }
 
 export interface OptionGroup {
