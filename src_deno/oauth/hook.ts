@@ -1,7 +1,7 @@
 import {
   AuthTestResponse,
   OAuthV2AccessResponse,
-} from "https://deno.land/x/slack_web_api_client@1.0.2/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@1.0.3/mod.ts";
 import { InvalidStateParameter, OAuthErrorCode } from "./error-codes.ts";
 import { Installation } from "./installation.ts";
 import {

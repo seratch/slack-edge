@@ -1,7 +1,7 @@
 import {
   OpenIDConnectTokenResponse,
   OpenIDConnectUserInfoResponse,
-} from "https://deno.land/x/slack_web_api_client@1.0.2/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@1.0.3/mod.ts";
 
 /**
  * Data type representing the SIWS login result.
