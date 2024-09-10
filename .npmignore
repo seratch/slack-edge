@@ -1,6 +1,7 @@
 node_modules/
 tsconfig.json
 .prettierrc.json
+biome.json
 examples/
 src/
 src_deno/
