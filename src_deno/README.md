@@ -77,7 +77,7 @@ run a Socket Mode app as below:
 import {
   SlackApp,
   SlackSocketModeAppEnv,
-} from "https://deno.land/x/slack_edge@1.0.1/mod.ts";
+} from "https://deno.land/x/slack_edge@1.0.2/mod.ts";
 
 const app = new SlackApp<SlackSocketModeAppEnv>({
   env: {
