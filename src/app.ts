@@ -85,6 +85,12 @@ export interface SlackAppOptions<E extends SlackEdgeAppEnv | SlackSocketModeAppE
    * The default is set to false.
    */
   startLazyListenerAfterAck?: boolean;
+
+  /**
+   * When this is set to false, the built-in ignoringSelfEvents middleware is disabled.
+   * The default is set to true.
+   */
+  ignoreSelfEvents?: boolean;
 }
 
 /**
@@ -145,6 +151,12 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
   public startLazyListenerAfterAck: boolean; // default: false
 
   /**
+   * When this is set to false, the built-in ignoringSelfEvents middleware is disabled.
+   * The default is set to true.
+   */
+  public ignoreSelfEvents: boolean; // default: true
+
+  /**
    * The custom middleware that are called before authorize() function.
    */
   // deno-lint-ignore no-explicit-any
@@ -154,7 +166,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
    * The custom middleware that are called after authorize() function.
    */
   // deno-lint-ignore no-explicit-any
-  public postAuthorizeMiddleware: Middleware<any>[] = [ignoringSelfEvents];
+  public postAuthorizeMiddleware: Middleware<any>[] = [];
 
   public eventsToSkipAuthorize: string[] = ["app_uninstalled", "tokens_revoked"];
 
@@ -203,6 +215,10 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       this.signingSecret = this.env.SLACK_SIGNING_SECRET;
     }
     this.startLazyListenerAfterAck = options.startLazyListenerAfterAck ?? false;
+    this.ignoreSelfEvents = options.ignoreSelfEvents ?? true;
+    if (this.ignoreSelfEvents) {
+      this.postAuthorizeMiddleware.push(ignoringSelfEvents);
+    }
     this.authorize = options.authorize ?? singleTeamAuthorize;
     this.routes = { events: options.routes?.events };
   }
