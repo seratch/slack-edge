@@ -3,7 +3,7 @@ import {
   HomeTabView,
   MessageAttachment,
   MessageMetadata,
-} from "https://deno.land/x/slack_web_api_client@1.0.4/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@1.0.5/mod.ts";
 
 export type AnySlackEvent =
   | AppRequestedEvent
