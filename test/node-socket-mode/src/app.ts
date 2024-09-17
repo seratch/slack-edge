@@ -1,4 +1,4 @@
-import { SlackApp } from "../../../src/index"; // "slack-edge"
+import { SlackApp, Assistant } from "../../../src/index"; // "slack-edge"
 
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR";
 const logLevel = (process.env.SLACK_APP_LOG_LEVEL || "DEBUG") as LogLevel;
@@ -11,6 +11,27 @@ export const app = new SlackApp({
     SLACK_LOGGING_LEVEL: logLevel,
   },
 });
+
+app.assistant(new Assistant({
+  threadStarted: async ({ context: { say, setSuggestedPrompts }}) => {
+    await say({ text: "Hello, how can I help you today?"});
+    await setSuggestedPrompts({
+      title: "New chat",
+      prompts: [
+        "What does SLACK stand for?"
+      ]
+    })
+  },
+  userMessage: async ({ context: { setStatus, say, threadContextStore, channelId, threadTs }}) => {
+    await setStatus({ status: "is typing..."});
+    const threadContext = await threadContextStore.find({ channel_id: channelId, thread_ts: threadTs });
+    if (threadContext?.channel_id) {
+      await say({ text: `Do you need help with contents in <#${threadContext.channel_id}>?` });
+    } else {
+      await say({ text: "Here you are!" });
+    }
+  }
+}));
 
 app.event(
   "app_home_opened",

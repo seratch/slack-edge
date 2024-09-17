@@ -377,9 +377,10 @@ Starting from v0.9, if desired, you can execute lazy listeners after the complet
 
 |Pattern|Description|`ack` function|`lazy` function|
 |-|-|-|-|
+|app.assistant|The passed collection of functions handles an assistant thread request pattern. The feature needs to be turned on in advance.|x|◯|
 |app.command|The passed function handles a slash command request pattern. If the function returns a message, the message will be posted in the channel where the end-user invoked the command.|◯|◯|
 |app.event|The passed function asynchronously does something when an Events API request that matches the constraints comes in. Please note that manually acknowledge a request is unsupported. You can pass only one function, which can be executed as a lazy listener.|x|◯|
-|app.function [**experimental**]|The passed function asynchronously does something when a "function_executed" event request that matches the constraints comes in. Please note that manually acknowledge a request is unsupported. You can pass only one function, which can be executed as a lazy listener. Also, this feature is still in beta so that the details could be changed on the Slack plaform side until it's GAed.|x|◯|
+|app.function|The passed function asynchronously does something when a "function_executed" event request that matches the constraints comes in. Please note that manually acknowledge a request is unsupported. You can pass only one function, which can be executed as a lazy listener.|x|◯|
 |app.message / app.anyMessage|The passed function asynchronously does something when an a message event comes in. Please note that manually acknowledge a request is unsupported. You can pass only one function, which can be executed as a lazy listener. If the message pattern argument can be any of string, regexp, and undefined. When you pass undefined, the listener matches all messages.|x|◯|
 |app.shortcut / app.globalShortcut / app.messageShortcut|The passed function handles a global/message shortcut request pattern. Please note that returning a message text in the `ack` function does not work for shortcuts. Instead, you can use `context.respond` for it.|◯|◯|
 |app.action|The passed function handles a user interaction on a Block Kit component such as button clicks, item selection in a select menu, and so on.|◯|◯|

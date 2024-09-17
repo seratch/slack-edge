@@ -3,7 +3,7 @@ import {
   AnyModalBlock,
   PlainTextField,
   RichTextBlock,
-} from "https://deno.land/x/slack_web_api_client@1.0.5/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@1.1.2/mod.ts";
 
 export interface ViewStateSelectedOption {
   text: PlainTextField;

@@ -4,6 +4,10 @@ export * from "./execution-context";
 
 export * from "slack-web-api-client";
 
+export * from "./assistant/assistant";
+export * from "./assistant/thread-context";
+export * from "./assistant/thread-context-store";
+
 export * from "./errors";
 export * from "./oauth/error-codes";
 

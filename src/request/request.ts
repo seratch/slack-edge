@@ -4,6 +4,7 @@ import {
   SlackAppContextWithRespond,
   SlackAppContextWithOptionalRespond,
   SlackAppContextWithChannelId,
+  SlackAppContextWithAssistantUtilities,
 } from "../context/context";
 import { SlackAppEnv } from "../app-env";
 
@@ -47,6 +48,14 @@ export type SlackRequest<E extends SlackAppEnv, Payload> = SlackMiddlewareReques
  */
 export type SlackRequestWithChannelId<E extends SlackAppEnv, Payload> = SlackMiddlewareRequest<E> & {
   context: SlackAppContextWithChannelId;
+  payload: Payload;
+};
+
+/**
+ * Request data representation including channel_id and thread_ts available for listeners.
+ */
+export type SlackRequestWithAssistantUtilities<E extends SlackAppEnv, Payload> = SlackMiddlewareRequest<E> & {
+  context: SlackAppContextWithAssistantUtilities;
   payload: Payload;
 };
 

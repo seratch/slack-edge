@@ -1,5 +1,16 @@
 import { AuthorizeResult } from "../authorization/authorize-result";
-import { SlackAPIClient, ChatPostMessageRequest, ChatPostMessageResponse, WebhookParams } from "slack-web-api-client";
+import {
+  SlackAPIClient,
+  ChatPostMessageRequest,
+  ChatPostMessageResponse,
+  WebhookParams,
+  AssistantThreadsSetStatusResponse,
+  AssistantThreadsSetSuggestedPromptsResponse,
+  AssistantThreadsSetTitleResponse,
+} from "slack-web-api-client";
+import { PayloadType } from "../request/payload-types";
+import { AssistantThreadContextStore } from "../assistant/thread-context-store";
+import { AssistantThreadContext } from "../assistant/thread-context";
 
 /**
  * SlackApp context object that provides data available before performing authorize()
@@ -16,6 +27,8 @@ export interface PreAuthorizeSlackAppContext {
   botUserId?: string; // this will always exist when initializing SlackAppContext
   responseUrl?: string;
   channelId?: string;
+  threadTs?: string; // for assistant apps
+  isAssistantThreadEvent: boolean;
   triggerId?: string;
   functionExecutionId?: string;
   functionBotAccessToken?: string;
@@ -49,6 +62,21 @@ export type SlackAppContextWithChannelId = {
   channelId: string;
   say: (params: Omit<ChatPostMessageRequest, "channel">) => Promise<ChatPostMessageResponse>;
 } & SlackAppContext;
+
+export type SlackAppContextWithAssistantUtilities = SlackAppContextWithChannelId & {
+  setStatus: (args: { status: string }) => Promise<AssistantThreadsSetStatusResponse>;
+  setSuggestedPrompts: (args: {
+    title?: string;
+    prompts: ({ title: string; message: string } | string)[];
+  }) => Promise<AssistantThreadsSetSuggestedPromptsResponse>;
+  setTitle: (args: { title: string }) => Promise<AssistantThreadsSetTitleResponse>;
+  threadContextStore: AssistantThreadContextStore;
+  saveThreadContextStore: (newContext: AssistantThreadContext) => Promise<void>;
+  threadContext?: AssistantThreadContext;
+  channelId: string;
+  threadTs: string;
+  isAssitantThreadEvent: true;
+};
 
 /**
  * SlackApp context object that provides channelId and respond() utility.
@@ -84,6 +112,8 @@ export function builtBaseContext(
     botUserId: undefined, // will be set later
     responseUrl: extractResponseUrl(body),
     channelId: extractChannelId(body),
+    threadTs: extractThreadTs(body),
+    isAssistantThreadEvent: isAssitantThreadEvent(body),
     triggerId: extractTriggerId(body),
     functionExecutionId: extractFunctionExecutionId(body),
     functionBotAccessToken: extractFunctionBotAccessToken(body),
@@ -341,6 +371,48 @@ export function extractChannelId(
   } else if (body.item) {
     // reaction_added: body["event"]["item"]
     return extractChannelId(body.item);
+  } else if (body.assistant_thread) {
+    // assistant_thread_started
+    return extractChannelId(body.assistant_thread);
+  }
+  return undefined;
+}
+
+export function isAssitantThreadEvent(
+  // deno-lint-ignore no-explicit-any
+  body: Record<string, any>,
+): boolean {
+  return (
+    body.type === PayloadType.EventsAPI &&
+    body.event !== undefined &&
+    (body.event.type === "assistant_thread_started" ||
+      body.event.type === "assistant_thread_context_changed" ||
+      (body.event.type === "message" && body.event.channel_type === "im"))
+  );
+}
+
+export function extractThreadTs(
+  // deno-lint-ignore no-explicit-any
+  body: Record<string, any>,
+): string | undefined {
+  // This utility initially supports only the use cases for AI assistants, but it may be fine to add more patterns.
+  // That said, note that thread_ts is always required for assistant threads, but it's not for channels.
+  // Thus, blindly setting this thread_ts to say utility can break existing apps' behaviors.
+  if (isAssitantThreadEvent(body)) {
+    if (body.event.assistant_thread !== undefined) {
+      return body.event.assistant_thread.thread_ts;
+    } else if (body.event.channel !== undefined) {
+      if (body.event.thread_ts !== undefined) {
+        // message events
+        return body.event.thread_ts;
+      } else if (body.event.message !== undefined && body.event.message.thread_ts !== undefined) {
+        // message_changed
+        return body.event.message.thread_ts;
+      } else if (body.event.previous_message !== undefined && body.event.previous_message.thread_ts !== undefined) {
+        // message_deleted
+        return body.event.previous_message.thread_ts;
+      }
+    }
   }
   return undefined;
 }

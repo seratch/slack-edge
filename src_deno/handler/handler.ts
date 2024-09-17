@@ -1,4 +1,4 @@
-import { AnyEventType } from "https://deno.land/x/slack_web_api_client@1.0.5/mod.ts";
+import { AnyEventType } from "https://deno.land/x/slack_web_api_client@1.1.2/mod.ts";
 import { EventRequest, MessageEventHandler } from "../app.ts";
 import { SlackAppEnv } from "../app-env.ts";
 import {
@@ -14,6 +14,7 @@ import { ViewClosed } from "../request/payload/view-closed.ts";
 import { ViewSubmission } from "../request/payload/view-submission.ts";
 import {
   SlackRequest,
+  SlackRequestWithAssistantUtilities,
   SlackRequestWithOptionalRespond,
   SlackRequestWithRespond,
 } from "../request/request.ts";
@@ -21,6 +22,12 @@ import { SlackResponse } from "../response/response.ts";
 import { MessageAckResponse } from "./message-handler.ts";
 import { OptionsAckResponse } from "./options-handler.ts";
 import { ViewAckResponse } from "./view-handler.ts";
+import {
+  AssistantThreadContextChangedEvent,
+  AssistantThreadStartedEvent,
+  FileShareMessageEvent,
+  GenericMessageEvent,
+} from "../request/payload/event.ts";
 
 /**
  * Returned data from an ack function.
@@ -72,6 +79,30 @@ export type EventLazyHandler<
  */
 export type MessageEventLazyHandler<E extends SlackAppEnv = SlackAppEnv> =
   MessageEventHandler<E>;
+
+export type AssistantThreadEventRequest<
+  E extends SlackAppEnv,
+  Type extends
+    | AssistantThreadStartedEvent
+    | AssistantThreadContextChangedEvent
+    | GenericMessageEvent
+    | FileShareMessageEvent,
+> = SlackRequestWithAssistantUtilities<E, Type>;
+
+export type AssistantEventLazyHandler<
+  Type extends
+    | AssistantThreadStartedEvent
+    | AssistantThreadContextChangedEvent
+    | GenericMessageEvent
+    | FileShareMessageEvent,
+  E extends SlackAppEnv = SlackAppEnv,
+> = (req: AssistantThreadEventRequest<E, Type>) => Promise<void>;
+
+export type AssistantMessageEventRequest<E extends SlackAppEnv> =
+  SlackRequestWithAssistantUtilities<
+    E,
+    GenericMessageEvent | FileShareMessageEvent
+  >;
 
 // ----------------------------------------
 // Shortcuts

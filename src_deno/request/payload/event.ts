@@ -3,7 +3,7 @@ import {
   HomeTabView,
   MessageAttachment,
   MessageMetadata,
-} from "https://deno.land/x/slack_web_api_client@1.0.5/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@1.1.2/mod.ts";
 
 export type AnySlackEvent =
   | AppRequestedEvent
@@ -14,6 +14,8 @@ export type AnySlackEvent =
   | AppMentionEvent
   | AppRateLimitedEvent
   | AppUninstalledEvent
+  | AssistantThreadStartedEvent
+  | AssistantThreadContextChangedEvent
   | ChannelArchiveEvent
   | ChannelCreatedEvent
   | ChannelDeletedEvent
@@ -92,6 +94,8 @@ export type AnySlackEventWithChannelId =
   | AppHomeOpenedEvent
   | AppMentionEvent
   | AppUninstalledEvent
+  | AssistantThreadStartedEvent
+  | AssistantThreadContextChangedEvent
   | ChannelArchiveEvent
   | ChannelCreatedEvent
   | ChannelDeletedEvent
@@ -129,6 +133,13 @@ export type AnySlackEventWithChannelId =
   | SharedChannelInviteDeclinedEvent
   | StarAddedEvent
   | StarRemovedEvent;
+
+// These union types may not be a complete set of events
+export type AnySlackAssistantThreadEvent =
+  | AssistantThreadStartedEvent
+  | AssistantThreadContextChangedEvent
+  | GenericMessageEvent
+  | FileShareMessageEvent;
 
 /**
  * Events API payload data
@@ -289,6 +300,37 @@ export interface AppRateLimitedEvent extends SlackEvent<"app_rate_limited"> {
 
 export interface AppUninstalledEvent extends SlackEvent<"app_uninstalled"> {
   type: "app_uninstalled";
+}
+
+export interface AssistantThreadStartedEvent
+  extends SlackEvent<"assistant_thread_started"> {
+  type: "assistant_thread_started";
+  assistant_thread: {
+    user_id: string;
+    context: {
+      channel_id?: string;
+      team_id?: string;
+      enterprise_id?: string | null;
+    };
+    channel_id: string;
+    thread_ts: string;
+  };
+  event_ts: string;
+}
+export interface AssistantThreadContextChangedEvent
+  extends SlackEvent<"assistant_thread_context_changed"> {
+  type: "assistant_thread_context_changed";
+  assistant_thread: {
+    user_id: string;
+    context: {
+      channel_id: string;
+      team_id: string;
+      enterprise_id: string | null;
+    };
+    channel_id: string;
+    thread_ts: string;
+  };
+  event_ts: string;
 }
 
 export interface ChannelArchiveEvent extends SlackEvent<"channel_archive"> {
