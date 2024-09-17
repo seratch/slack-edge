@@ -40,6 +40,7 @@ import {
   OAuthErrorPageRenderer,
   OAuthStartPageRenderer,
 } from "./oauth/oauth-page-renderer.ts";
+import { AssistantThreadContextStore } from "./assistant/thread-context-store.ts";
 
 /**
  * Options for initializing SlackOAuthApp instance.
@@ -110,6 +111,23 @@ export interface SlackOAuthAppOptions<E extends SlackOAuthEnv> {
     oauth: { start: string; callback: string };
     oidc?: { start: string; callback: string };
   };
+
+  /**
+   * When this is set to true, all lazy listeners are invoked after the ack function completion.
+   * The default is set to false.
+   */
+  startLazyListenerAfterAck?: boolean;
+
+  /**
+   * When this is set to false, the built-in ignoringSelfEvents middleware is disabled.
+   * The default is set to true.
+   */
+  ignoreSelfEvents?: boolean;
+
+  /**
+   * Your custom assistant thread context store implementation.
+   */
+  assistantThreadContextStore?: AssistantThreadContextStore;
 }
 
 /**
@@ -177,6 +195,9 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
       env: options.env,
       authorize: options.installationStore.toAuthorize(),
       routes: { events: options.routes?.events ?? "/slack/events" },
+      startLazyListenerAfterAck: options.startLazyListenerAfterAck,
+      ignoreSelfEvents: options.ignoreSelfEvents,
+      assistantThreadContextStore: options.assistantThreadContextStore,
     });
     this.env = options.env;
     this.installationStore = options.installationStore;
