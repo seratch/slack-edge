@@ -790,19 +790,17 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
               thisBotUserId: context.botUserId,
             });
           assistantContext.threadContextStore = threadContextStore;
+          // saveThreadContextStore
           assistantContext.saveThreadContextStore = async (newContext) => {
             await threadContextStore.save({ channel_id, thread_ts }, newContext);
           };
 
           // threadContext
           const threadContext: AssistantThreadContext | undefined =
-            (await threadContextStore.find({
-              channel_id: context.channelId,
-              thread_ts: context.threadTs,
-            })) ||
-            (body.event.assistant_thread?.context && Object.keys(body.event.assistant_thread.context).length > 0)
+            (await threadContextStore.find({ channel_id, thread_ts })) ||
+            (body.event.assistant_thread?.context && Object.keys(body.event.assistant_thread.context).length > 0
               ? body.event.assistant_thread?.context
-              : undefined;
+              : undefined);
           if (threadContext) {
             assistantContext.threadContext = threadContext;
           }
