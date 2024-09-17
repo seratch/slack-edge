@@ -103,6 +103,12 @@ export interface SlackAppOptions<E extends SlackEdgeAppEnv | SlackSocketModeAppE
   ignoreSelfEvents?: boolean;
 
   /**
+   * When this is set to false, the built-in ignoringSelfEvents middleware does not block this app's assistant bot message event.
+   * The default is set to true.
+   */
+  ignoreSelfAssistantMessageEvents?: boolean;
+
+  /**
    * Your custom assistant thread context store implementation.
    */
   assistantThreadContextStore?: AssistantThreadContextStore;
@@ -237,7 +243,8 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     this.startLazyListenerAfterAck = options.startLazyListenerAfterAck ?? false;
     this.ignoreSelfEvents = options.ignoreSelfEvents ?? true;
     if (this.ignoreSelfEvents) {
-      this.postAuthorizeMiddleware.push(ignoringSelfEvents);
+      const middleware = ignoringSelfEvents(options.ignoreSelfAssistantMessageEvents ?? true);
+      this.postAuthorizeMiddleware.push(middleware);
     }
     this.authorize = options.authorize ?? singleTeamAuthorize;
     this.routes = { events: options.routes?.events };
@@ -357,14 +364,34 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     return this;
   }
 
-  #assistantEvent<Type extends AnyEventType>(event: Type, lazy: EventLazyHandler<Type, E>): SlackApp<E> {
+  #assistantEvent<Type extends AnyEventType>(
+    event: Type,
+    lazy: EventLazyHandler<Type, E>,
+    handleSelfBotMessageEvents: boolean = false,
+  ): SlackApp<E> {
     this.#events.push((body) => {
       if (body.type !== PayloadType.EventsAPI || !body.event) {
         return null;
       }
       if (body.event.type === event && isAssitantThreadEvent(body)) {
-        // deno-lint-ignore require-await
-        return { ack: async () => "", lazy };
+        if (event === "message" && "bot_profile" in body.event) {
+          if (handleSelfBotMessageEvents) {
+            // this app's bot message events
+            // The botMessageHandler acknowledges this pattern
+            // Note that ignoreSelfAssistantMessageEvents must be set to false
+            // deno-lint-ignore require-await
+            return { ack: async () => "", lazy };
+          } else {
+            // userMessageHandler does not acknowledge
+            return null;
+          }
+        } else {
+          // assistant_thread_started events
+          // assistant_thread_context_changed events
+          // user message events
+          // deno-lint-ignore require-await
+          return { ack: async () => "", lazy };
+        }
       }
       return null;
     });
@@ -374,7 +401,8 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
   assistant(assistant: Assistant<E>): SlackApp<E> {
     this.#assistantEvent("assistant_thread_started", assistant.threadStartedHandler);
     this.#assistantEvent("assistant_thread_context_changed", assistant.threadContextChangedHandler);
-    this.#assistantEvent("message", assistant.userMessageHandler);
+    this.#assistantEvent("message", assistant.userMessageHandler, false);
+    this.#assistantEvent("message", assistant.botMessageHandler, true);
     if (assistant.threadContextStore) {
       this.assistantThreadContextStore = assistant.threadContextStore;
     }

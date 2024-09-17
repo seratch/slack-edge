@@ -27,6 +27,7 @@ export interface AssistantOptions<E extends SlackAppEnv> {
   threadStarted?: AssistantThreadStartedHandler<E>;
   threadContextChanged?: AssistantThreadContextChangedHandler<E>;
   userMessage?: AssistantUserMessageHandler<E>;
+  botMessage?: AssistantUserMessageHandler<E>;
 }
 
 export class Assistant<E extends SlackAppEnv> {
@@ -37,6 +38,7 @@ export class Assistant<E extends SlackAppEnv> {
     E
   >;
   userMessageHandler: EventLazyHandler<"message", E>;
+  botMessageHandler: EventLazyHandler<"message", E>;
 
   constructor(options: AssistantOptions<E> = {}) {
     this.threadContextStore = options.threadContextStore;
@@ -99,6 +101,8 @@ export class Assistant<E extends SlackAppEnv> {
         ) {
           if (options.userMessage) {
             await options.userMessage(req as AssistantMessageEventRequest<E>);
+          } else {
+            // noop; just ack the request
           }
         }
       } catch (e: unknown) {
@@ -106,6 +110,25 @@ export class Assistant<E extends SlackAppEnv> {
           `Failed to execute userMessageHandler listener: ${
             (e as Error).stack
           }`,
+        );
+      }
+    };
+    this.botMessageHandler = async (req) => {
+      try {
+        if (
+          (req.payload.subtype === undefined ||
+            req.payload.subtype === "file_share") &&
+          req.payload.user === req.context.botUserId
+        ) {
+          if (options.botMessage) {
+            await options.botMessage(req as AssistantMessageEventRequest<E>);
+          } else {
+            // noop; just ack the request
+          }
+        }
+      } catch (e: unknown) {
+        console.error(
+          `Failed to execute botMessageHandler listener: ${(e as Error).stack}`,
         );
       }
     };
@@ -165,6 +188,23 @@ export class Assistant<E extends SlackAppEnv> {
           `Failed to execute userMessageHandler listener: ${
             (e as Error).stack
           }`,
+        );
+      }
+    };
+  }
+  botMessage(handler: AssistantUserMessageHandler<E>) {
+    this.botMessageHandler = async (req) => {
+      try {
+        if (
+          (req.payload.subtype === undefined ||
+            req.payload.subtype === "file_share") &&
+          req.payload.user === req.context.botUserId
+        ) {
+          await handler(req as AssistantMessageEventRequest<E>);
+        }
+      } catch (e: unknown) {
+        console.error(
+          `Failed to execute botMessageHandler listener: ${(e as Error).stack}`,
         );
       }
     };
