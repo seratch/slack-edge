@@ -8,11 +8,22 @@ import { MessageShortcut } from "../request/payload/message-shortcut";
 import { SlashCommand } from "../request/payload/slash-command";
 import { ViewClosed } from "../request/payload/view-closed";
 import { ViewSubmission } from "../request/payload/view-submission";
-import { SlackRequest, SlackRequestWithOptionalRespond, SlackRequestWithRespond } from "../request/request";
+import {
+  SlackRequest,
+  SlackRequestWithAssistantUtilities,
+  SlackRequestWithOptionalRespond,
+  SlackRequestWithRespond,
+} from "../request/request";
 import { SlackResponse } from "../response/response";
 import { MessageAckResponse } from "./message-handler";
 import { OptionsAckResponse } from "./options-handler";
 import { ViewAckResponse } from "./view-handler";
+import {
+  AssistantThreadContextChangedEvent,
+  AssistantThreadStartedEvent,
+  FileShareMessageEvent,
+  GenericMessageEvent,
+} from "../request/payload/event";
 
 /**
  * Returned data from an ack function.
@@ -58,6 +69,21 @@ export type EventLazyHandler<Type extends AnyEventType, E extends SlackAppEnv = 
  * lazy function for message event handling.
  */
 export type MessageEventLazyHandler<E extends SlackAppEnv = SlackAppEnv> = MessageEventHandler<E>;
+
+export type AssistantThreadEventRequest<
+  E extends SlackAppEnv,
+  Type extends AssistantThreadStartedEvent | AssistantThreadContextChangedEvent | GenericMessageEvent | FileShareMessageEvent,
+> = SlackRequestWithAssistantUtilities<E, Type>;
+
+export type AssistantEventLazyHandler<
+  Type extends AssistantThreadStartedEvent | AssistantThreadContextChangedEvent | GenericMessageEvent | FileShareMessageEvent,
+  E extends SlackAppEnv = SlackAppEnv,
+> = (req: AssistantThreadEventRequest<E, Type>) => Promise<void>;
+
+export type AssistantMessageEventRequest<E extends SlackAppEnv> = SlackRequestWithAssistantUtilities<
+  E,
+  GenericMessageEvent | FileShareMessageEvent
+>;
 
 // ----------------------------------------
 // Shortcuts

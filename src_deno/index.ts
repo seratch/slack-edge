@@ -2,7 +2,11 @@ export * from "./app.ts";
 export * from "./app-env.ts";
 export * from "./execution-context.ts";
 
-export * from "https://deno.land/x/slack_web_api_client@1.0.5/mod.ts";
+export * from "https://deno.land/x/slack_web_api_client@1.1.2/mod.ts";
+
+export * from "./assistant/assistant.ts";
+export * from "./assistant/thread-context.ts";
+export * from "./assistant/thread-context-store.ts";
 
 export * from "./errors.ts";
 export * from "./oauth/error-codes.ts";

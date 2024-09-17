@@ -29,7 +29,14 @@ import { SlashCommand } from "./request/payload/slash-command";
 import { toCompleteResponse } from "./response/response";
 import { SlackEvent, AnySlackEvent, AnySlackEventWithChannelId } from "./request/payload/event";
 import { AnyEventType, ResponseUrlSender, SlackAPIClient } from "slack-web-api-client";
-import { builtBaseContext, SlackAppContext, SlackAppContextWithChannelId, SlackAppContextWithRespond } from "./context/context";
+import {
+  builtBaseContext,
+  isAssitantThreadEvent,
+  SlackAppContext,
+  SlackAppContextWithAssistantUtilities,
+  SlackAppContextWithChannelId,
+  SlackAppContextWithRespond,
+} from "./context/context";
 import { PreAuthorizeMiddleware, Middleware } from "./middleware/middleware";
 import { isDebugLogEnabled, prettyPrint } from "slack-web-api-client";
 import { Authorize } from "./authorization/authorize";
@@ -51,6 +58,9 @@ import { PayloadType } from "./request/payload-types";
 import { isPostedMessageEvent } from "./utility/message-events";
 import { SocketModeClient } from "./socket-mode/socket-mode-client";
 import { isFunctionExecutedEvent } from "./utility/function-executed-event";
+import { Assistant } from "./assistant/assistant";
+import { AssistantThreadContextStore, DefaultAssistantThreadContextStore } from "./assistant/thread-context-store";
+import { AssistantThreadContext } from "./assistant/thread-context";
 
 /**
  * Options for initializing SlackApp instance.
@@ -91,6 +101,11 @@ export interface SlackAppOptions<E extends SlackEdgeAppEnv | SlackSocketModeAppE
    * The default is set to true.
    */
   ignoreSelfEvents?: boolean;
+
+  /**
+   * Your custom assistant thread context store implementation.
+   */
+  assistantThreadContextStore?: AssistantThreadContextStore;
 }
 
 /**
@@ -170,6 +185,11 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
 
   public eventsToSkipAuthorize: string[] = ["app_uninstalled", "tokens_revoked"];
 
+  /**
+   * Your custom assistant thread context store implementation.
+   */
+  public assistantThreadContextStore?: AssistantThreadContextStore;
+
   // --------------------------
   // Enabled listener functions
   // --------------------------
@@ -221,6 +241,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     }
     this.authorize = options.authorize ?? singleTeamAuthorize;
     this.routes = { events: options.routes?.events };
+    this.assistantThreadContextStore = options.assistantThreadContextStore;
   }
 
   /**
@@ -333,6 +354,30 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       }
       return null;
     });
+    return this;
+  }
+
+  #assistantEvent<Type extends AnyEventType>(event: Type, lazy: EventLazyHandler<Type, E>): SlackApp<E> {
+    this.#events.push((body) => {
+      if (body.type !== PayloadType.EventsAPI || !body.event) {
+        return null;
+      }
+      if (body.event.type === event && isAssitantThreadEvent(body)) {
+        // deno-lint-ignore require-await
+        return { ack: async () => "", lazy };
+      }
+      return null;
+    });
+    return this;
+  }
+
+  assistant(assistant: Assistant<E>): SlackApp<E> {
+    this.#assistantEvent("assistant_thread_started", assistant.threadStartedHandler);
+    this.#assistantEvent("assistant_thread_context_changed", assistant.threadContextChangedHandler);
+    this.#assistantEvent("message", assistant.userMessageHandler);
+    if (assistant.threadContextStore) {
+      this.assistantThreadContextStore = assistant.threadContextStore;
+    }
     return this;
   }
 
@@ -718,11 +763,70 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         const context = authorizedContext as SlackAppContextWithChannelId;
         const primaryToken = context.functionBotAccessToken || context.botToken;
         const client = new SlackAPIClient(primaryToken);
-        context.say = async (params) =>
-          await client.chat.postMessage({
-            channel: context.channelId,
-            ...params,
-          });
+        if (authorizedContext.isAssistantThreadEvent && context.channelId && context.threadTs) {
+          const assistantContext = authorizedContext as SlackAppContextWithAssistantUtilities;
+          const { channelId: channel_id, threadTs: thread_ts } = assistantContext;
+          // setStatus
+          assistantContext.setStatus = async ({ status }) => await client.assistant.threads.setStatus({ channel_id, thread_ts, status });
+          // setTitle
+          assistantContext.setTitle = async ({ title }) => await client.assistant.threads.setTitle({ channel_id, thread_ts, title });
+          // setSuggestedPrompts
+          assistantContext.setSuggestedPrompts = async ({ title, prompts }) => {
+            const promptsArgs: { title: string; message: string }[] = [];
+            for (const p of prompts) {
+              if (typeof p === "string") {
+                promptsArgs.push({ message: p, title: p });
+              } else {
+                promptsArgs.push(p);
+              }
+            }
+            return await client.assistant.threads.setSuggestedPrompts({ channel_id, thread_ts, prompts: promptsArgs, title });
+          };
+          // threadContextStore
+          const threadContextStore =
+            this.assistantThreadContextStore ??
+            new DefaultAssistantThreadContextStore({
+              client,
+              thisBotUserId: context.botUserId,
+            });
+          assistantContext.threadContextStore = threadContextStore;
+          assistantContext.saveThreadContextStore = async (newContext) => {
+            await threadContextStore.save({ channel_id, thread_ts }, newContext);
+          };
+
+          // threadContext
+          const threadContext: AssistantThreadContext | undefined =
+            (await threadContextStore.find({
+              channel_id: context.channelId,
+              thread_ts: context.threadTs,
+            })) ||
+            (body.event.assistant_thread?.context && Object.keys(body.event.assistant_thread.context).length > 0)
+              ? body.event.assistant_thread?.context
+              : undefined;
+          if (threadContext) {
+            assistantContext.threadContext = threadContext;
+          }
+          // say
+          context.say = async (params) =>
+            await client.chat.postMessage({
+              channel: channel_id,
+              thread_ts,
+              metadata: threadContext
+                ? {
+                    event_type: "assistant_thread_context",
+                    event_payload: { ...threadContext },
+                  }
+                : undefined,
+              ...params,
+            });
+        } else {
+          context.say = async (params) =>
+            await client.chat.postMessage({
+              channel: context.channelId,
+              thread_ts: context.threadTs, // for assistant apps
+              ...params,
+            });
+        }
       }
       if (authorizedContext.responseUrl) {
         const responseUrl = authorizedContext.responseUrl;
