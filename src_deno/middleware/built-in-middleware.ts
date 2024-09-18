@@ -19,17 +19,29 @@ const eventTypesToKeep = ["member_joined_channel", "member_left_channel"];
  * @param req request
  * @returns response if needed
  */
-// deno-lint-ignore require-await
-export const ignoringSelfEvents: Middleware = async (req) => {
-  if (req.body.event) {
-    if (eventTypesToKeep.includes(req.body.event.type)) {
-      return;
+export function ignoringSelfEvents(
+  ignoreSelfAssistantMessageEvents: boolean,
+): Middleware {
+  // deno-lint-ignore require-await
+  return async (req) => {
+    if (req.body.event) {
+      if (eventTypesToKeep.includes(req.body.event.type)) {
+        return;
+      }
+      const auth = req.context.authorizeResult;
+      const isSelfEvent = auth.botId === req.body.event.bot_id ||
+        auth.botUserId === req.context.userId;
+      if (isSelfEvent) {
+        if (
+          !ignoreSelfAssistantMessageEvents &&
+          req.body.event.type === "message" &&
+          req.body.event.channel_type === "im"
+        ) {
+          // Assistant#botMessage handles this pattern
+          return;
+        }
+        return { status: 200, body: "" };
+      }
     }
-    if (
-      req.context.authorizeResult.botId === req.body.event.bot_id ||
-      req.context.authorizeResult.botUserId === req.context.userId
-    ) {
-      return { status: 200, body: "" };
-    }
-  }
-};
+  };
+}

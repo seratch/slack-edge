@@ -33,25 +33,29 @@ export class DefaultAssistantThreadContextStore implements AssistantThreadContex
   }
 
   async #findFirstAssistantReply(key: AssistantThreadKey): Promise<FirstReply | undefined> {
-    const response = await this.#client.conversations.replies({
-      channel: key.channel_id,
-      ts: key.thread_ts,
-      oldest: key.thread_ts,
-      include_all_metadata: true,
-      limit: 4,
-    });
-    if (response.messages) {
-      for (const message of response.messages) {
-        if (!("subtype" in message) && message.user === this.#thisBotUserId) {
-          return {
-            channel_id: key.channel_id,
-            ts: message.ts!,
-            text: message.text!,
-            blocks: message.blocks!,
-            metadata: message.metadata as MessageMetadata | undefined,
-          };
+    try {
+      const response = await this.#client.conversations.replies({
+        channel: key.channel_id,
+        ts: key.thread_ts,
+        oldest: key.thread_ts,
+        include_all_metadata: true,
+        limit: 4,
+      });
+      if (response.messages) {
+        for (const message of response.messages) {
+          if (!("subtype" in message) && message.user === this.#thisBotUserId) {
+            return {
+              channel_id: key.channel_id,
+              ts: message.ts!,
+              text: message.text!,
+              blocks: message.blocks!,
+              metadata: message.metadata as MessageMetadata | undefined,
+            };
+          }
         }
       }
+    } catch (e) {
+      console.log(`Failed to fetch conversations.replies API result: ${e}`);
     }
     return undefined;
   }

@@ -1378,6 +1378,7 @@ export type AnyMessageEvent =
   | GenericMessageEvent
   | BotMessageEvent
   | ChannelArchiveMessageEvent
+  | ChannelConvertToPublicessageEvent
   | ChannelJoinMessageEvent
   | ChannelLeaveMessageEvent
   | ChannelNameMessageEvent
@@ -1432,6 +1433,7 @@ export interface GenericMessageEvent extends SlackEvent<"message"> {
   attachments?: MessageAttachment[];
   blocks?: AnyMessageBlock[];
   files?: FileElement[];
+  metadata?: MessageMetadata;
   edited?: {
     user: string;
     ts: string;
@@ -1468,6 +1470,7 @@ export interface BotMessageEvent extends SlackEvent<"message"> {
   user?: string;
   attachments?: MessageAttachment[];
   blocks?: AnyMessageBlock[];
+  metadata?: MessageMetadata;
   edited?: {
     user: string;
     ts: string;
@@ -1536,6 +1539,18 @@ export interface ChannelPostingPermissionsMessageEvent
   text: string;
   ts: string;
   event_ts: string;
+}
+
+export interface ChannelConvertToPublicessageEvent
+  extends SlackEvent<"message"> {
+  type: "message";
+  subtype: "channel_convert_to_public";
+  ts: string;
+  text: string;
+  user: string;
+  channel: string;
+  event_ts: string;
+  channel_type: string;
 }
 
 export interface ChannelPurposeMessageEvent extends SlackEvent<"message"> {
