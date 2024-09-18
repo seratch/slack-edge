@@ -98,11 +98,14 @@ export type AssistantEventLazyHandler<
   E extends SlackAppEnv = SlackAppEnv,
 > = (req: AssistantThreadEventRequest<E, Type>) => Promise<void>;
 
-export type AssistantMessageEventRequest<E extends SlackAppEnv> =
+export type AssistantUserMessageEventRequest<E extends SlackAppEnv> =
   SlackRequestWithAssistantUtilities<
     E,
     GenericMessageEvent | FileShareMessageEvent
   >;
+
+export type AssistantBotMessageEventRequest<E extends SlackAppEnv> =
+  SlackRequestWithAssistantUtilities<E, GenericMessageEvent>;
 
 // ----------------------------------------
 // Shortcuts

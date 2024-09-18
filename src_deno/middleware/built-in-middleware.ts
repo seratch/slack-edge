@@ -33,7 +33,7 @@ export function ignoringSelfEvents(
         auth.botUserId === req.context.userId;
       if (isSelfEvent) {
         if (
-          ignoreSelfAssistantMessageEvents &&
+          !ignoreSelfAssistantMessageEvents &&
           req.body.event.type === "message" &&
           req.body.event.channel_type === "im"
         ) {

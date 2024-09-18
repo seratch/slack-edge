@@ -1,9 +1,10 @@
 import { SlackAppEnv } from "../app-env.ts";
 import { isAssitantThreadEvent } from "../context/context.ts";
 import {
+  AssistantBotMessageEventRequest,
   AssistantEventLazyHandler,
-  AssistantMessageEventRequest,
   AssistantThreadEventRequest,
+  AssistantUserMessageEventRequest,
   EventLazyHandler,
 } from "../handler/handler.ts";
 import {
@@ -19,7 +20,11 @@ export type AssistantThreadContextChangedHandler<E extends SlackAppEnv> =
   AssistantEventLazyHandler<AssistantThreadContextChangedEvent, E>;
 
 export type AssistantUserMessageHandler<E extends SlackAppEnv> = (
-  req: AssistantMessageEventRequest<E>,
+  req: AssistantUserMessageEventRequest<E>,
+) => Promise<void>;
+
+export type AssistantBotMessageHandler<E extends SlackAppEnv> = (
+  req: AssistantBotMessageEventRequest<E>,
 ) => Promise<void>;
 
 export interface AssistantOptions<E extends SlackAppEnv> {
@@ -27,7 +32,7 @@ export interface AssistantOptions<E extends SlackAppEnv> {
   threadStarted?: AssistantThreadStartedHandler<E>;
   threadContextChanged?: AssistantThreadContextChangedHandler<E>;
   userMessage?: AssistantUserMessageHandler<E>;
-  botMessage?: AssistantUserMessageHandler<E>;
+  botMessage?: AssistantBotMessageHandler<E>;
 }
 
 export class Assistant<E extends SlackAppEnv> {
@@ -100,7 +105,9 @@ export class Assistant<E extends SlackAppEnv> {
           req.payload.subtype === "file_share"
         ) {
           if (options.userMessage) {
-            await options.userMessage(req as AssistantMessageEventRequest<E>);
+            await options.userMessage(
+              req as AssistantUserMessageEventRequest<E>,
+            );
           } else {
             // noop; just ack the request
           }
@@ -116,12 +123,11 @@ export class Assistant<E extends SlackAppEnv> {
     this.botMessageHandler = async (req) => {
       try {
         if (
-          (req.payload.subtype === undefined ||
-            req.payload.subtype === "file_share") &&
+          req.payload.subtype === undefined &&
           req.payload.user === req.context.botUserId
         ) {
           if (options.botMessage) {
-            await options.botMessage(req as AssistantMessageEventRequest<E>);
+            await options.botMessage(req as AssistantBotMessageEventRequest<E>);
           } else {
             // noop; just ack the request
           }
@@ -181,7 +187,7 @@ export class Assistant<E extends SlackAppEnv> {
           req.payload.subtype === undefined ||
           req.payload.subtype === "file_share"
         ) {
-          await handler(req as AssistantMessageEventRequest<E>);
+          await handler(req as AssistantUserMessageEventRequest<E>);
         }
       } catch (e: unknown) {
         console.error(
@@ -192,15 +198,14 @@ export class Assistant<E extends SlackAppEnv> {
       }
     };
   }
-  botMessage(handler: AssistantUserMessageHandler<E>) {
+  botMessage(handler: AssistantBotMessageHandler<E>) {
     this.botMessageHandler = async (req) => {
       try {
         if (
-          (req.payload.subtype === undefined ||
-            req.payload.subtype === "file_share") &&
+          req.payload.subtype === undefined &&
           req.payload.user === req.context.botUserId
         ) {
-          await handler(req as AssistantMessageEventRequest<E>);
+          await handler(req as AssistantBotMessageEventRequest<E>);
         }
       } catch (e: unknown) {
         console.error(

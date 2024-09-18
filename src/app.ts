@@ -58,7 +58,13 @@ import { PayloadType } from "./request/payload-types";
 import { isPostedMessageEvent } from "./utility/message-events";
 import { SocketModeClient } from "./socket-mode/socket-mode-client";
 import { isFunctionExecutedEvent } from "./utility/function-executed-event";
-import { Assistant } from "./assistant/assistant";
+import {
+  Assistant,
+  AssistantBotMessageHandler,
+  AssistantThreadContextChangedHandler,
+  AssistantThreadStartedHandler,
+  AssistantUserMessageHandler,
+} from "./assistant/assistant";
 import { AssistantThreadContextStore, DefaultAssistantThreadContextStore } from "./assistant/thread-context-store";
 import { AssistantThreadContext } from "./assistant/thread-context";
 
@@ -407,6 +413,48 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       this.assistantThreadContextStore = assistant.threadContextStore;
     }
     return this;
+  }
+
+  assistantThreadStarted(lazy: AssistantThreadStartedHandler<E>): SlackApp<E> {
+    return this.#assistantEvent(
+      "assistant_thread_started",
+      new Assistant<E>({
+        threadContextStore: this.assistantThreadContextStore,
+        threadStarted: lazy,
+      }).threadStartedHandler,
+    );
+  }
+
+  assistantThreadContextChanged(lazy: AssistantThreadContextChangedHandler<E>): SlackApp<E> {
+    return this.#assistantEvent(
+      "assistant_thread_context_changed",
+      new Assistant<E>({
+        threadContextStore: this.assistantThreadContextStore,
+        threadContextChanged: lazy,
+      }).threadContextChangedHandler,
+    );
+  }
+
+  assistantUserMessage(lazy: AssistantUserMessageHandler<E>): SlackApp<E> {
+    return this.#assistantEvent(
+      "message",
+      new Assistant<E>({
+        threadContextStore: this.assistantThreadContextStore,
+        userMessage: lazy,
+      }).userMessageHandler,
+      false,
+    );
+  }
+
+  assistantBotMessage(lazy: AssistantBotMessageHandler<E>): SlackApp<E> {
+    return this.#assistantEvent(
+      "message",
+      new Assistant<E>({
+        threadContextStore: this.assistantThreadContextStore,
+        botMessage: lazy,
+      }).botMessageHandler,
+      true,
+    );
   }
 
   /**
@@ -791,7 +839,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
         const context = authorizedContext as SlackAppContextWithChannelId;
         const primaryToken = context.functionBotAccessToken || context.botToken;
         const client = new SlackAPIClient(primaryToken);
-        if (authorizedContext.isAssistantThreadEvent && context.channelId && context.threadTs) {
+        if (authorizedContext.isAssistantThreadEvent) {
           const assistantContext = authorizedContext as SlackAppContextWithAssistantUtilities;
           const { channelId: channel_id, threadTs: thread_ts } = assistantContext;
           // setStatus
@@ -895,6 +943,16 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
               ctx.waitUntil(handler.lazy(slackRequest));
             }
             return toCompleteResponse(slackResponse);
+          }
+        }
+        if (payload.event?.type === "assistant_thread_context_changed") {
+          // When a developer does not register their customer listener for this event,
+          // SlackApp automatically calls the built-in one for ease of development.
+          const handler = new Assistant({ threadContextStore: this.assistantThreadContextStore }).threadContextChangedHandler;
+          if (!this.startLazyListenerAfterAck) {
+            const req = slackRequest as EventRequest<E, "assistant_thread_context_changed">;
+            ctx.waitUntil(handler(req));
+            return toCompleteResponse();
           }
         }
       } else if (!body.type && body.command) {

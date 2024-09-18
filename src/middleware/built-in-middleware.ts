@@ -29,7 +29,7 @@ export function ignoringSelfEvents(ignoreSelfAssistantMessageEvents: boolean): M
       const auth = req.context.authorizeResult;
       const isSelfEvent = auth.botId === req.body.event.bot_id || auth.botUserId === req.context.userId;
       if (isSelfEvent) {
-        if (ignoreSelfAssistantMessageEvents && req.body.event.type === "message" && req.body.event.channel_type === "im") {
+        if (!ignoreSelfAssistantMessageEvents && req.body.event.type === "message" && req.body.event.channel_type === "im") {
           // Assistant#botMessage handles this pattern
           return;
         }
