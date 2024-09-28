@@ -37,7 +37,7 @@
     "slack-web-api-client": "^1.1.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.1",
+    "@biomejs/biome": "^1.9.2",
     "@vitest/coverage-v8": "^2.1.1",
     "typescript": "^5.6.2",
     "vitest": "^2.1.1"
