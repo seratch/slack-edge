@@ -41,15 +41,7 @@
   },
   "oauth_config": {
     "scopes": {
-      "bot": [
-        "commands",
-        "chat:write",
-        "chat:write.public",
-        "app_mentions:read",
-        "reactions:read",
-        "channels:history",
-        "groups:history"
-      ]
+      "bot": ["commands", "chat:write", "chat:write.public", "app_mentions:read", "reactions:read", "channels:history", "groups:history"]
     }
   },
   "settings": {
@@ -57,13 +49,7 @@
       "is_enabled": true
     },
     "event_subscriptions": {
-      "bot_events": [
-        "app_home_opened",
-        "app_mention",
-        "message.channels",
-        "message.groups",
-        "reaction_added"
-      ]
+      "bot_events": ["app_home_opened", "app_mention", "message.channels", "message.groups", "reaction_added"]
     },
     "org_deploy_enabled": true,
     "socket_mode_enabled": true,

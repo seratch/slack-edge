@@ -28,37 +28,27 @@ describe("Events", () => {
           display_as_bot: false,
           username: "",
           url_private: "https://files.slack.com/files-pri/T111-F111/test.png",
-          url_private_download:
-            "https://files.slack.com/files-pri/T111-F111/download/test.png",
+          url_private_download: "https://files.slack.com/files-pri/T111-F111/download/test.png",
           media_display_type: "unknown",
-          thumb_64:
-            "https://files.slack.com/files-tmb/T111-F111-test/test_64.png",
-          thumb_80:
-            "https://files.slack.com/files-tmb/T111-F111-test/test_80.png",
-          thumb_360:
-            "https://files.slack.com/files-tmb/T111-F111-test/test_360.png",
+          thumb_64: "https://files.slack.com/files-tmb/T111-F111-test/test_64.png",
+          thumb_80: "https://files.slack.com/files-tmb/T111-F111-test/test_80.png",
+          thumb_360: "https://files.slack.com/files-tmb/T111-F111-test/test_360.png",
           thumb_360_w: 360,
           thumb_360_h: 262,
-          thumb_480:
-            "https://files.slack.com/files-tmb/T111-F111-test/test_480.png",
+          thumb_480: "https://files.slack.com/files-tmb/T111-F111-test/test_480.png",
           thumb_480_w: 480,
           thumb_480_h: 350,
-          thumb_160:
-            "https://files.slack.com/files-tmb/T111-F111-test/test_160.png",
-          thumb_720:
-            "https://files.slack.com/files-tmb/T111-F111-test/test_720.png",
+          thumb_160: "https://files.slack.com/files-tmb/T111-F111-test/test_160.png",
+          thumb_720: "https://files.slack.com/files-tmb/T111-F111-test/test_720.png",
           thumb_720_w: 720,
           thumb_720_h: 525,
-          thumb_800:
-            "https://files.slack.com/files-tmb/T111-F111-test/test_800.png",
+          thumb_800: "https://files.slack.com/files-tmb/T111-F111-test/test_800.png",
           thumb_800_w: 800,
           thumb_800_h: 583,
-          thumb_960:
-            "https://files.slack.com/files-tmb/T111-F111-test/test_960.png",
+          thumb_960: "https://files.slack.com/files-tmb/T111-F111-test/test_960.png",
           thumb_960_w: 960,
           thumb_960_h: 700,
-          thumb_1024:
-            "https://files.slack.com/files-tmb/T111-F111-test/test_1024.png",
+          thumb_1024: "https://files.slack.com/files-tmb/T111-F111-test/test_1024.png",
           thumb_1024_w: 1024,
           thumb_1024_h: 747,
           original_w: 1772,

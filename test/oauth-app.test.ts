@@ -1,30 +1,16 @@
 import { assert, test, describe } from "vitest";
-import {
-  SlackOAuthApp,
-  InstallationStore,
-  SlackOAuthEnv,
-  Installation,
-  InstallationStoreQuery,
-  Authorize,
-} from "../src/index";
+import { SlackOAuthApp, InstallationStore, SlackOAuthEnv, Installation, InstallationStoreQuery, Authorize } from "../src/index";
 
 class MemoryInstallationStore implements InstallationStore<SlackOAuthEnv> {
-  async save(
-    installation: Installation,
-    request: Request | undefined,
-  ): Promise<void> {
+  async save(installation: Installation, request: Request | undefined): Promise<void> {
     throw new Error();
   }
 
-  async findBotInstallation(
-    query: InstallationStoreQuery,
-  ): Promise<Installation | undefined> {
+  async findBotInstallation(query: InstallationStoreQuery): Promise<Installation | undefined> {
     throw new Error();
   }
 
-  async findUserInstallation(
-    query: InstallationStoreQuery,
-  ): Promise<Installation | undefined> {
+  async findUserInstallation(query: InstallationStoreQuery): Promise<Installation | undefined> {
     throw new Error();
   }
 

@@ -1,8 +1,5 @@
 import { assert, test, describe } from "vitest";
-import {
-  fromResponseToSocketModePayload,
-  fromSocketModeToRequest,
-} from "../src/index";
+import { fromResponseToSocketModePayload, fromSocketModeToRequest } from "../src/index";
 
 describe("Socket Mode", () => {
   describe("fromSocketModeToRequest", () => {

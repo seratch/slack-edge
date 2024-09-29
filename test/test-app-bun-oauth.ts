@@ -10,27 +10,14 @@ import {
 } from "../src/index";
 
 class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
-  async save(
-    installation: Installation,
-    _request: Request | undefined,
-  ): Promise<void> {
-    await Bun.write(
-      `./tmp/${installation.team_id}.json`,
-      JSON.stringify(installation),
-    );
-    await Bun.write(
-      `./tmp/${installation.team_id}-${installation.user_id}.json`,
-      JSON.stringify(installation),
-    );
+  async save(installation: Installation, _request: Request | undefined): Promise<void> {
+    await Bun.write(`./tmp/${installation.team_id}.json`, JSON.stringify(installation));
+    await Bun.write(`./tmp/${installation.team_id}-${installation.user_id}.json`, JSON.stringify(installation));
   }
-  async findBotInstallation(
-    query: InstallationStoreQuery,
-  ): Promise<Installation | undefined> {
+  async findBotInstallation(query: InstallationStoreQuery): Promise<Installation | undefined> {
     return await Bun.file(`./tmp/${query.teamId}.json`).json();
   }
-  async findUserInstallation(
-    query: InstallationStoreQuery,
-  ): Promise<Installation | undefined> {
+  async findUserInstallation(query: InstallationStoreQuery): Promise<Installation | undefined> {
     return await Bun.file(`./tmp/${query.teamId}-${query.userId}.json`).json();
   }
   toAuthorize(): Authorize<SlackOAuthEnv> {
@@ -51,9 +38,7 @@ class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
           botScopes: installation.bot_scopes,
         };
       }
-      throw new AuthorizeError(
-        `Failed to resolve the associated installation: ${req.context.teamId}`,
-      );
+      throw new AuthorizeError(`Failed to resolve the associated installation: ${req.context.teamId}`);
     };
   }
 }
@@ -69,14 +54,10 @@ const app = new SlackOAuthApp({
   installationStore: new FileInstallationStore(),
   oauth: {
     beforeInstallation: async (args) => {
-      console.log(
-        `!!! beforeInstallation !!!\n\n${JSON.stringify(args, null, 2)}\n\n`,
-      );
+      console.log(`!!! beforeInstallation !!!\n\n${JSON.stringify(args, null, 2)}\n\n`);
     },
     afterInstallation: async (args) => {
-      console.log(
-        `!!! afterInstallation !!!\n\n${JSON.stringify(args, null, 2)}\n\n`,
-      );
+      console.log(`!!! afterInstallation !!!\n\n${JSON.stringify(args, null, 2)}\n\n`);
     },
   },
 });

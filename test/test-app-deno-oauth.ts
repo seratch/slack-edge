@@ -10,31 +10,16 @@ import {
 } from "../src_deno/mod.ts";
 
 class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
-  async save(
-    installation: Installation,
-    _request: Request | undefined,
-  ): Promise<void> {
+  async save(installation: Installation, _request: Request | undefined): Promise<void> {
     const encoder = new TextEncoder();
-    await Deno.writeFile(
-      `./tmp/${installation.team_id}.json`,
-      encoder.encode(JSON.stringify(installation)),
-    );
-    await Deno.writeFile(
-      `./tmp/${installation.team_id}-${installation.user_id}.json`,
-      encoder.encode(JSON.stringify(installation)),
-    );
+    await Deno.writeFile(`./tmp/${installation.team_id}.json`, encoder.encode(JSON.stringify(installation)));
+    await Deno.writeFile(`./tmp/${installation.team_id}-${installation.user_id}.json`, encoder.encode(JSON.stringify(installation)));
   }
-  async findBotInstallation(
-    query: InstallationStoreQuery,
-  ): Promise<Installation | undefined> {
+  async findBotInstallation(query: InstallationStoreQuery): Promise<Installation | undefined> {
     return JSON.parse(await Deno.readTextFile(`./tmp/${query.teamId}.json`));
   }
-  async findUserInstallation(
-    query: InstallationStoreQuery,
-  ): Promise<Installation | undefined> {
-    return JSON.parse(
-      await Deno.readTextFile(`./tmp/${query.teamId}-${query.userId}.json`),
-    );
+  async findUserInstallation(query: InstallationStoreQuery): Promise<Installation | undefined> {
+    return JSON.parse(await Deno.readTextFile(`./tmp/${query.teamId}-${query.userId}.json`));
   }
   toAuthorize(): Authorize<SlackOAuthEnv> {
     return async (req) => {
@@ -54,9 +39,7 @@ class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
           botScopes: installation.bot_scopes!,
         };
       }
-      throw new AuthorizeError(
-        `Failed to resolve the associated installation: ${req.context.teamId}`,
-      );
+      throw new AuthorizeError(`Failed to resolve the associated installation: ${req.context.teamId}`);
     };
   }
 }

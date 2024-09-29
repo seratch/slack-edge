@@ -1,9 +1,5 @@
 import { assert, test, describe } from "vitest";
-import {
-  extractFunctionBotAccessToken,
-  extractFunctionExecutionId,
-  extractTriggerId,
-} from "../src/index";
+import { extractFunctionBotAccessToken, extractFunctionExecutionId, extractTriggerId } from "../src/index";
 
 const event = {
   token: "xxx",

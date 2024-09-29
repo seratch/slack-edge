@@ -60,17 +60,14 @@ describe("SlackApp", () => {
     app.command("/echo", command, commandLazy);
 
     // Events API
-    const appMentionEvent: EventLazyHandler<"app_mention"> = async ({
-      payload,
-      context,
-    }) => {
+    const appMentionEvent: EventLazyHandler<"app_mention"> = async ({ payload, context }) => {
       const type: "app_mention" = payload.type;
       const botUserId: string = context.botUserId;
       const botId: string = context.botId;
     };
     app.event("app_mention", appMentionEvent);
 
-    const tokensRevokedEvent: EventLazyHandler<"tokens_revoked"> = async ({payload  }) => {
+    const tokensRevokedEvent: EventLazyHandler<"tokens_revoked"> = async ({ payload }) => {
       const type: "tokens_revoked" = payload.type;
     };
     app.event("tokens_revoked", tokensRevokedEvent);
@@ -88,22 +85,14 @@ describe("SlackApp", () => {
     const globalShortcut: GlobalShortcutAckHandler = async ({ payload }) => {
       const type: "shortcut" = payload.type;
     };
-    const globalShortcutLazy: GlobalShortcutLazyHandler = async ({
-      payload,
-    }) => {
+    const globalShortcutLazy: GlobalShortcutLazyHandler = async ({ payload }) => {
       const type: "shortcut" = payload.type;
     };
-    const messageShortcut: MessageShortcutAckHandler = async ({
-      payload,
-      context,
-    }) => {
+    const messageShortcut: MessageShortcutAckHandler = async ({ payload, context }) => {
       const type: "message_action" = payload.type;
       const respond: Respond = context.respond;
     };
-    const messageShortcutLazy: MessageShortcutLazyHandler = async ({
-      payload,
-      context,
-    }) => {
+    const messageShortcutLazy: MessageShortcutLazyHandler = async ({ payload, context }) => {
       const type: "message_action" = payload.type;
       const respond: Respond = context.respond;
     };
@@ -115,19 +104,13 @@ describe("SlackApp", () => {
 
     // Block actions
 
-    const button: BlockActionAckHandler<"button", MyEnv> = async ({
-      payload,
-      env,
-    }) => {
+    const button: BlockActionAckHandler<"button", MyEnv> = async ({ payload, env }) => {
       const type: "block_actions" = payload.type;
       const action: ButtonAction = payload.actions[0];
       const label: string | undefined = action.accessibility_label;
       const myValue: string = env.MyValue;
     };
-    const buttonLazy: BlockActionLazyHandler<"button", MyEnv> = async ({
-      payload,
-      env,
-    }) => {
+    const buttonLazy: BlockActionLazyHandler<"button", MyEnv> = async ({ payload, env }) => {
       const type: "block_actions" = payload.type;
       const action: ButtonAction = payload.actions[0];
       const label: string | undefined = action.accessibility_label;
@@ -157,9 +140,7 @@ describe("SlackApp", () => {
     const viewSubmission: ViewSubmissionAckHandler = async ({ payload }) => {
       const type: "view_submission" = payload.type;
     };
-    const viewSubmissionLazy: ViewSubmissionLazyHandler = async ({
-      payload,
-    }) => {
+    const viewSubmissionLazy: ViewSubmissionLazyHandler = async ({ payload }) => {
       const type: "view_submission" = payload.type;
     };
     app.viewSubmission("callback_id", view);
