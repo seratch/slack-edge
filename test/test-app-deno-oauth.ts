@@ -21,6 +21,15 @@ class FileInstallationStore implements InstallationStore<SlackOAuthEnv> {
   async findUserInstallation(query: InstallationStoreQuery): Promise<Installation | undefined> {
     return JSON.parse(await Deno.readTextFile(`./tmp/${query.teamId}-${query.userId}.json`));
   }
+  async deleteBotInstallation(query: InstallationStoreQuery): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  async deleteUserInstallation(query: InstallationStoreQuery): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  async deleteAll(query: InstallationStoreQuery): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
   toAuthorize(): Authorize<SlackOAuthEnv> {
     return async (req) => {
       // Note that this implementation supports only bot token resolution

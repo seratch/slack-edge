@@ -5,13 +5,20 @@ class MemoryInstallationStore implements InstallationStore<SlackOAuthEnv> {
   async save(installation: Installation, request: Request | undefined): Promise<void> {
     throw new Error();
   }
-
   async findBotInstallation(query: InstallationStoreQuery): Promise<Installation | undefined> {
     throw new Error();
   }
-
   async findUserInstallation(query: InstallationStoreQuery): Promise<Installation | undefined> {
     throw new Error();
+  }
+  async deleteBotInstallation(query: InstallationStoreQuery): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  async deleteUserInstallation(query: InstallationStoreQuery): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  async deleteAll(query: InstallationStoreQuery): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
   toAuthorize(): Authorize<SlackOAuthEnv> {
