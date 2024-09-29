@@ -109,45 +109,49 @@ app.assistantBotMessage(async ({ payload, context: { client, setStatus, say } })
 });
 
 app.action<"button">("assistant-summarize-channel", async ({ payload, context: { client } }) => {
-  const threadContext = payload.message!.metadata!.event_payload as unknown as AssistantThreadContext;
-  await client.views.open({
-    trigger_id: payload.trigger_id,
-    view: {
-      type: "modal",
-      title: { type: "plain_text", text: "My Assistant" },
-      close: { type: "plain_text", text: "Close" },
-      blocks: [
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `Got it! I will start analyzing <#${threadContext.channel_id}>! I will update you once it's done!`,
+  if ("message" in payload && payload.message.metadata) {
+    const threadContext = payload.message.metadata.event_payload as unknown as AssistantThreadContext;
+    await client.views.open({
+      trigger_id: payload.trigger_id,
+      view: {
+        type: "modal",
+        title: { type: "plain_text", text: "My Assistant" },
+        close: { type: "plain_text", text: "Close" },
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `Got it! I will start analyzing <#${threadContext.channel_id}>! I will update you once it's done!`,
+            },
           },
-        },
-      ],
-    },
-  });
-  await client.chat.postMessage({
-    channel: payload.channel!.id,
-    thread_ts: payload.message!.thread_ts,
-    text: `OK, I will do more research on <#${threadContext.channel_id}> history, and will update you once it's done!`,
-    metadata: {
-      event_type: "assistant_summarize_channel", // triggers the next operation within botMessage handler
-      event_payload: { ...threadContext },
-    },
-  });
+        ],
+      },
+    });
+    await client.chat.postMessage({
+      channel: payload.channel.id,
+      thread_ts: payload.message.thread_ts,
+      text: `OK, I will do more research on <#${threadContext.channel_id}> history, and will update you once it's done!`,
+      metadata: {
+        event_type: "assistant_summarize_channel", // triggers the next operation within botMessage handler
+        event_payload: { ...threadContext },
+      },
+    });
+  }
 });
 app.action<"button">("assistant-generate-random-numbers", async ({ payload, context: { client } }) => {
-  const threadContext = payload.message!.metadata!.event_payload as unknown as AssistantThreadContext;
-  await client.chat.postMessage({
-    channel: payload.channel!.id,
-    thread_ts: payload.message!.thread_ts,
-    text: "OK, I will generarte random numbers for you!",
-    metadata: {
-      event_type: "assistant_random_numbers", // triggers the next operation within botMessage handler
-      event_payload: { ...threadContext },
-    },
-  });
+  if ("message" in payload && payload.message.metadata) {
+    const threadContext = payload.message.metadata.event_payload as unknown as AssistantThreadContext;
+    await client.chat.postMessage({
+      channel: payload.channel.id,
+      thread_ts: payload.message.thread_ts,
+      text: "OK, I will generarte random numbers for you!",
+      metadata: {
+        event_type: "assistant_random_numbers", // triggers the next operation within botMessage handler
+        event_payload: { ...threadContext },
+      },
+    });
+  }
 });
 
 app.event("app_home_opened", async ({ payload, context: { client, actorUserId } }) => {
@@ -170,11 +174,45 @@ app.event("app_home_opened", async ({ payload, context: { client, actorUserId } 
 
 app.event("app_mention", async ({ context: { say, actorUserId } }) => {
   // do anything async here
-  await say({ text: `Hi <@${actorUserId}>!` });
+  await say({
+    text: `Hi <@${actorUserId}>!`,
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: `Hi <@${actorUserId}>!` },
+        accessory: {
+          type: "button",
+          action_id: "button-click",
+          text: { type: "plain_text", text: "Click this" },
+          value: "clicked",
+        },
+      },
+    ],
+  });
 });
 
-app.message("hello", async ({ context: { say } }) => {
-  await say({ text: "Hello!" });
+app.action<"button">("button-click", async ({}) => {});
+
+app.message("attachment", async ({ context: { say, actorUserId } }) => {
+  await say({
+    text: "Hello!",
+    attachments: [
+      {
+        blocks: [
+          {
+            type: "section",
+            text: { type: "mrkdwn", text: `Hi <@${actorUserId}>!` },
+            accessory: {
+              type: "button",
+              action_id: "attachment-button-click",
+              text: { type: "plain_text", text: "Click this" },
+              value: "clicked",
+            },
+          },
+        ],
+      },
+    ],
+  });
 });
 app.anyMessage(async () => {});
 
