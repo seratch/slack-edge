@@ -15,8 +15,7 @@ import { BotProfile } from "./event.ts";
 
 export type BlockAction<A extends BlockElementAction> =
   | MessageBlockAction<A>
-  | ViewBlockAction<A>
-  | FunctionBlockAction<A>;
+  | ViewBlockAction<A>;
 
 // To narrow the type down to this, you can have either `if ("message" in payload) { ... }` or SourceSpecifiedBlockActionAckHandler
 export type MessageBlockAction<A extends BlockElementAction> =
@@ -44,15 +43,13 @@ export type MessageBlockAction<A extends BlockElementAction> =
       // deno-lint-ignore no-explicit-any
       [key: string]: any;
     };
-    response_url: string;
-    container: // blocks in a message
+    container:
       | {
         type: "message";
         message_ts: string;
         channel_id: string;
         is_ephemeral: boolean;
       }
-      // blocks within an attachment
       | {
         type: "message_attachment";
         message_ts: string;
@@ -71,6 +68,7 @@ export type MessageBlockAction<A extends BlockElementAction> =
       app_unfurl_url: string;
       is_app_unfurl: boolean;
     };
+    response_url?: string;
   };
 
 // To narrow the type down to this, you can have either `if ("view" in payload) { ... }` or SourceSpecifiedBlockActionAckHandler
@@ -78,35 +76,9 @@ export type ViewBlockAction<A extends BlockElementAction> =
   & BaseBlockAction<A>
   & {
     view: DataSubmissionView;
-    state: {
-      values: {
-        [blockId: string]: {
-          [actionId: string]: ViewStateValue;
-        };
-      };
-    };
     container: {
       type: "view";
       view_id: string;
-    };
-  };
-
-// To narrow the type down to this, you can have either `if ("function_data" in payload) { ... }` or SourceSpecifiedBlockActionAckHandler
-export type FunctionBlockAction<A extends BlockElementAction> =
-  & BaseBlockAction<A>
-  & {
-    bot_access_token: string;
-    function_data: {
-      execution_id: string;
-      function: { callback_id: string };
-      inputs: {
-        // deno-lint-ignore no-explicit-any
-        [key: string]: any;
-      };
-    };
-    interactivity: {
-      interactivity_pointer: string;
-      interactor: { id: string; secret: string };
     };
   };
 
@@ -130,6 +102,28 @@ export interface BaseBlockAction<A extends BlockElementAction> {
     id: string;
     name: string;
     team_id?: string;
+  };
+  // state can exist even for a payload from a message block
+  state: {
+    values: {
+      [blockId: string]: {
+        [actionId: string]: ViewStateValue;
+      };
+    };
+  };
+  // only for a workflow custom step
+  bot_access_token?: string;
+  function_data?: {
+    execution_id: string;
+    function: { callback_id: string };
+    inputs: {
+      // deno-lint-ignore no-explicit-any
+      [key: string]: any;
+    };
+  };
+  interactivity?: {
+    interactivity_pointer: string;
+    interactor: { id: string; secret: string };
   };
   token: string; // legacy verification token
 }
