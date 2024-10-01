@@ -1,12 +1,15 @@
 import { assert, test, describe } from "vitest";
 import {
   BlockActionAckHandler,
+  SourceSpecifiedBlockActionAckHandler,
   BlockActionLazyHandler,
   BlockSuggestionAckHandler,
   ButtonAction,
+  DataSubmissionView,
   EventLazyHandler,
   GlobalShortcutAckHandler,
   GlobalShortcutLazyHandler,
+  MessageBlockAction,
   MessageEventLazyHandler,
   MessageShortcutAckHandler,
   MessageShortcutLazyHandler,
@@ -22,6 +25,9 @@ import {
   ViewLazyHandler,
   ViewSubmissionAckHandler,
   ViewSubmissionLazyHandler,
+  SourceSpecifiedBlockActionLazyHandler,
+  ViewBlockAction,
+  ViewStateValue,
 } from "../src/index";
 
 interface MyEnv extends SlackAppEnv {
@@ -103,21 +109,79 @@ describe("SlackApp", () => {
     app.messageShortcut("save-this", messageShortcut, messageShortcutLazy);
 
     // Block actions
-
     const button: BlockActionAckHandler<"button", MyEnv> = async ({ payload, env }) => {
       const type: "block_actions" = payload.type;
       const action: ButtonAction = payload.actions[0];
+      if ("message" in payload) {
+        const messageTs: string = payload.message.ts;
+        const channelId: string = payload.channel.id;
+        // for a workflow custom step, this has to be optional
+        const responseUrl: string | undefined = payload.response_url;
+      } else if ("view" in payload) {
+        const view: DataSubmissionView = payload.view;
+        const state: Record<string, Record<string, ViewStateValue>> = payload.state.values;
+      }
+      const functionId: string | undefined = payload.function_data?.execution_id;
+      const interactivityPointer: string | undefined = payload.interactivity?.interactivity_pointer;
       const label: string | undefined = action.accessibility_label;
       const myValue: string = env.MyValue;
     };
+
+    const button2: BlockActionAckHandler<"button", MyEnv, MessageBlockAction<ButtonAction>> = async ({ payload, env }) => {
+      const type: "block_actions" = payload.type;
+      const action: ButtonAction = payload.actions[0];
+      const messageTs: string = payload.message.ts;
+      const channelId: string = payload.channel.id;
+      // for a workflow custom step, this has to be optional
+      const responseUrl: string | undefined = payload.response_url;
+    };
+
+    const button3: SourceSpecifiedBlockActionAckHandler<MyEnv, MessageBlockAction<ButtonAction>> = async ({ payload, env }) => {
+      const type: "block_actions" = payload.type;
+      const action: ButtonAction = payload.actions[0];
+      const messageTs: string = payload.message.ts;
+      const channelId: string = payload.channel.id;
+      // for a workflow custom step, this has to be optional
+      const responseUrl: string | undefined = payload.response_url;
+    };
+
     const buttonLazy: BlockActionLazyHandler<"button", MyEnv> = async ({ payload, env }) => {
       const type: "block_actions" = payload.type;
       const action: ButtonAction = payload.actions[0];
       const label: string | undefined = action.accessibility_label;
       const myValue: string = env.MyValue;
     };
+    const buttonLazy2: SourceSpecifiedBlockActionLazyHandler<MyEnv, ViewBlockAction<ButtonAction>> = async ({ payload, env }) => {
+      const type: "block_actions" = payload.type;
+      const action: ButtonAction = payload.actions[0];
+      const view: DataSubmissionView = payload.view;
+      const state: Record<string, Record<string, ViewStateValue>> = payload.state.values;
+    };
     app.action("action_id", button);
+    app.action("action_id", button2);
+    app.action("action_id", button3);
     app.action("action_id", button, buttonLazy);
+    app.action("action_id", button, buttonLazy2);
+
+    app.action<"button">("action_id", async ({ payload }) => {
+      const type: "block_actions" = payload.type;
+      const action: ButtonAction = payload.actions[0];
+      if ("message" in payload) {
+        const messageTs: string = payload.message.ts;
+        const channelId: string = payload.channel.id;
+        // for a workflow custom step, this has to be optional
+        const responseUrl: string | undefined = payload.response_url;
+      }
+    });
+    app.action<"button", MessageBlockAction<ButtonAction>>("action_id", async ({ payload }) => {
+      const type: "block_actions" = payload.type;
+      const action: ButtonAction = payload.actions[0];
+      // This can result in a runtime error if the handler receives other patterns
+      const messageTs: string = payload.message.ts;
+      const channelId: string = payload.channel.id;
+      // for a workflow custom step, this has to be optional
+      const responseUrl: string | undefined = payload.response_url;
+    });
 
     // Block suggestion
     const search: BlockSuggestionAckHandler = async ({ payload }) => {

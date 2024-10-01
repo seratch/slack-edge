@@ -16,6 +16,8 @@ import {
   SlackHandler,
   SlashCommandAckHandler,
   SlashCommandLazyHandler,
+  SourceSpecifiedBlockActionAckHandler,
+  SourceSpecifiedBlockActionLazyHandler,
   ViewAckHandler,
   ViewClosedAckHandler,
   ViewClosedLazyHandler,
@@ -574,8 +576,8 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
     A extends BlockAction<Extract<BlockElementActions, { type: T }>> = BlockAction<Extract<BlockElementActions, { type: T }>>,
   >(
     constraints: StringOrRegExp | { type: T; block_id?: string; action_id: string },
-    ack: BlockActionAckHandler<T, E, A>,
-    lazy: BlockActionLazyHandler<T, E, A> = noopLazyHandler,
+    ack: BlockActionAckHandler<T, E, A> | SourceSpecifiedBlockActionAckHandler<E, A>,
+    lazy: BlockActionLazyHandler<T, E, A> | SourceSpecifiedBlockActionLazyHandler<E, A> = noopLazyHandler,
   ): SlackApp<E> {
     const handler: SlackHandler<E, A> = { ack, lazy };
     this.#blockActions.push((body) => {

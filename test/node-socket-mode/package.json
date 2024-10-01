@@ -4,7 +4,7 @@
   "description": "Simple project template for Slack app",
   "main": "lib/main.js",
   "scripts": {
-    "start": "npm run build && node lib/main.js",
+    "start": "nodemon --watch 'src/**/*.ts' --exec \"ts-node\" src/main.ts",
     "format": "npx prettier -w src/ && npx prettier -w *.json",
     "build": "tsc -p .",
     "local": "npm run build:live",

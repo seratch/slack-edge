@@ -2,33 +2,24 @@ import { Confirm, AnyOption, PlainTextField, MessageMetadata, AnyMessageBlock, M
 import { DataSubmissionView, ViewStateValue } from "./view-objects";
 import { BotProfile } from "./event";
 
-/**
- * block_actions payload data
- */
-export interface BlockAction<A extends BlockElementAction> {
-  type: "block_actions";
-  actions: A[];
-  team: {
-    id: string;
-    domain: string;
-    enterprise_id?: string;
-    enterprise_name?: string;
-  } | null;
-  user: {
-    id: string;
-    name: string;
-    team_id?: string;
-  };
-  channel?: {
+// ------------------------------------------
+// The whole block_actions payload
+// ------------------------------------------
+
+export type BlockAction<A extends BlockElementAction> = MessageBlockAction<A> | ViewBlockAction<A>;
+
+// To narrow the type down to this, you can have either `if ("message" in payload) { ... }` or SourceSpecifiedBlockActionAckHandler
+export type MessageBlockAction<A extends BlockElementAction> = BaseBlockAction<A> & {
+  channel: {
     id: string;
     name: string;
   };
-  message?: {
+  message: {
     type: "message";
     user?: string;
     ts: string;
     thread_ts?: string;
-    text?: string;
+    text: string;
     metadata?: MessageMetadata;
     blocks?: AnyMessageBlock[];
     attachments?: MessageAttachment[];
@@ -41,44 +32,68 @@ export interface BlockAction<A extends BlockElementAction> {
     // deno-lint-ignore no-explicit-any
     [key: string]: any;
   };
-  view?: DataSubmissionView;
-  state?: {
+  container:
+    | { type: "message"; message_ts: string; channel_id: string; is_ephemeral: boolean }
+    | {
+        type: "message_attachment";
+        message_ts: string;
+        attachment_id: number;
+        channel_id: string;
+        is_ephemeral: boolean;
+        is_app_unfurl: boolean;
+        app_unfurl_url?: string;
+        thread_ts?: string;
+      };
+  app_unfurl?: {
+    id: string;
+    app_id: string;
+    bot_id: string;
+    fallback: string;
+    app_unfurl_url: string;
+    is_app_unfurl: boolean;
+  };
+  response_url?: string;
+};
+
+// To narrow the type down to this, you can have either `if ("view" in payload) { ... }` or SourceSpecifiedBlockActionAckHandler
+export type ViewBlockAction<A extends BlockElementAction> = BaseBlockAction<A> & {
+  view: DataSubmissionView;
+  container: {
+    type: "view";
+    view_id: string;
+  };
+};
+
+export interface BaseBlockAction<A extends BlockElementAction> {
+  type: "block_actions";
+  actions: A[];
+  trigger_id: string;
+  api_app_id: string;
+  is_enterprise_install?: boolean;
+  enterprise?: {
+    id: string;
+    name: string;
+  };
+  team: {
+    id: string;
+    domain: string;
+    enterprise_id?: string;
+    enterprise_name?: string;
+  } | null;
+  user: {
+    id: string;
+    name: string;
+    team_id?: string;
+  };
+  // state can exist even for a payload from a message block
+  state: {
     values: {
       [blockId: string]: {
         [actionId: string]: ViewStateValue;
       };
     };
   };
-  token: string;
-  response_url: string;
-  trigger_id: string;
-  api_app_id: string;
-  container: {
-    type: string;
-    message_ts?: string;
-    attachment_id?: number;
-    channel_id?: string;
-    view_id?: string;
-    text?: string;
-    is_ephemeral?: boolean;
-    is_app_unfurl?: boolean;
-    app_unfurl_url?: string;
-    thread_ts?: string;
-  };
-  app_unfurl?: {
-    id: string;
-    fallback: string;
-    bot_id: string;
-    app_unfurl_url: string;
-    is_app_unfurl: boolean;
-    app_id: string;
-  };
-  is_enterprise_install?: boolean;
-  enterprise?: {
-    id: string;
-    name: string;
-  };
-  // remote functions
+  // only for a workflow custom step
   bot_access_token?: string;
   function_data?: {
     execution_id: string;
@@ -92,7 +107,12 @@ export interface BlockAction<A extends BlockElementAction> {
     interactivity_pointer: string;
     interactor: { id: string; secret: string };
   };
+  token: string; // legacy verification token
 }
+
+// ------------------------------------------
+// Block element actions
+// ------------------------------------------
 
 export interface BlockElementAction<T extends string = string> {
   type: T;

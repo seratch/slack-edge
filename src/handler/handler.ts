@@ -1,7 +1,7 @@
 import { AnyEventType } from "slack-web-api-client";
 import { EventRequest, MessageEventHandler } from "../app";
 import { SlackAppEnv } from "../app-env";
-import { BlockAction, BlockElementActions, BlockElementTypes } from "../request/payload/block-action";
+import { BlockAction, BlockElementAction, BlockElementActions, BlockElementTypes } from "../request/payload/block-action";
 import { BlockSuggestion } from "../request/payload/block-suggestion";
 import { GlobalShortcut } from "../request/payload/global-shortcut";
 import { MessageShortcut } from "../request/payload/message-shortcut";
@@ -143,12 +143,25 @@ export type BlockActionAckHandler<
 > = (req: SlackRequestWithOptionalRespond<E, A>) => Promise<AckResponse>;
 
 /**
+ * ack function for block_actions request handling.
+ */
+export type SourceSpecifiedBlockActionAckHandler<
+  E extends SlackAppEnv = SlackAppEnv,
+  A extends BlockAction<BlockElementAction> = BlockAction<BlockElementAction>,
+> = (req: SlackRequestWithOptionalRespond<E, A>) => Promise<AckResponse>;
+
+/**
  * lazy function for block_actions request handling.
  */
 export type BlockActionLazyHandler<
   T extends BlockElementTypes,
   E extends SlackAppEnv = SlackAppEnv,
   A extends BlockAction<Extract<BlockElementActions, { type: T }>> = BlockAction<Extract<BlockElementActions, { type: T }>>,
+> = (req: SlackRequestWithOptionalRespond<E, A>) => Promise<void>;
+
+export type SourceSpecifiedBlockActionLazyHandler<
+  E extends SlackAppEnv = SlackAppEnv,
+  A extends BlockAction<BlockElementAction> = BlockAction<BlockElementAction>,
 > = (req: SlackRequestWithOptionalRespond<E, A>) => Promise<void>;
 
 /**
