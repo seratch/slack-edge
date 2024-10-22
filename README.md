@@ -122,9 +122,7 @@ app.command("/hello-edge",
   }
 );
 
-export async function POST(
-  req: NextRequest
-) {
+export async function POST(req: NextRequest) {
   return await app.run(req, { waitUntil });
 }
 ```
