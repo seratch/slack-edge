@@ -358,6 +358,7 @@ export interface ChannelCreatedEvent extends SlackEvent<"channel_created"> {
 export interface ChannelDeletedEvent extends SlackEvent<"channel_deleted"> {
   type: "channel_deleted";
   channel: string;
+  actor_id: string;
 }
 
 export interface ChannelHistoryChangedEvent
