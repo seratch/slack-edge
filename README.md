@@ -92,7 +92,8 @@ npm i slack-edge
 Create a new source file `pages/api/slack.ts` that contains the following code:
 
 ```typescript
-import type { NextFetchEvent, NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
+import { waitUntil } from '@vercel/functions';
 import { SlackApp } from "slack-edge";
 
 export const config = {
@@ -121,11 +122,10 @@ app.command("/hello-edge",
   }
 );
 
-export default async function handler(
-  req: NextRequest,
-  context: NextFetchEvent
+export async function POST(
+  req: NextRequest
 ) {
-  return await app.run(req, context);
+  return await app.run(req, { waitUntil });
 }
 ```
 
