@@ -399,7 +399,7 @@ export function extractThreadTs(
   // That said, note that thread_ts is always required for assistant threads, but it's not for channels.
   // Thus, blindly setting this thread_ts to say utility can break existing apps' behaviors.
   if (isAssitantThreadEvent(body)) {
-    if (body.event.assistant_thread !== undefined) {
+    if (body.event.assistant_thread !== undefined && body.event.assistant_thread.thread_ts !== undefined) {
       return body.event.assistant_thread.thread_ts;
     } else if (body.event.channel !== undefined) {
       if (body.event.thread_ts !== undefined) {

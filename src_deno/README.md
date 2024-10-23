@@ -111,7 +111,8 @@ do when developing web apps. A common example is to attach extra data to the
 #### `ack` / `lazy` Functions
 
 You may be unfamiliar with the "lazy listener" concept in this framework. To
-learn more about it, please read bolt-python's documentation: https://tools.slack.dev/bolt-python/concepts/lazy-listeners
+learn more about it, please read bolt-python's documentation:
+https://tools.slack.dev/bolt-python/concepts/lazy-listeners
 
 The `ack` function must complete within 3 seconds, while the `lazy` function can
 perform time-consuming tasks. It's important to note that not all request

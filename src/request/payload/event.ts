@@ -1404,6 +1404,8 @@ export interface GenericMessageEvent extends SlackEvent<"message"> {
   client_msg_id?: string;
   parent_user_id?: string;
 
+  assistant_thread?: Record<string, unknown>;
+
   // TODO: optional types that maybe should flow into other subtypes?
   is_starred?: boolean;
   pinned_to?: string[];
