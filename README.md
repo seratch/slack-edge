@@ -15,7 +15,7 @@ This framework draws significant inspiration from Slack's [Bolt framework](https
 
 * **Edge function ready**: Out-of-the-box edge function (e.g., Cloudflare Workers) support
 * **TypeScript focused**: Enhances type safety and clarifies typings for developers
-* **Lazy listener enabled**: [bolt-python's lazy listener feature](https://slack.dev/bolt-python/concepts#lazy-listeners) is provided out of the box
+* **Lazy listener enabled**: [bolt-python's lazy listener feature](https://tools.slack.dev/bolt-python/concepts/lazy-listeners) is provided out of the box
 * **Zero additional dependencies**: No other dependencies required beyond TypeScript types and [slack-web-api-client](https://github.com/seratch/slack-web-api-client) (our fetch-function-based Slack API client)
 
 ## Getting Started
@@ -367,7 +367,7 @@ This framework offers ways to globally customize your app's behavior, like you d
 
 #### `ack` / `lazy` Functions
 
-You may be unfamiliar with the "lazy listener" concept in this framework. To learn more about it, please read bolt-python's documentation: https://slack.dev/bolt-python/concepts#lazy-listeners
+You may be unfamiliar with the "lazy listener" concept in this framework. To learn more about it, please read bolt-python's documentation: https://tools.slack.dev/bolt-python/concepts/lazy-listeners
 
 The `ack` function must complete within 3 seconds, while the `lazy` function can perform time-consuming tasks. It's important to note that not all request handlers support the ack or lazy functions. For more information, please refer to the following table, which covers all the patterns in detail.
 
