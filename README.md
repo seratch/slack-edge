@@ -89,7 +89,7 @@ cd your-app-name
 npm i slack-edge
 ```
 
-Create a new source file `pages/api/slack.ts` that contains the following code:
+Create a new source file `app/api/slack.ts` that contains the following code:
 
 ```typescript
 import type { NextRequest } from "next/server";
