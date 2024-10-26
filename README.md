@@ -162,7 +162,7 @@ Open the source file `supabase/functions/hello-world/index.ts` and replace it wi
 import {
   SlackApp,
   SlackEdgeAppEnv,
-} from "https://deno.land/x/slack_edge@1.2.1/mod.ts";
+} from "https://deno.land/x/slack_edge@1.3.0/mod.ts";
 
 const app = new SlackApp<SlackEdgeAppEnv>({
   env: {
