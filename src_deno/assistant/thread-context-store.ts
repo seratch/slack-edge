@@ -2,7 +2,7 @@ import {
   AnyMessageBlock,
   MessageMetadata,
   SlackAPIClient,
-} from "https://deno.land/x/slack_web_api_client@1.1.2/mod.ts";
+} from "https://deno.land/x/slack_web_api_client@1.1.3/mod.ts";
 import { AssistantThreadContext } from "./thread-context.ts";
 
 export type AssistantThreadKey = {
