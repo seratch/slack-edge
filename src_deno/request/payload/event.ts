@@ -1,4 +1,5 @@
 import {
+  AnyManifestEvent,
   AnyMessageBlock,
   HomeTabView,
   MessageAttachment,
@@ -75,7 +76,7 @@ export type AnySlackEvent =
   | SubteamUpdatedEvent
   | TeamAccessGrantedEvent
   | TeamAccessRevokedEvent
-  | TeamDomainChangedEvent
+  | TeamDomainChangeEvent
   | TeamJoinEvent
   | TeamRenameEvent
   | TokensRevokedEvent
@@ -144,7 +145,7 @@ export type AnySlackAssistantThreadEvent =
 /**
  * Events API payload data
  */
-export interface SlackEvent<Type extends string> {
+export interface SlackEvent<Type extends AnyManifestEvent> {
   type: Type;
   subtype?: string;
 }
@@ -901,9 +902,9 @@ export interface TeamAccessRevokedEvent
   event_ts: string;
 }
 
-export interface TeamDomainChangedEvent
-  extends SlackEvent<"team_domain_changed"> {
-  type: "team_domain_changed";
+export interface TeamDomainChangeEvent
+  extends SlackEvent<"team_domain_change"> {
+  type: "team_domain_change";
   url: string;
   domain: string;
 }

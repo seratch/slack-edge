@@ -209,7 +209,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
   // --------------------------
 
   #slashCommands: ((body: SlackRequestBody) => SlackMessageHandler<E, SlashCommand> | null)[] = [];
-  #events: ((body: SlackRequestBody) => SlackHandler<E, SlackEvent<string>> | null)[] = [];
+  #events: ((body: SlackRequestBody) => SlackHandler<E, SlackEvent<AnyEventType>> | null)[] = [];
   #globalShorcuts: ((body: SlackRequestBody) => SlackHandler<E, GlobalShortcut> | null)[] = [];
   #messageShorcuts: ((body: SlackRequestBody) => SlackHandler<E, MessageShortcut> | null)[] = [];
   #blockActions: ((body: SlackRequestBody) => SlackHandler<
@@ -927,7 +927,7 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
 
       if (body.type === PayloadType.EventsAPI) {
         // Events API
-        const slackRequest: SlackRequest<E, SlackEvent<string>> = {
+        const slackRequest: SlackRequest<E, SlackEvent<AnyEventType>> = {
           payload: body.event,
           ...baseRequest,
         };
