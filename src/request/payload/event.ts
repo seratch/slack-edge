@@ -1344,7 +1344,8 @@ export type AnyMessageEvent =
   | GenericMessageEvent
   | BotMessageEvent
   | ChannelArchiveMessageEvent
-  | ChannelConvertToPublicessageEvent
+  | ChannelConvertToPrivateMessageEvent
+  | ChannelConvertToPublicMessageEvent
   | ChannelJoinMessageEvent
   | ChannelLeaveMessageEvent
   | ChannelNameMessageEvent
@@ -1505,7 +1506,18 @@ export interface ChannelPostingPermissionsMessageEvent extends SlackEvent<"messa
   event_ts: string;
 }
 
-export interface ChannelConvertToPublicessageEvent extends SlackEvent<"message"> {
+export interface ChannelConvertToPrivateMessageEvent extends SlackEvent<"message"> {
+  type: "message";
+  subtype: "channel_convert_to_private";
+  ts: string;
+  text: string;
+  user: string;
+  channel: string;
+  event_ts: string;
+  channel_type: string;
+}
+
+export interface ChannelConvertToPublicMessageEvent extends SlackEvent<"message"> {
   type: "message";
   subtype: "channel_convert_to_public";
   ts: string;
