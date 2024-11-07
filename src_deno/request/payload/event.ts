@@ -1546,7 +1546,8 @@ export interface ChannelPostingPermissionsMessageEvent
   event_ts: string;
 }
 
-export interface ChannelConvertToPrivateMessageEvent extends SlackEvent<"message"> {
+export interface ChannelConvertToPrivateMessageEvent
+  extends SlackEvent<"message"> {
   type: "message";
   subtype: "channel_convert_to_private";
   ts: string;
