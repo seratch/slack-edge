@@ -314,7 +314,9 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
    */
   async handleOAuthStartRequest(request: Request): Promise<Response> {
     const stateValue = await this.stateStore.issueNewState();
-    const authorizeUrl = generateAuthorizeUrl(stateValue, this.env);
+    const url = new URL(request.url);
+    const team = url.searchParams.get("team") || undefined;
+    const authorizeUrl = generateAuthorizeUrl(stateValue, this.env, team);
     return await this.oauth.start({
       env: this.env,
       authorizeUrl,
