@@ -351,8 +351,35 @@ export interface ChannelCreatedEvent extends SlackEvent<"channel_created"> {
     name_normalized: string;
     created: number;
     creator: string;
+    is_group: boolean;
+    is_im: boolean;
+    is_mpim: boolean;
+    is_private: boolean;
+    is_archived: boolean;
+    is_general: boolean;
     is_shared: boolean;
     is_org_shared: boolean;
+    is_moved?: number;
+    updated?: number;
+    unlinked?: number;
+    context_team_id?: string;
+    is_pending_ext_shared?: boolean;
+    pending_shared?: string[];
+    is_ext_shared?: boolean;
+    shared_team_ids?: string[];
+    internal_team_ids?: string[];
+    pending_connected_team_ids?: string[];
+    topic?: {
+      value: string;
+      creator: string;
+      last_set: number;
+    };
+    purpose?: {
+      value: string;
+      creator: string;
+      last_set: number;
+    };
+    previous_names?: string[];
   };
 }
 
@@ -1865,6 +1892,7 @@ export interface Subteam {
   users: string[];
   user_count: number;
   channel_count?: number;
+  is_section?: boolean;
 }
 
 export interface StatusEmojiDisplayInfo {
