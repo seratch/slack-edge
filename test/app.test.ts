@@ -40,6 +40,10 @@ describe("SlackApp", () => {
   test("initialization", () => {
     const app = new SlackApp({
       env: { SLACK_SIGNING_SECRET: "test", SLACK_BOT_TOKEN: "xoxb-" },
+      authorizeErrorHandler: async ({ request, error }) => {
+        // Just acknowledge the request this app cannot handle
+        return new Response("", { status: 200 });
+      },
     });
     assert.exists(app.client);
   });
