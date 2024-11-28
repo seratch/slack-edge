@@ -41,6 +41,7 @@ import {
   OAuthStartPageRenderer,
 } from "./oauth/oauth-page-renderer.ts";
 import { AssistantThreadContextStore } from "./assistant/thread-context-store.ts";
+import { AuthorizeErrorHandler } from "./authorization/authorize-error-handler.ts";
 
 /**
  * Options for initializing SlackOAuthApp instance.
@@ -55,6 +56,11 @@ export interface SlackOAuthAppOptions<E extends SlackOAuthEnv> {
    * InstallationStore for managing installation data such as issued OAUth tokens.
    */
   installationStore: InstallationStore<E>;
+
+  /**
+   * The hoook that handles authorization failure.
+   */
+  authorizeErrorHandler?: AuthorizeErrorHandler<E>;
 
   /**
    * Server-side store for managing the state parameter string used for general OAuth security.
@@ -194,6 +200,7 @@ export class SlackOAuthApp<E extends SlackOAuthEnv> extends SlackApp<E> {
     super({
       env: options.env,
       authorize: options.installationStore.toAuthorize(),
+      authorizeErrorHandler: options.authorizeErrorHandler,
       routes: { events: options.routes?.events ?? "/slack/events" },
       startLazyListenerAfterAck: options.startLazyListenerAfterAck,
       ignoreSelfEvents: options.ignoreSelfEvents,
