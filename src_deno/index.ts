@@ -17,6 +17,7 @@ export * from "./handler/options-handler.ts";
 export * from "./handler/view-handler.ts";
 
 export * from "./authorization/authorize.ts";
+export * from "./authorization/authorize-error-handler.ts";
 export * from "./authorization/authorize-result.ts";
 export * from "./authorization/single-team-authorize.ts";
 
