@@ -67,7 +67,7 @@ import {
   ignoringSelfEvents,
   urlVerification,
 } from "./middleware/built-in-middleware.ts";
-import { ConfigError } from "./errors.ts";
+import { AuthorizeError, ConfigError } from "./errors.ts";
 import { GlobalShortcut } from "./request/payload/global-shortcut.ts";
 import { MessageShortcut } from "./request/payload/message-shortcut.ts";
 import {
@@ -99,6 +99,10 @@ import {
   DefaultAssistantThreadContextStore,
 } from "./assistant/thread-context-store.ts";
 import { AssistantThreadContext } from "./assistant/thread-context.ts";
+import {
+  AuthorizeErrorHandler,
+  buildDefaultAuthorizeErrorHanlder,
+} from "./authorization/authorize-error-handler.ts";
 
 /**
  * Options for initializing SlackApp instance.
@@ -115,6 +119,11 @@ export interface SlackAppOptions<
    * The function that resolves the OAuth token associated with an incoming request.
    */
   authorize?: Authorize<E>;
+
+  /**
+   * The hoook that handles authorization failure.
+   */
+  authorizeErrorHandler?: AuthorizeErrorHandler<E>;
 
   /**
    * The endpoint routes to handle requests from Slack's API server.
@@ -173,6 +182,11 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
    * The function that resolves the OAuth token associated with an incoming request.
    */
   public authorize: Authorize<E>;
+
+  /**
+   * The hoook that handles authorization failure.
+   */
+  public authorizeErrorHandler: AuthorizeErrorHandler<E>;
 
   /**
    * The endpoint routes to handle requests from Slack's API server.
@@ -314,6 +328,8 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
       this.postAuthorizeMiddleware.push(middleware);
     }
     this.authorize = options.authorize ?? singleTeamAuthorize;
+    this.authorizeErrorHandler = options.authorizeErrorHandler ??
+      buildDefaultAuthorizeErrorHanlder();
     this.routes = { events: options.routes?.events };
     this.assistantThreadContextStore = options.assistantThreadContextStore;
   }
@@ -985,9 +1001,30 @@ export class SlackApp<E extends SlackEdgeAppEnv | SlackSocketModeAppEnv> {
           return toCompleteResponse(response);
         }
       }
-      const authorizeResult: AuthorizeResult = await this.#callAuthorize(
-        preAuthorizeRequest,
-      );
+      let authorizeResult: AuthorizeResult;
+      try {
+        authorizeResult = await this.#callAuthorize(preAuthorizeRequest);
+      } catch (// deno-lint-ignore no-explicit-any
+      error: any) {
+        if ("name" in error && error.name === "AuthorizeError") {
+          const responseOrError: Response | AuthorizeError = await this
+            .authorizeErrorHandler({
+              request: preAuthorizeRequest,
+              error,
+            });
+          if (
+            "name" in responseOrError &&
+            responseOrError.name === "AuthorizeError"
+          ) {
+            throw responseOrError; // AuthorizeError
+          } else {
+            return responseOrError as Response; // Response
+          }
+        } else {
+          // The authorize() function should not throw any other exceptions than AuthorizeError
+          throw error;
+        }
+      }
       const primaryToken = preAuthorizeRequest.context.functionBotAccessToken ||
         authorizeResult.botToken;
       const authorizedContext: SlackAppContext = {

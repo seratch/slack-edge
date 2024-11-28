@@ -1,3 +1,4 @@
+import { AuthorizeError } from "slack-edge";
 import { SlackApp, SlackAPIError, AssistantThreadContext } from "../../../src/index"; // "slack-edge"
 
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR";
@@ -11,6 +12,9 @@ export const app = new SlackApp({
     SLACK_APP_TOKEN: process.env.SLACK_APP_TOKEN!,
     SLACK_LOGGING_LEVEL: logLevel,
   },
+  // authorizeErrorHandler testing
+  // authorize: async () => { throw new AuthorizeError("test") },
+  // authorizeErrorHandler: async () => new Response("", { status: 200}),
 });
 
 app.assistantThreadStarted(async ({ context: { threadContext, say, setSuggestedPrompts, channelId, threadTs } }) => {

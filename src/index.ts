@@ -17,6 +17,7 @@ export * from "./handler/options-handler";
 export * from "./handler/view-handler";
 
 export * from "./authorization/authorize";
+export * from "./authorization/authorize-error-handler";
 export * from "./authorization/authorize-result";
 export * from "./authorization/single-team-authorize";
 
