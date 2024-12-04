@@ -55,6 +55,7 @@ export * from "./request/payload/view-closed.ts";
 export * from "./request/payload/view-objects.ts";
 
 export * from "./response/response.ts";
+export * from "./response/response-body.ts";
 export * from "./socket-mode/socket-mode-client.ts";
 export * from "./socket-mode/payload-handler.ts";
 
